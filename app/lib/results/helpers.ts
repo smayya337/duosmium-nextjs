@@ -1,6 +1,7 @@
 import { dump } from 'js-yaml';
 import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interpreter/types';
 import strftime from 'strftime';
+import { NextResponse } from 'next/server';
 
 export const DUOSMIUM_ID_REGEX =
 	/^(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]$/;
@@ -28,9 +29,9 @@ export function exportYAMLOrJSON(url: URL, obj: object, yamlName: string) {
 		const myYAMLOptions = YAML_OPTIONS;
 		// @ts-ignore
 		myYAMLOptions['headers']['content-disposition'] = `attachment; filename=${yamlName}.yaml`;
-		return new Response(objectToYAML(obj), myYAMLOptions);
+		return new NextResponse(objectToYAML(obj), myYAMLOptions);
 	} else {
-		return new Response(objectToJSON(obj), JSON_OPTIONS);
+		return new NextResponse(objectToJSON(obj), JSON_OPTIONS);
 	}
 }
 
