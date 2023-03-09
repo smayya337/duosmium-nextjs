@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	experimental: {
-		appDir: true,
-		topLevelAwait: true
+		appDir: true
 	},
 	webpack: (config, options) => {
 		config.experiments = {

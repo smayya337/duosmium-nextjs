@@ -13,7 +13,7 @@ services:
     volumes:
       - mongodb:/data/db:Z
     env_file:
-      - .env.local
+      - .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
