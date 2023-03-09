@@ -1,0 +1,21 @@
+version: '3'
+services:
+  node:
+    restart: always
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app:Z
+      - /app/node_modules/
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongodb:/data/db:Z
+    env_file:
+      - .env.local
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+volumes:
+  mongodb:

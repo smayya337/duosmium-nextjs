@@ -1,22 +1,30 @@
 {
-  "name": "duosmium-nextjs",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@types/node": "18.14.6",
-    "@types/react": "18.0.28",
-    "@types/react-dom": "18.0.11",
-    "eslint": "8.35.0",
-    "eslint-config-next": "13.2.3",
-    "next": "13.2.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "typescript": "4.9.5"
-  }
+	"name": "duosmium-nextjs",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"format": "prettier --plugin-search-dir . --write .",
+		"lint": "prettier --plugin-search-dir . --check . && next lint"
+	},
+	"dependencies": {
+		"@types/js-yaml": "4.0.5",
+		"@types/node": "18.14.6",
+		"@types/react": "18.0.28",
+		"@types/react-dom": "18.0.11",
+		"@types/strftime": "0.9.4",
+		"eslint": "8.35.0",
+		"eslint-config-next": "13.2.3",
+		"mongodb": "5.1.0",
+		"next": "13.2.3",
+		"prettier": "2.8.0",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"sciolyff": "0.11.0",
+		"strftime": "0.10.1",
+		"typescript": "4.9.5",
+		"webpack": "5.76.0"
+	}
 }
