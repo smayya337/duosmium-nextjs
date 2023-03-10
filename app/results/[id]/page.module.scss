@@ -1,0 +1,69 @@
+.info {
+  text-align: center;
+}
+
+.resultsTable {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 1rem;
+  margin: -3ex auto .75em;
+}
+
+.header {
+
+}
+
+.numberHeader {
+  text-align: end;
+}
+
+.teamHeader {
+  text-align: start;
+}
+
+.eventHeader {
+  text-align: start;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  padding-left: 0.75rem;
+  width: 2rem;
+  position: sticky;
+}
+
+.body {
+
+}
+
+.team {
+  text-align: center;
+}
+
+.teamNumber {
+  text-align: end;
+}
+
+.teamName {
+  text-align: start;
+  white-space: nowrap;
+}
+
+.teamLocation {
+  font-size: 0.75rem;
+}
+
+.teamRank {
+
+}
+
+.teamPoints {
+
+}
+
+.teamPlacing {
+  width: 2rem;
+  padding: 0;
+}
+
+.teamPenalty {
+
+}
