@@ -234,8 +234,8 @@ export const ordinalize = (i: number) => {
 
 export function dateString(i: Interpreter): string {
 	if (i.tournament.startDate && i.tournament.endDate) {
-		let s = strftime('%A, %B %d, %Y', i.tournament.startDate);
-		const e = strftime('%A, %B %d, %Y', i.tournament.endDate);
+		let s = strftime('%A, %B %-d, %Y', i.tournament.startDate);
+		const e = strftime('%A, %B %-d, %Y', i.tournament.endDate);
 		if (s != e) {
 			s += ' - ' + e;
 		}
