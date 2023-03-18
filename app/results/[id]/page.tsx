@@ -7,7 +7,6 @@ import {
 	formatSchool,
 	fullTournamentTitle,
 	fullTournamentTitleShort,
-	objectToYAML,
 	teamLocation
 } from '@/app/lib/results/helpers';
 import { Event, Placing, Team } from 'sciolyff/dist/src/interpreter/types';
@@ -15,9 +14,11 @@ import styles from './page.module.css';
 import Link from 'next/link';
 
 async function getRequestedInterpreter(id: string) {
-	const result = await getResult(id);
-	const yaml = objectToYAML(result);
-	return getInterpreter(yaml);
+	if (interpreter === null) {
+		const result = await getResult(id);
+		interpreter = getInterpreter(result);
+	}
+	return interpreter;
 }
 
 function eventClassName(event: string) {
@@ -26,6 +27,8 @@ function eventClassName(event: string) {
 		.replaceAll(/\s+/g, '-')
 		.replaceAll(/[^\w-]/g, '');
 }
+
+let interpreter: Interpreter = null;
 
 // @ts-ignore
 export async function generateMetadata({ params }) {

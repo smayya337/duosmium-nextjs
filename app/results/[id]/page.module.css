@@ -72,7 +72,8 @@
 	cursor: pointer;
 }
 
-.actions a, .actions button {
+.actions a,
+.actions button {
 	padding: 0;
 	background: none;
 	display: inline-block;
@@ -83,19 +84,15 @@
 }
 
 .backButton {
-
 }
 
 .saveButton {
-
 }
 
 .printButton {
-
 }
 
 .shareButton {
-
 }
 
 .resultsTable {
