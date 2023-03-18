@@ -1,6 +1,6 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 
-export function getInterpreter(yaml: string) {
-	return new Interpreter(yaml);
+export function getInterpreter(source: string | object) {
+	return new Interpreter(source);
 }
