@@ -13,13 +13,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH() {
-	return new NextResponse(null, { status: 501 });
+	return new NextResponse(null, { status: 405 });
 }
 
 export async function POST() {
-	return new NextResponse(null, { status: 501 });
+	return new NextResponse(null, { status: 405 });
 }
 
 export async function PUT() {
-	return new NextResponse(null, { status: 501 });
+	return new NextResponse(null, { status: 405 });
 }

@@ -1,123 +1,253 @@
+// noinspection ES6RedundantAwait
+
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
-import { generateFilename, MONGO_ID_REGEX } from './helpers';
-import { addSchoolsFromInterpreter } from '@/app/lib/schools/async';
-import { ObjectId } from 'mongodb';
-import { db } from '@/app/lib/database';
-import { dump, load } from 'js-yaml';
+import { generateFilename } from './helpers';
+import { load } from 'js-yaml';
+import { getInterpreter } from './interpreter';
+import { keepTryingUntilItWorks, prisma } from '@/app/lib/global/prisma';
+import { createTournamentDataInput, getTournamentData } from '@/app/lib/tournaments/async';
+import { createHistogramDataInput, getHistogramData } from '@/app/lib/histograms/async';
+import { ResultsAddQueue } from './queue';
+import { createTeamDataInput, getTeamData } from '@/app/lib/teams/async';
+import { createEventDataInput, getEventData } from '@/app/lib/events/async';
+import { createPlacingDataInput, getPlacingData } from '@/app/lib/placings/async';
+import { createPenaltyDataInput, getPenaltyData } from '@/app/lib/penalties/async';
+import { createTrackDataInput, getTrackData } from '@/app/lib/tracks/async';
 
-export async function getResult(id: string): Promise<object> {
-	if (MONGO_ID_REGEX.test(id)) {
-		return getResultByMongoID(new ObjectId(id));
-	} else {
-		return getResultByDuosmiumID(id);
-	}
+export async function getResult(duosmiumID: string) {
+	return await prisma.result.findUniqueOrThrow({
+		where: {
+			duosmiumId: duosmiumID
+		}
+	});
 }
 
-export async function resultExists(id: string): Promise<boolean> {
-	if (MONGO_ID_REGEX.test(id)) {
-		return resultExistsByMongoID(new ObjectId(id));
-	} else {
-		return resultExistsByDuosmiumID(id);
-	}
-}
-
-export async function deleteResult(id: string) {
-	if (MONGO_ID_REGEX.test(id)) {
-		return deleteResultByMongoID(new ObjectId(id));
-	} else {
-		return deleteResultByDuosmiumID(id);
-	}
-}
-
-async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
-	const matches = await db.collection('results').find({ duosmium_id: duosmiumID });
-	const arr = await matches.toArray();
-	if (arr.length < 1) {
-		throw new Error('No result found!');
-	}
-	return arr[0]['result'];
-}
-
-async function resultExistsByDuosmiumID(duosmiumID: string): Promise<boolean> {
-	return (await db.collection('results').countDocuments({ duosmium_id: duosmiumID })) > 0;
-}
-
-async function deleteResultByDuosmiumID(duosmiumID: string) {
-	await db.collection('results').deleteOne({ duosmium_id: duosmiumID });
-}
-
-async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
-	const matches = await db.collection('results').find({ _id: mongoID });
-	const arr = await matches.toArray();
-	if (arr.length < 1) {
-		throw new Error('No result found!');
-	}
-	return arr[0]['result'];
-}
-
-async function resultExistsByMongoID(mongoID: ObjectId): Promise<boolean> {
-	return (await db.collection('results').countDocuments({ _id: mongoID })) > 0;
-}
-
-async function deleteResultByMongoID(mongoID: ObjectId) {
-	await db.collection('results').deleteOne({ _id: mongoID });
-}
-
-export async function getAllResults(): Promise<object> {
-	const matches = await db.collection('results').find();
-	const matchObject: object = {};
-	let arr = await matches.toArray();
-	arr = arr.sort((a, b) => (a['duosmium_id'] > b['duosmium_id'] ? 1 : -1));
-	for (const arrElement of arr) {
+export async function getCompleteResult(duosmiumID: string) {
+	const tournamentData = await getTournamentData(duosmiumID);
+	const eventData = await getEventData(duosmiumID);
+	const trackData = await getTrackData(duosmiumID);
+	const teamData = await getTeamData(duosmiumID);
+	const placingData = await getPlacingData(duosmiumID);
+	const penaltyData = await getPenaltyData(duosmiumID);
+	const histogramData = await getHistogramData(duosmiumID);
+	const output = {};
+	if (tournamentData !== null) {
 		// @ts-ignore
-		matchObject[arrElement['duosmium_id']] = arrElement['result'];
+		output['Tournament'] = tournamentData;
 	}
-	return matchObject;
-}
-
-export async function addResultFromYAMLFile(file: File) {
-	const yaml = await file.text();
-	const obj = load(yaml);
-	await addResult(yaml, obj);
-}
-
-export async function addResultFromObject(obj: object) {
-	const yaml = dump(obj);
-	await addResult(yaml, obj);
-}
-
-async function addResult(yaml: string, obj: object | unknown) {
-	let interpreter;
-	try {
-		interpreter = new Interpreter(yaml);
-	} catch (e) {
-		throw new Error('The uploaded data is not valid SciolyFF!');
+	if (eventData.length > 0) {
+		// @ts-ignore
+		output['Events'] = eventData;
 	}
-	const fileName = generateFilename(interpreter);
-	const collection = db.collection('results');
-	await collection.createIndex({ duosmium_id: 1 }, { unique: true });
-	if (await resultExistsByDuosmiumID(fileName)) {
-		await collection.updateOne(
+	if (trackData.length > 0) {
+		// @ts-ignore
+		output['Tracks'] = trackData;
+	}
+	if (teamData.length > 0) {
+		// @ts-ignore
+		output['Teams'] = teamData;
+	}
+	if (placingData.length > 0) {
+		// @ts-ignore
+		output['Placings'] = placingData;
+	}
+	if (penaltyData.length > 0) {
+		// @ts-ignore
+		output['Penalties'] = penaltyData;
+	}
+	if (histogramData !== null) {
+		// @ts-ignore
+		output['Histograms'] = histogramData;
+	}
+	return output;
+}
+
+export async function getAllResults() {
+	return await prisma.result.findMany({
+		orderBy: [
 			{
-				duosmium_id: fileName
-			},
-			{
-				$set: {
-					result: obj
-				}
+				duosmiumId: 'asc'
 			}
-		);
-	} else {
-		await collection.insertOne({
-			duosmium_id: fileName,
-			result: obj
-		});
+		]
+	});
+}
+
+export async function getAllCompleteResults() {
+	const output = {};
+	for (const result of await getAllResults()) {
+		const duosmiumID = result.duosmiumId;
+		// @ts-ignore
+		output[duosmiumID] = await getCompleteResult(duosmiumID);
 	}
-	await addSchoolsFromInterpreter(interpreter);
-	return fileName;
+	return output;
+}
+
+export async function resultExists(duosmiumID: string) {
+	return (
+		(await prisma.result.count({
+			where: {
+				duosmiumId: duosmiumID
+			}
+		})) > 0
+	);
+}
+
+export async function deleteResult(duosmiumID: string) {
+	return await prisma.result.delete({
+		where: {
+			duosmiumId: duosmiumID
+		}
+	});
 }
 
 export async function deleteAllResults() {
-	await db.collection('results').drop();
+	return await prisma.result.deleteMany({});
+}
+
+export async function addResultFromYAMLFile(
+	file: File,
+	callback = function (name: string) {
+		const q = ResultsAddQueue.getInstance();
+		console.log(
+			`Result ${name} added! There are ${q.running()} workers running. The queue length is ${q.length()}.`
+		);
+	}
+) {
+	const yaml = await file.text();
+	// @ts-ignore
+	const obj: object = load(yaml);
+	const interpreter: Interpreter = getInterpreter(obj);
+	const resultData: object = await createResultDataInput(interpreter);
+	// console.log(resultData);
+	try {
+		await keepTryingUntilItWorks(addResult, resultData);
+		// await addResult(resultData);
+		callback(generateFilename(interpreter));
+	} catch (e) {
+		console.log(`ERROR: could not add ${generateFilename(interpreter)}!`);
+		console.log(e);
+	}
+}
+
+export async function addResult(resultData: object) {
+	return await prisma.result.upsert({
+		where: {
+			// @ts-ignore
+			duosmiumId: resultData['duosmiumId']
+		},
+		// @ts-ignore
+		create: resultData,
+		update: resultData
+	});
+}
+
+export async function createResultDataInput(interpreter: Interpreter) {
+	const duosmiumID = generateFilename(interpreter);
+	const tournamentData = await createTournamentDataInput(interpreter.tournament);
+	const tournament = interpreter.tournament;
+	const eventData = [];
+	for (const event of tournament.events) {
+		const thisEventData = await createEventDataInput(event);
+		eventData.push({
+			create: thisEventData,
+			where: {
+				resultDuosmiumId_name: {
+					resultDuosmiumId: duosmiumID,
+					name: event.name
+				}
+			}
+		});
+	}
+	const trackData = [];
+	for (const track of tournament.tracks) {
+		const thisTrackData = await createTrackDataInput(track);
+		trackData.push({
+			create: thisTrackData,
+			where: {
+				resultDuosmiumId_name: {
+					resultDuosmiumId: duosmiumID,
+					name: track.name.toString()
+				}
+			}
+		});
+	}
+	const teamData = [];
+	for (const team of tournament.teams) {
+		const thisTeamData = await createTeamDataInput(team);
+		teamData.push({
+			create: thisTeamData,
+			where: {
+				resultDuosmiumId_number: {
+					resultDuosmiumId: duosmiumID,
+					number: team.number
+				}
+			}
+		});
+	}
+	const placingData = [];
+	for (const placing of tournament.placings) {
+		const thisPlacingData = await createPlacingDataInput(placing, duosmiumID);
+		placingData.push({
+			create: thisPlacingData,
+			where: {
+				resultDuosmiumId_eventName_teamNumber: {
+					resultDuosmiumId: duosmiumID,
+					eventName: placing.event.name,
+					teamNumber: placing.team.number
+				}
+			}
+		});
+	}
+	const penaltyData = [];
+	for (const penalty of tournament.penalties) {
+		const thisPenaltyData = await createPenaltyDataInput(penalty, duosmiumID);
+		penaltyData.push({
+			create: thisPenaltyData,
+			where: {
+				resultDuosmiumId_teamNumber: {
+					resultDuosmiumId: duosmiumID,
+					teamNumber: penalty.team.number
+				}
+			}
+		});
+	}
+	const output = {
+		duosmiumId: duosmiumID,
+		tournament: {
+			connectOrCreate: {
+				create: tournamentData,
+				where: {
+					resultDuosmiumId: duosmiumID
+				}
+			}
+		},
+		events: {
+			connectOrCreate: eventData
+		},
+		tracks: {
+			connectOrCreate: trackData
+		},
+		teams: {
+			connectOrCreate: teamData
+		},
+		placings: {
+			connectOrCreate: placingData
+		},
+		penalties: {
+			connectOrCreate: penaltyData
+		}
+	};
+	if (interpreter.histograms) {
+		// @ts-ignore
+		output['histogram'] = {
+			connectOrCreate: {
+				create: await createHistogramDataInput(interpreter.histograms),
+				where: {
+					resultDuosmiumId: duosmiumID
+				}
+			}
+		};
+	}
+	return output;
 }

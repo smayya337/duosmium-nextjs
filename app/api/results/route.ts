@@ -1,7 +1,13 @@
 import { load } from 'js-yaml';
-import { getAllResults, addResultFromObject, deleteAllResults } from '@/app/lib/results/async';
+import {
+	getAllCompleteResults,
+	deleteAllResults,
+	addResult,
+	createResultDataInput
+} from '@/app/lib/results/async';
 import { exportYAMLOrJSON } from '@/app/lib/results/helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { getInterpreter } from '@/app/lib/results/interpreter';
 
 export async function DELETE() {
 	await deleteAllResults();
@@ -9,12 +15,12 @@ export async function DELETE() {
 }
 
 export async function GET(request: NextRequest) {
-	const allResults = await getAllResults();
+	const allResults = await getAllCompleteResults();
 	return exportYAMLOrJSON(new URL(request.url), allResults, 'results');
 }
 
 export async function PATCH() {
-	return new NextResponse(null, { status: 501 });
+	return new NextResponse(null, { status: 405 });
 }
 
 export async function POST(request: NextRequest) {
@@ -43,10 +49,11 @@ export async function POST(request: NextRequest) {
 	} catch (e) {
 		obj = JSON.parse(data);
 	}
-	const fileName = await addResultFromObject(obj);
-	return new NextResponse(`Result ${fileName} created`, { status: 201 });
+	const interpreter = await getInterpreter(obj);
+	const result = await addResult(await createResultDataInput(interpreter));
+	return new NextResponse(result.duosmiumId, { status: 201 });
 }
 
 export async function PUT() {
-	return new NextResponse(null, { status: 501 });
+	return new NextResponse(null, { status: 405 });
 }

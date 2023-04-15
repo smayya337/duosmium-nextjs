@@ -1,3 +1,5 @@
+import { Roboto } from 'next/font/google';
+
 export const metadata = {
 	title: 'Duosmium Results'
 };

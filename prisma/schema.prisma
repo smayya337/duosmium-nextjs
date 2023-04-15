@@ -1,0 +1,120 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = []
+  schemas    = ["public"]
+  directUrl  = env("DIRECT_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
+}
+
+// SciolyFF
+
+model Result {
+  id         Int         @id @default(autoincrement())
+  duosmiumId String      @unique
+  logo       String?
+  color      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  histogram  Histogram?
+  teams      Team[]
+  events     Event[]
+  tracks     Track[]
+  placings   Placing[]
+  penalties  Penalty[]
+  tournament Tournament?
+
+  @@index([duosmiumId(sort: Asc)])
+  @@schema("public")
+}
+
+model Tournament {
+  id               Int    @id @default(autoincrement())
+  resultDuosmiumId String @unique
+  data             Json   @db.JsonB
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+
+  @@index([resultDuosmiumId(sort: Asc)])
+  @@schema("public")
+}
+
+model Team {
+  id               Int       @id @default(autoincrement())
+  number           Int
+  data             Json      @db.JsonB
+  Placing          Placing[]
+  Penalty          Penalty?
+  result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String
+
+  @@unique([resultDuosmiumId, number])
+  @@index([resultDuosmiumId(sort: Asc), number(sort: Asc)])
+  @@schema("public")
+}
+
+model Event {
+  id               Int       @id @default(autoincrement())
+  name             String
+  result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String
+  data             Json      @db.JsonB
+  Placing          Placing[]
+
+  @@unique([resultDuosmiumId, name])
+  @@index([resultDuosmiumId(sort: Asc), name(sort: Asc)])
+  @@schema("public")
+}
+
+model Track {
+  id               Int    @id @default(autoincrement())
+  name             String
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String
+  data             Json   @db.JsonB
+
+  @@unique([resultDuosmiumId, name])
+  @@index([resultDuosmiumId(sort: Asc), name(sort: Asc)])
+  @@schema("public")
+}
+
+model Placing {
+  id               Int    @id @default(autoincrement())
+  event            Event  @relation(fields: [resultDuosmiumId, eventName], references: [resultDuosmiumId, name], onDelete: Cascade)
+  eventName        String
+  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  teamNumber       Int
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String
+  data             Json   @db.JsonB
+
+  @@unique([resultDuosmiumId, eventName, teamNumber])
+  @@index([resultDuosmiumId(sort: Asc), eventName(sort: Asc), teamNumber(sort: Asc)])
+  @@schema("public")
+}
+
+model Penalty {
+  id               Int    @id @default(autoincrement())
+  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  teamNumber       Int
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String
+  data             Json   @db.JsonB
+
+  @@unique([resultDuosmiumId, teamNumber])
+  @@index([resultDuosmiumId(sort: Asc), teamNumber(sort: Asc)])
+  @@schema("public")
+}
+
+model Histogram {
+  id               Int    @id @default(autoincrement())
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId String @unique
+  data             Json   @db.JsonB
+
+  @@index([resultDuosmiumId(sort: Asc)])
+  @@schema("public")
+}

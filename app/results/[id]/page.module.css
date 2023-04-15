@@ -38,6 +38,7 @@
 	min-height: 7rem;
 	margin-bottom: 1rem;
 	margin-left: 1.5rem;
+	margin-top: 1.5rem;
 }
 
 .info h1 {
@@ -60,7 +61,6 @@
 }
 
 .actions {
-	padding-left: 0.75rem;
 	text-align: start;
 	margin-left: 9rem;
 }
@@ -86,7 +86,7 @@
 .backButton {
 }
 
-.saveButton {
+.tuneButton {
 }
 
 .printButton {
@@ -150,10 +150,50 @@
 	position: sticky;
 }
 
+.badge {
+	border-radius: 2px;
+	align-items: center;
+	display: inline-flex;
+	font-size: inherit;
+	font-weight: 500;
+	line-height: inherit;
+	margin-left: 0.25rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	text-align: center;
+	vertical-align: baseline;
+	white-space: nowrap;
+	color: white;
+}
+
+.badgeTrial {
+	background-color: #2196f3;
+}
+
+.badgeTrialed {
+	background-color: #f44336;
+}
+
+.badgeDisqualified {
+	background-color: #9920f5;
+}
+
+.badgeExhibition {
+	background-color: #ffa229;
+}
+
+.badgeAbsent {
+	background-color: #8a8a8a;
+}
+
 .numberHeader,
 .teamNumber {
 	padding-right: 0.5rem;
 	text-align: end;
+}
+
+.teamNumber {
+	color: #15658c;
 }
 
 .teamNumber,

@@ -12,5 +12,5 @@ export async function POST(request: NextRequest) {
 			addResultFromYAMLFile(file);
 		}
 	}
-	return NextResponse.redirect(`${new URL(request.url).host}/results/add`, 303);
+	return NextResponse.redirect(`${new URL(request.url).host}/results/upload`, 303);
 }
