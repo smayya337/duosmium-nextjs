@@ -8,6 +8,7 @@ import {
 	formatSchool,
 	fullTournamentTitle,
 	fullTournamentTitleShort,
+	generateFilename,
 	teamAttended,
 	teamLocation
 } from '@/app/lib/results/helpers';
@@ -16,7 +17,7 @@ import styles from './page.module.css';
 import Link from 'next/link';
 
 async function getRequestedInterpreter(id: string) {
-	if (interpreter === null) {
+	if (interpreter === null || generateFilename(interpreter) !== id) {
 		const result = await getCompleteResult(id);
 		interpreter = getInterpreter(result);
 	}

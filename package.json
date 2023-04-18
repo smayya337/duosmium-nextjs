@@ -32,6 +32,7 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"sciolyff": "^0.12.0",
+		"sharp": "^0.32.0",
 		"strftime": "^0.10.1",
 		"typescript": "^4.9.5",
 		"webpack": "^5.76.0"
