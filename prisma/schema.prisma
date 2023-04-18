@@ -16,8 +16,8 @@ generator client {
 model Result {
   id         Int         @id @default(autoincrement())
   duosmiumId String      @unique
-  logo       String?
-  color      String?
+  logo       String
+  color      String
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   histogram  Histogram?
@@ -46,8 +46,8 @@ model Team {
   id               Int       @id @default(autoincrement())
   number           Int
   data             Json      @db.JsonB
-  Placing          Placing[]
-  Penalty          Penalty?
+  placings         Placing[]
+  penalties        Penalty[]
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   resultDuosmiumId String
 

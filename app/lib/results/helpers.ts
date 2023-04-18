@@ -3,15 +3,15 @@ import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interprete
 import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '@/app/lib/global/helpers';
 import { NextResponse } from 'next/server';
 import { supabase } from '@/app/lib/global/supabase';
-import { prisma } from '@/app/lib/global/prisma';
-import { getResult } from '@/app/lib/results/async';
+import { getResult, resultExists } from '@/app/lib/results/async';
 // @ts-ignore
 import { Placing } from 'sciolyff/interpreter';
-import Vibrant from '@vibrant/core';
-// @ts-ignore
-import ContrastChecker from 'color-contrast-calc';
+import Vibrant from 'node-vibrant';
 // @ts-ignore
 import chroma from 'chroma-js';
+
+// @ts-ignore
+import { ContrastChecker } from 'color-contrast-calc';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
@@ -232,9 +232,11 @@ export function fullTournamentTitleShort(tournament: Tournament) {
 }
 
 export async function findLogoPath(duosmiumID: string) {
-	const dbEntry = (await getResult(duosmiumID)).logo;
-	if (dbEntry) {
-		return dbEntry;
+	if (await resultExists(duosmiumID)) {
+		const dbEntry = (await getResult(duosmiumID)).logo;
+		if (dbEntry) {
+			return dbEntry;
+		}
 	}
 	const tournamentYear = parseInt(duosmiumID.slice(0, 4));
 	const tournamentName = duosmiumID.slice(11, -2).replace('_no_builds', '');
@@ -277,22 +279,15 @@ export async function findLogoPath(duosmiumID: string) {
 			return currentScore > prevScore ? curr : prev;
 		});
 	}
-	const output = '/images/logos/' + selected;
-	await prisma.result.update({
-		where: {
-			duosmiumId: duosmiumID
-		},
-		data: {
-			logo: output
-		}
-	});
-	return output;
+	return '/images/logos/' + selected;
 }
 
 export async function findBgColor(duosmiumID: string) {
-	const dbEntry = (await getResult(duosmiumID)).color;
-	if (dbEntry) {
-		return dbEntry;
+	if (await resultExists(duosmiumID)) {
+		const dbEntry = (await getResult(duosmiumID)).color;
+		if (dbEntry) {
+			return dbEntry;
+		}
 	}
 	const logo = await findLogoPath(duosmiumID);
 	const logoData = (await supabase.storage.from('images').download(logo.replace('/images/', '')))
@@ -304,7 +299,8 @@ export async function findBgColor(duosmiumID: string) {
 		// @ts-ignore
 		const arrayBuffer = await logoData.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
-		const extracted = await Vibrant.from(buffer).getPalette();
+		const builder = Vibrant.from(buffer);
+		const extracted = await builder.getPalette();
 		const colors = [
 			extracted.DarkVibrant,
 			extracted.Vibrant,
@@ -315,19 +311,11 @@ export async function findBgColor(duosmiumID: string) {
 		].filter((color) => color != null);
 		// @ts-ignore
 		let chosenColor = chroma(colors[0].hex);
-		while (ContrastChecker.contrastRatio('#f5f5f5', chosenColor.hex()) < 5.5) {
+		while (ContrastChecker.contrastRatio('#ffffff', chosenColor.hex()) < 5.5) {
 			chosenColor = chosenColor.darken();
 		}
 		output = chosenColor.hex();
 	}
-	await prisma.result.update({
-		where: {
-			duosmiumId: duosmiumID
-		},
-		data: {
-			color: output
-		}
-	});
 	return output;
 }
 

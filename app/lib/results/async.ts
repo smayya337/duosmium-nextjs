@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
-import { generateFilename } from './helpers';
+import { findBgColor, findLogoPath, generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
 import { keepTryingUntilItWorks, prisma } from '@/app/lib/global/prisma';
@@ -236,7 +236,9 @@ export async function createResultDataInput(interpreter: Interpreter) {
 		},
 		penalties: {
 			connectOrCreate: penaltyData
-		}
+		},
+		logo: await findLogoPath(duosmiumID),
+		color: await findBgColor(duosmiumID)
 	};
 	if (interpreter.histograms) {
 		// @ts-ignore

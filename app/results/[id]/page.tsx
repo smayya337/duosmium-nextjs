@@ -1,7 +1,7 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import { getInterpreter } from '@/app/lib/results/interpreter';
-import { getCompleteResult, getResult } from '@/app/lib/results/async';
+import { getCompleteResult } from '@/app/lib/results/async';
 import {
 	dateString,
 	findBgColor,

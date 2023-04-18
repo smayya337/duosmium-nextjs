@@ -5,34 +5,34 @@ import { addResultFromYAMLFile } from './async';
 const MAX_PROCESSES = 16;
 
 export class ResultsAddQueue {
-	private static instance: ResultsAddQueue | null = null;
-	private q: QueueObject<object> | null = null;
+	private static instance: ResultsAddQueue;
+	private q: QueueObject<object>;
 
 	constructor() {
 		this.q = queue(addResultFromYAMLFile, MAX_PROCESSES);
 	}
 
 	public static getInstance() {
-		if (ResultsAddQueue.instance === null) {
+		if (!ResultsAddQueue.instance) {
 			ResultsAddQueue.instance = new ResultsAddQueue();
 		}
 		return ResultsAddQueue.instance;
 	}
 
 	public running() {
-		return this.q?.running();
+		return this.q.running();
 	}
 
 	public length() {
-		return this.q?.length();
+		return this.q.length();
 	}
 
 	public drain(arg: () => void) {
-		this.q?.drain(arg);
+		this.q.drain(arg);
 	}
 
 	public push(arg: File) {
-		this.q?.push(arg);
+		this.q.push(arg);
 		console.log(
 			`Pushed ${
 				arg.name
@@ -41,10 +41,10 @@ export class ResultsAddQueue {
 	}
 
 	public started() {
-		return this.q?.started;
+		return this.q.started;
 	}
 
 	public idle() {
-		return this.q?.idle();
+		return this.q.idle();
 	}
 }

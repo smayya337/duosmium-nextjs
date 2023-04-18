@@ -1,0 +1,25 @@
+.mdcCard {
+    /*color: white;*/
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.mdcCard__mediaContent {
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cardHeader {
+    padding: 1rem;
+}
+
+.cardTitle, .cardDate, .cardLocation {
+    margin: 0;
+}
+
+.cardImage {
+    object-fit: contain;
+}
