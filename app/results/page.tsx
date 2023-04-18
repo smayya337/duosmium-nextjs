@@ -33,12 +33,13 @@ async function Card({ meta }) {
 						</div>
 						<div className="mdc-card__media mdc-card__media--16-9">
 							<div className={`mdc-card__media-content ${styles.mdcCard__mediaContent}`}>
-								<Image
-									src={meta.logo}
-									alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}
-									fill={true}
-									className={styles.cardImage}
-								/>
+								{/*<Image*/}
+								{/*	src={meta.logo}*/}
+								{/*	alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}*/}
+								{/*	fill={true}*/}
+								{/*	className={styles.cardImage}*/}
+								{/*/>*/}
+								<img src={meta.logo} className={styles.cardImage} alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}/>
 							</div>
 						</div>
 						<div className="mdc-card__ripple" />
