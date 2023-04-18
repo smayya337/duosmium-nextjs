@@ -1,19 +1,16 @@
-.mdcCard {
-    /*color: white;*/
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    position: relative;
-    word-wrap: break-word;
-}
-
 .mdcCard__mediaContent {
     background-repeat: no-repeat;
     background-position: center;
+    background-color: var(--mdc-theme-background);
 }
 
 .cardHeader {
     padding: 1rem;
+}
+
+.primaryCardLink {
+    color: var(--mdc-theme-on-surface);
+    text-decoration: none;
 }
 
 .cardTitle, .cardDate, .cardLocation {
@@ -22,4 +19,8 @@
 
 .cardImage {
     object-fit: contain;
+}
+
+.teamCountButton {
+    margin-right: 0.125rem;
 }
