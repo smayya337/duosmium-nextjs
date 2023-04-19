@@ -16,10 +16,10 @@ async function Card({ meta }) {
 	const interpreter = getInterpreter(completeResult);
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop">
-			{/*@ts-ignore*/}
 			<div
 				className="mdc-card"
 				style={{
+					// @ts-ignore
 					'--mdc-theme-primary': meta.color,
 					height: '100%',
 					display: 'flex',
