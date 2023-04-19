@@ -18,7 +18,7 @@ async function Card({ meta }) {
 		<div className="mdc-layout-grid__cell">
 			{/*@ts-ignore*/}
 			<div className="mdc-card" style={{ '--mdc-theme-primary': meta.color }}>
-				<Link href={`/results/${meta.duosmiumId}`} className={styles.primaryCardLink}>
+				<Link href={`/results/${meta.duosmiumId}`} className={styles.primaryCardLink} tabIndex={-1}>
 					<div className="mdc-card__primary-action" tabIndex={0}>
 						<div className={`mdc-card__content ${styles.cardHeader}`}>
 							<h6 className={`${styles.cardTitle} mdc-typography--headline6`}>
@@ -33,13 +33,12 @@ async function Card({ meta }) {
 						</div>
 						<div className="mdc-card__media mdc-card__media--16-9">
 							<div className={`mdc-card__media-content ${styles.mdcCard__mediaContent}`}>
-								{/*<Image*/}
-								{/*	src={meta.logo}*/}
-								{/*	alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}*/}
-								{/*	fill={true}*/}
-								{/*	className={styles.cardImage}*/}
-								{/*/>*/}
-								<img src={meta.logo} className={styles.cardImage} alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}/>
+								<Image
+									src={`${process.env.BASE_URL}${meta.logo}`}
+									alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}
+									fill={true}
+									className={styles.cardImage}
+								/>
 							</div>
 						</div>
 						<div className="mdc-card__ripple" />
@@ -51,18 +50,18 @@ async function Card({ meta }) {
 							<div className="mdc-button__ripple" />
 							<span className="mdc-button__label">Summary</span>
 						</button>
-						<Link href={`/results/${meta.duosmiumId}`}>
-							<button
-								className="mdc-button mdc-card__action mdc-card__action--button"
-								tabIndex={-1}
-							>
+						<Link href={`/results/${meta.duosmiumId}`} tabIndex={-1}>
+							<button className="mdc-button mdc-card__action mdc-card__action--button">
 								<div className="mdc-button__ripple" />
 								<span className="mdc-button__label">Full Results</span>
 							</button>
 						</Link>
 					</div>
 					<div className="mdc-card__action-icons">
-						<button className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}>
+						<button
+							className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}
+							tabIndex={-1}
+						>
 							{/*<div className="mdc-button__ripple" />*/}
 							<span className="mdc-button__label">
 								{interpreter.tournament.nonExhibitionTeamsCount} Teams

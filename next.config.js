@@ -12,21 +12,10 @@ const nextConfig = {
 		return config;
 	},
 	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'duosmium-*.vercel.app',
-				port: '',
-				pathname: '/images/**',
-			},
-			{
-				protocol: 'https',
-				hostname: '**.duosmium.org',
-				port: '',
-				pathname: '/images/**',
-			}
-		],
-	},
+		domains: [
+			process.env.BASE_URL.replace(/https?:\/\//, '')
+		]
+	}
 };
 
 module.exports = nextConfig;
