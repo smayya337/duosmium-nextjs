@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getInterpreter } from '@/app/lib/results/interpreter';
 
 export async function DELETE() {
+	return new NextResponse(null, { status: 405 });
 	await deleteAllResults();
 	return new NextResponse(null, { status: 204 });
 }
@@ -24,6 +25,7 @@ export async function PATCH() {
 }
 
 export async function POST(request: NextRequest) {
+	return new NextResponse(null, { status: 405 });
 	const body = request.body;
 	if (body === null) {
 		return new NextResponse('No data provided!', { status: 400 });

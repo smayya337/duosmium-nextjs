@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ResultsAddQueue } from '@/app/lib/results/queue';
 
 export async function POST(request: NextRequest) {
+	return new NextResponse(null, { status: 405 });
 	const data = await request.formData();
 	const allFiles = data.getAll('yaml');
 	const q = ResultsAddQueue.getInstance();

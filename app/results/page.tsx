@@ -15,9 +15,18 @@ async function Card({ meta }) {
 	}
 	const interpreter = getInterpreter(completeResult);
 	return (
-		<div className="mdc-layout-grid__cell">
+		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop">
 			{/*@ts-ignore*/}
-			<div className="mdc-card" style={{ '--mdc-theme-primary': meta.color }}>
+			<div
+				className="mdc-card"
+				style={{
+					'--mdc-theme-primary': meta.color,
+					height: '100%',
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'space-between'
+				}}
+			>
 				<Link href={`/results/${meta.duosmiumId}`} className={styles.primaryCardLink} tabIndex={-1}>
 					<div className="mdc-card__primary-action" tabIndex={0}>
 						<div className={`mdc-card__content ${styles.cardHeader}`}>
@@ -97,10 +106,7 @@ function CardFallback({ meta }) {
 				<div className="mdc-card__actions">
 					<div className="mdc-card__action-buttons">
 						<Link href={`/results/${id}`}>
-							<button
-								className="mdc-button mdc-card__action mdc-card__action--button"
-								tabIndex={-1}
-							>
+							<button className="mdc-button mdc-card__action mdc-card__action--button">
 								<div className="mdc-button__ripple" />
 								<span className="mdc-button__label">Full Results</span>
 							</button>

@@ -9,7 +9,8 @@
 }
 
 .primaryCardLink {
-	color: var(--mdc-theme-on-surface);
+	background-color: var(--mdc-theme-primary);
+	color: var(--mdc-theme-surface);
 	text-decoration: none;
 }
 

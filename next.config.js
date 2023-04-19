@@ -12,9 +12,7 @@ const nextConfig = {
 		return config;
 	},
 	images: {
-		domains: [
-			process.env.BASE_URL.replace(/https?:\/\//, '')
-		]
+		domains: [process.env.BASE_URL.replace(/https?:\/\//, '')]
 	}
 };
 

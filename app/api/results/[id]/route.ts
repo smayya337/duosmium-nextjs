@@ -3,6 +3,7 @@ import { exportYAMLOrJSON } from '@/app/lib/results/helpers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(request: NextRequest) {
+	return new NextResponse(null, { status: 405 });
 	const url = new URL(request.url);
 	const duosmiumID = url.pathname.split('/').pop();
 	if (duosmiumID === undefined) {

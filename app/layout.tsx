@@ -8,7 +8,9 @@ export const metadata = {
 
 const roboto = Roboto({
 	weight: ['400', '500', '700'],
-	subsets: ['latin']
+	style: ['normal', 'italic'],
+	subsets: ['latin'],
+	display: 'swap'
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
