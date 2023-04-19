@@ -11,8 +11,8 @@ import { getInterpreter } from '@/app/lib/results/interpreter';
 
 export async function DELETE() {
 	return new NextResponse(null, { status: 405 });
-	await deleteAllResults();
-	return new NextResponse(null, { status: 204 });
+	// await deleteAllResults();
+	// return new NextResponse(null, { status: 204 });
 }
 
 export async function GET(request: NextRequest) {
@@ -26,34 +26,34 @@ export async function PATCH() {
 
 export async function POST(request: NextRequest) {
 	return new NextResponse(null, { status: 405 });
-	const body = request.body;
-	if (body === null) {
-		return new NextResponse('No data provided!', { status: 400 });
-	}
-	let data = '';
-	let readDone = false;
-	const reader = body.getReader();
-	while (!readDone) {
-		await reader.read().then(({ done, value }) => {
-			if (value === undefined) {
-				readDone = done;
-			}
-			if (!readDone) {
-				const fragment = new TextDecoder().decode(value);
-				data += fragment;
-			}
-		});
-	}
-	let obj;
-	try {
-		// Why on earth does this load to a string first and then an object???
-		obj = load(<string>load(data));
-	} catch (e) {
-		obj = JSON.parse(data);
-	}
-	const interpreter = await getInterpreter(obj);
-	const result = await addResult(await createResultDataInput(interpreter));
-	return new NextResponse(result.duosmiumId, { status: 201 });
+	// const body = request.body;
+	// if (body === null) {
+	// 	return new NextResponse('No data provided!', { status: 400 });
+	// }
+	// let data = '';
+	// let readDone = false;
+	// const reader = body.getReader();
+	// while (!readDone) {
+	// 	await reader.read().then(({ done, value }) => {
+	// 		if (value === undefined) {
+	// 			readDone = done;
+	// 		}
+	// 		if (!readDone) {
+	// 			const fragment = new TextDecoder().decode(value);
+	// 			data += fragment;
+	// 		}
+	// 	});
+	// }
+	// let obj;
+	// try {
+	// 	// Why on earth does this load to a string first and then an object???
+	// 	obj = load(<string>load(data));
+	// } catch (e) {
+	// 	obj = JSON.parse(data);
+	// }
+	// const interpreter = await getInterpreter(obj);
+	// const result = await addResult(await createResultDataInput(interpreter));
+	// return new NextResponse(result.duosmiumId, { status: 201 });
 }
 
 export async function PUT() {

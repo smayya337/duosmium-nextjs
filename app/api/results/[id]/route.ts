@@ -4,21 +4,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(request: NextRequest) {
 	return new NextResponse(null, { status: 405 });
-	const url = new URL(request.url);
-	const duosmiumID = url.pathname.split('/').pop();
-	if (duosmiumID === undefined) {
-		return new NextResponse('No result specified!', { status: 400 });
-	} else {
-		if ((await resultExists(duosmiumID)) === false) {
-			return new NextResponse('Result ' + duosmiumID + ' does not exist!', { status: 404 });
-		}
-		try {
-			await deleteResult(duosmiumID);
-		} catch (e) {
-			return new NextResponse('Server Error', { status: 500 });
-		}
-	}
-	return new NextResponse(null, { status: 204 });
+	// const url = new URL(request.url);
+	// const duosmiumID = url.pathname.split('/').pop();
+	// if (duosmiumID === undefined) {
+	// 	return new NextResponse('No result specified!', { status: 400 });
+	// } else {
+	// 	if ((await resultExists(duosmiumID)) === false) {
+	// 		return new NextResponse('Result ' + duosmiumID + ' does not exist!', { status: 404 });
+	// 	}
+	// 	try {
+	// 		await deleteResult(duosmiumID);
+	// 	} catch (e) {
+	// 		return new NextResponse('Server Error', { status: 500 });
+	// 	}
+	// }
+	// return new NextResponse(null, { status: 204 });
 }
 
 export async function GET(request: NextRequest) {
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 	if (duosmiumID === undefined) {
 		return new NextResponse('No result specified!', { status: 400 });
 	} else {
-		if ((await resultExists(duosmiumID)) === false) {
+		if (!(await resultExists(duosmiumID))) {
 			return new NextResponse('Result ' + duosmiumID + ' does not exist!', { status: 404 });
 		}
 		try {
