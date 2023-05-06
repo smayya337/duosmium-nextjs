@@ -2,7 +2,7 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   extensions = []
-  schemas    = ["public"]
+  schemas    = ["public", "auth"]
   directUrl  = env("DIRECT_URL")
 }
 

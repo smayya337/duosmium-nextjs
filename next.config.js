@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	experimental: {
-		appDir: true
+		appDir: true,
+		serverActions: true
 	},
 	webpack: (config, options) => {
 		config.experiments = {
@@ -12,7 +13,7 @@ const nextConfig = {
 		return config;
 	},
 	images: {
-		domains: [process.env.BASE_URL.replace(/https?:\/\//, '')]
+		domains: [process.env.BASE_URL.replace(/https?:\/\//, '').replace(/:\d+/, '')]
 	}
 };
 

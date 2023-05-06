@@ -1,11 +1,12 @@
 import { getInterpreter } from '@/app/lib/results/interpreter';
 import { dateString, fullTournamentTitle } from '@/app/lib/results/helpers';
-import { prisma } from '@/app/lib/global/prisma';
 import { cache, Suspense } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCompleteResult } from '@/app/lib/results/async';
+import { getAllResultsMostRecent, getCompleteResult } from '@/app/lib/results/async';
+import { headers, cookies } from 'next/headers';
+import { getServerComponentSupabaseClient } from '@/app/lib/global/supabase';
 
 // @ts-ignore
 async function Card({ meta }) {
@@ -127,12 +128,8 @@ function preload(duosmiumID: string) {
 }
 
 export default async function Page() {
-	const allResults = await prisma.result.findMany({
-		orderBy: {
-			duosmiumId: 'desc'
-		},
-		take: 24
-	});
+	const supabase = getServerComponentSupabaseClient(headers, cookies);
+	const allResults = await getAllResultsMostRecent(supabase);
 	for (const res of allResults) {
 		preload(res.duosmiumId);
 	}

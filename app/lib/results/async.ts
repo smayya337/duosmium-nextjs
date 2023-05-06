@@ -14,13 +14,25 @@ import { createEventDataInput, getEventData } from '@/app/lib/events/async';
 import { createPlacingDataInput, getPlacingData } from '@/app/lib/placings/async';
 import { createPenaltyDataInput, getPenaltyData } from '@/app/lib/penalties/async';
 import { createTrackDataInput, getTrackData } from '@/app/lib/tracks/async';
+import { supabase } from '@/app/lib/global/supabase';
+import { NextResponse } from 'next/server';
 
-export async function getResult(duosmiumID: string) {
-	return await prisma.result.findUniqueOrThrow({
-		where: {
-			duosmiumId: duosmiumID
-		}
-	});
+export const RESULT_TABLE = 'Result';
+
+export async function getResult(duosmiumID: string, client = supabase) {
+	const { data, error } = await client.from(RESULT_TABLE).select().eq('duosmiumId', duosmiumID);
+	if (error) {
+		throw error;
+	}
+	if (!data) {
+		throw new Error('No result found!');
+	}
+	return data[0];
+	// return await prisma.result.findUniqueOrThrow({
+	// 	where: {
+	// 		duosmiumId: duosmiumID
+	// 	}
+	// });
 }
 
 export async function getCompleteResult(duosmiumID: string) {
@@ -73,6 +85,18 @@ export async function getAllResults() {
 	});
 }
 
+export async function getAllResultsMostRecent(client = supabase, limit = 24) {
+	const { data, error } = await client
+		.from(RESULT_TABLE)
+		.select('*')
+		.order('duosmiumId', { ascending: false })
+		.limit(limit);
+	if (error) {
+		throw error;
+	}
+	return data;
+}
+
 export async function getAllCompleteResults() {
 	const output = {};
 	for (const result of await getAllResults()) {
@@ -83,22 +107,27 @@ export async function getAllCompleteResults() {
 	return output;
 }
 
-export async function resultExists(duosmiumID: string) {
-	return (
-		(await prisma.result.count({
-			where: {
-				duosmiumId: duosmiumID
-			}
-		})) > 0
-	);
+export async function resultExists(duosmiumID: string, client = supabase) {
+	const { data, error } = await client
+		.from(RESULT_TABLE)
+		.select('*', { head: true, count: 'exact' })
+		.eq('duosmiumId', duosmiumID);
+	if (error) {
+		throw error;
+	}
+	return data?.length > 0;
 }
 
-export async function deleteResult(duosmiumID: string) {
-	return await prisma.result.delete({
-		where: {
-			duosmiumId: duosmiumID
-		}
-	});
+export async function deleteResult(duosmiumID: string, client = supabase) {
+	// return await prisma.result.delete({
+	// 	where: {
+	// 		duosmiumId: duosmiumID
+	// 	}
+	// });
+	const { error } = await client.from(RESULT_TABLE).delete().eq('duosmiumId', duosmiumID);
+	if (error) {
+		throw error;
+	}
 }
 
 export async function deleteAllResults() {
