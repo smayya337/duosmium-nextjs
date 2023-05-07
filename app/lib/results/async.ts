@@ -5,7 +5,7 @@ import Interpreter from 'sciolyff/interpreter';
 import { findBgColor, findLogoPath, generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { keepTryingUntilItWorks, prisma } from '@/app/lib/global/prisma';
+import { prisma } from '@/app/lib/global/prisma';
 import { createTournamentDataInput, getTournamentData } from '@/app/lib/tournaments/async';
 import { createHistogramDataInput, getHistogramData } from '@/app/lib/histograms/async';
 import { ResultsAddQueue } from './queue';
@@ -14,25 +14,13 @@ import { createEventDataInput, getEventData } from '@/app/lib/events/async';
 import { createPlacingDataInput, getPlacingData } from '@/app/lib/placings/async';
 import { createPenaltyDataInput, getPenaltyData } from '@/app/lib/penalties/async';
 import { createTrackDataInput, getTrackData } from '@/app/lib/tracks/async';
-import { supabase } from '@/app/lib/global/supabase';
-import { NextResponse } from 'next/server';
 
-export const RESULT_TABLE = 'Result';
-
-export async function getResult(duosmiumID: string, client = supabase) {
-	const { data, error } = await client.from(RESULT_TABLE).select().eq('duosmiumId', duosmiumID);
-	if (error) {
-		throw error;
-	}
-	if (!data) {
-		throw new Error('No result found!');
-	}
-	return data[0];
-	// return await prisma.result.findUniqueOrThrow({
-	// 	where: {
-	// 		duosmiumId: duosmiumID
-	// 	}
-	// });
+export async function getResult(duosmiumID: string) {
+	return await prisma.result.findUniqueOrThrow({
+		where: {
+			duosmiumId: duosmiumID
+		}
+	});
 }
 
 export async function getCompleteResult(duosmiumID: string) {
@@ -75,26 +63,15 @@ export async function getCompleteResult(duosmiumID: string) {
 	return output;
 }
 
-export async function getAllResults() {
+export async function getAllResults(ascending = true, limit = 0) {
 	return await prisma.result.findMany({
 		orderBy: [
 			{
-				duosmiumId: 'asc'
+				duosmiumId: ascending ? 'asc' : 'desc'
 			}
-		]
+		],
+		take: limit === 0 ? undefined : limit
 	});
-}
-
-export async function getAllResultsMostRecent(client = supabase, limit = 24) {
-	const { data, error } = await client
-		.from(RESULT_TABLE)
-		.select('*')
-		.order('duosmiumId', { ascending: false })
-		.limit(limit);
-	if (error) {
-		throw error;
-	}
-	return data;
 }
 
 export async function getAllCompleteResults() {
@@ -107,27 +84,22 @@ export async function getAllCompleteResults() {
 	return output;
 }
 
-export async function resultExists(duosmiumID: string, client = supabase) {
-	const { data, error } = await client
-		.from(RESULT_TABLE)
-		.select('*', { head: true, count: 'exact' })
-		.eq('duosmiumId', duosmiumID);
-	if (error) {
-		throw error;
-	}
-	return data?.length > 0;
+export async function resultExists(duosmiumID: string) {
+	return (
+		(await prisma.result.count({
+			where: {
+				duosmiumId: duosmiumID
+			}
+		})) > 0
+	);
 }
 
-export async function deleteResult(duosmiumID: string, client = supabase) {
-	// return await prisma.result.delete({
-	// 	where: {
-	// 		duosmiumId: duosmiumID
-	// 	}
-	// });
-	const { error } = await client.from(RESULT_TABLE).delete().eq('duosmiumId', duosmiumID);
-	if (error) {
-		throw error;
-	}
+export async function deleteResult(duosmiumID: string) {
+	return await prisma.result.delete({
+		where: {
+			duosmiumId: duosmiumID
+		}
+	});
 }
 
 export async function deleteAllResults() {
@@ -150,8 +122,8 @@ export async function addResultFromYAMLFile(
 	const resultData: object = await createResultDataInput(interpreter);
 	// console.log(resultData);
 	try {
-		await keepTryingUntilItWorks(addResult, resultData);
-		// await addResult(resultData);
+		// await keepTryingUntilItWorks(addResult, resultData);
+		await addResult(resultData);
 		callback(generateFilename(interpreter));
 	} catch (e) {
 		console.log(`ERROR: could not add ${generateFilename(interpreter)}!`);

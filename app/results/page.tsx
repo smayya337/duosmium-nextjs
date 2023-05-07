@@ -4,9 +4,7 @@ import { cache, Suspense } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getAllResultsMostRecent, getCompleteResult } from '@/app/lib/results/async';
-import { headers, cookies } from 'next/headers';
-import { getServerComponentSupabaseClient } from '@/app/lib/global/supabase';
+import { getAllResults, getCompleteResult } from '@/app/lib/results/async';
 
 // @ts-ignore
 async function Card({ meta }) {
@@ -128,8 +126,7 @@ function preload(duosmiumID: string) {
 }
 
 export default async function Page() {
-	const supabase = getServerComponentSupabaseClient(headers, cookies);
-	const allResults = await getAllResultsMostRecent(supabase);
+	const allResults = await getAllResults(false, 24);
 	for (const res of allResults) {
 		preload(res.duosmiumId);
 	}
