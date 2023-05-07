@@ -22,13 +22,12 @@ export async function getTrackData(duosmiumID: string) {
 		},
 		orderBy: {
 			name: 'asc'
+		},
+		select: {
+			data: true
 		}
 	});
-	const output = [];
-	for (const rawItem of rawData) {
-		output.push(rawItem.data);
-	}
-	return output;
+	return rawData.map((i) => i.data);
 }
 
 export async function trackExists(duosmiumID: string, name: string) {

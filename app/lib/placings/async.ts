@@ -31,14 +31,10 @@ export async function getPlacingData(duosmiumID: string) {
 			}
 		]
 	});
-	const output = [];
-	for (const rawItem of rawData) {
-		output.push(rawItem.data);
-	}
-	return output;
+	return rawData.map((i) => i.data);
 }
 
-export async function tournamentExists(duosmiumID: string, eventName: string, teamNumber: number) {
+export async function placingExists(duosmiumID: string, eventName: string, teamNumber: number) {
 	return (
 		(await prisma.placing.count({
 			where: {

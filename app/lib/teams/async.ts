@@ -22,13 +22,12 @@ export async function getTeamData(duosmiumID: string) {
 		},
 		orderBy: {
 			number: 'asc'
+		},
+		select: {
+			data: true
 		}
 	});
-	const output = [];
-	for (const rawItem of rawData) {
-		output.push(rawItem.data);
-	}
-	return output;
+	return rawData.map((i) => i.data);
 }
 
 export async function teamExists(duosmiumID: string, number: number) {

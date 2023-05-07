@@ -22,13 +22,12 @@ export async function getPenaltyData(duosmiumID: string) {
 		},
 		orderBy: {
 			teamNumber: 'asc'
+		},
+		select: {
+			data: true
 		}
 	});
-	const output = [];
-	for (const rawItem of rawData) {
-		output.push(rawItem.data);
-	}
-	return output;
+	return rawData.map((i) => i.data);
 }
 
 export async function penaltyExists(duosmiumID: string, teamNumber: number) {
