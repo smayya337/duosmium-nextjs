@@ -10,4 +10,6 @@ async function changeUserPassword(password: string) {
 	return data;
 }
 
-export default async function Page() {}
+export default function Page() {
+	return <p>TBD</p>;
+}

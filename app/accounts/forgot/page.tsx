@@ -9,3 +9,7 @@ async function sendForgotPasswordEmail(email: string) {
 	}
 	return data;
 }
+
+export default function Page() {
+	return <p>TBD</p>;
+}
