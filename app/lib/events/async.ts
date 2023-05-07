@@ -20,15 +20,14 @@ export async function getEventData(duosmiumID: string) {
 		where: {
 			resultDuosmiumId: duosmiumID
 		},
+		select: {
+			data: true
+		},
 		orderBy: {
 			name: 'asc'
 		}
 	});
-	const output = [];
-	for (const rawItem of rawData) {
-		output.push(rawItem.data);
-	}
-	return output;
+	return rawData.map((i) => i.data);
 }
 
 export async function eventExists(duosmiumID: string, eventName: string) {

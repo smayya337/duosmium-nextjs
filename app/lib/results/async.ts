@@ -6,14 +6,14 @@ import { findBgColor, findLogoPath, generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
 import { prisma } from '@/app/lib/global/prisma';
-import { createTournamentDataInput, getTournamentData } from '@/app/lib/tournaments/async';
-import { createHistogramDataInput, getHistogramData } from '@/app/lib/histograms/async';
+import { createTournamentDataInput } from '@/app/lib/tournaments/async';
+import { createHistogramDataInput } from '@/app/lib/histograms/async';
 import { ResultsAddQueue } from './queue';
-import { createTeamDataInput, getTeamData } from '@/app/lib/teams/async';
-import { createEventDataInput, getEventData } from '@/app/lib/events/async';
-import { createPlacingDataInput, getPlacingData } from '@/app/lib/placings/async';
-import { createPenaltyDataInput, getPenaltyData } from '@/app/lib/penalties/async';
-import { createTrackDataInput, getTrackData } from '@/app/lib/tracks/async';
+import { createTeamDataInput } from '@/app/lib/teams/async';
+import { createEventDataInput } from '@/app/lib/events/async';
+import { createPlacingDataInput } from '@/app/lib/placings/async';
+import { createPenaltyDataInput } from '@/app/lib/penalties/async';
+import { createTrackDataInput } from '@/app/lib/tracks/async';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -23,42 +23,126 @@ export async function getResult(duosmiumID: string) {
 	});
 }
 
+async function getCompleteResultData(duosmiumID: string) {
+	const [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData] =
+		await prisma.$transaction([
+			prisma.tournament.findUnique({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				select: {
+					data: true
+				}
+			}),
+			prisma.event.findMany({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				select: {
+					data: true
+				},
+				orderBy: {
+					name: 'asc'
+				}
+			}),
+			prisma.track.findMany({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				select: {
+					data: true
+				},
+				orderBy: {
+					name: 'asc'
+				}
+			}),
+			prisma.team.findMany({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				orderBy: {
+					number: 'asc'
+				},
+				select: {
+					data: true
+				}
+			}),
+			prisma.placing.findMany({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				orderBy: [
+					{
+						teamNumber: 'asc'
+					},
+					{
+						eventName: 'asc'
+					}
+				],
+				select: {
+					data: true
+				}
+			}),
+			prisma.penalty.findMany({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				orderBy: {
+					teamNumber: 'asc'
+				},
+				select: {
+					data: true
+				}
+			}),
+			prisma.histogram.findUnique({
+				where: {
+					resultDuosmiumId: duosmiumID
+				},
+				select: {
+					data: true
+				}
+			})
+		]);
+	return [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData];
+}
+
 export async function getCompleteResult(duosmiumID: string) {
-	const tournamentData = await getTournamentData(duosmiumID);
-	const eventData = await getEventData(duosmiumID);
-	const trackData = await getTrackData(duosmiumID);
-	const teamData = await getTeamData(duosmiumID);
-	const placingData = await getPlacingData(duosmiumID);
-	const penaltyData = await getPenaltyData(duosmiumID);
-	const histogramData = await getHistogramData(duosmiumID);
+	// @ts-ignore
+	const [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData] =
+		await getCompleteResultData(duosmiumID);
 	const output = {};
 	if (tournamentData !== null) {
 		// @ts-ignore
-		output['Tournament'] = tournamentData;
+		output['Tournament'] = tournamentData.data;
 	}
+	// @ts-ignore
 	if (eventData.length > 0) {
 		// @ts-ignore
-		output['Events'] = eventData;
+		output['Events'] = eventData.map((i) => i.data);
 	}
+	// @ts-ignore
 	if (trackData.length > 0) {
 		// @ts-ignore
-		output['Tracks'] = trackData;
+		output['Tracks'] = trackData.map((i) => i.data);
 	}
+	// @ts-ignore
 	if (teamData.length > 0) {
 		// @ts-ignore
-		output['Teams'] = teamData;
+		output['Teams'] = teamData.map((i) => i.data);
 	}
+	// @ts-ignore
 	if (placingData.length > 0) {
 		// @ts-ignore
-		output['Placings'] = placingData;
+		output['Placings'] = placingData.map((i) => i.data);
 	}
+	// @ts-ignore
 	if (penaltyData.length > 0) {
 		// @ts-ignore
-		output['Penalties'] = penaltyData;
+		output['Penalties'] = penaltyData.map((i) => i.data);
 	}
 	if (histogramData !== null) {
 		// @ts-ignore
-		output['Histograms'] = histogramData;
+		output['Histograms'] = histogramData.data;
 	}
 	return output;
 }
