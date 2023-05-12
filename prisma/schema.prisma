@@ -1,21 +1,17 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema", "postgresqlExtensions"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
-  extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
-  schemas    = ["public"]
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 /// SciolyFF
 
 model Result {
-  id                         Int                        @id @default(autoincrement())
-  duosmiumId                 String                     @unique
+  duosmiumId                 String                     @id
   logo                       String
   color                      String
   createdAt                  DateTime                   @default(now())
@@ -31,21 +27,17 @@ model Result {
   organizationResultPolicies OrganizationResultPolicy[]
 
   @@index([duosmiumId])
-  @@schema("public")
 }
 
 model Tournament {
-  id               Int    @id @default(autoincrement())
-  resultDuosmiumId String @unique
+  resultDuosmiumId String @id
   data             Json
   result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
   @@index([resultDuosmiumId])
-  @@schema("public")
 }
 
 model Team {
-  id               Int       @id @default(autoincrement())
   number           Int
   resultDuosmiumId String
   data             Json
@@ -53,38 +45,32 @@ model Team {
   placings         Placing[]
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
-  @@unique([resultDuosmiumId, number])
+  @@id([resultDuosmiumId, number])
   @@index([resultDuosmiumId, number])
-  @@schema("public")
 }
 
 model Event {
-  id               Int       @id @default(autoincrement())
   name             String
   resultDuosmiumId String
   data             Json
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   Placing          Placing[]
 
-  @@unique([resultDuosmiumId, name])
+  @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
-  @@schema("public")
 }
 
 model Track {
-  id               Int    @id @default(autoincrement())
   name             String
   resultDuosmiumId String
   data             Json
   result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
-  @@unique([resultDuosmiumId, name])
+  @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
-  @@schema("public")
 }
 
 model Placing {
-  id               Int    @id @default(autoincrement())
   eventName        String
   teamNumber       Int
   resultDuosmiumId String
@@ -93,46 +79,39 @@ model Placing {
   result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
 
-  @@unique([resultDuosmiumId, eventName, teamNumber])
+  @@id([resultDuosmiumId, eventName, teamNumber])
   @@index([resultDuosmiumId, eventName, teamNumber])
-  @@schema("public")
 }
 
 model Penalty {
-  id               Int    @id @default(autoincrement())
   teamNumber       Int
   resultDuosmiumId String
   data             Json
   result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
 
-  @@unique([resultDuosmiumId, teamNumber])
+  @@id([resultDuosmiumId, teamNumber])
   @@index([resultDuosmiumId, teamNumber])
-  @@schema("public")
 }
 
 model Histogram {
-  id               Int    @id @default(autoincrement())
   resultDuosmiumId String @unique
   data             Json
   result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
-  @@index([resultDuosmiumId])
-  @@schema("public")
+  @@id([resultDuosmiumId])
 }
 
 /// Fun stuff that I'd like to implement in the future
 
 model Location {
-  id      Int    @id @default(autoincrement())
   name    String
   city    String @default("")
   state   String
   country String @default("United States")
 
-  @@unique([name, city, state, country])
+  @@id([name, city, state, country])
   @@index([name, city, state, country])
-  @@schema("public")
 }
 
 /// Auth
@@ -140,69 +119,82 @@ model Location {
 model User {
   id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username                 String                   @unique
-  organizations            Organization[]
+  organizations            Membership[]
   userResultPolicies       UserResultPolicy[]
   userOrganizationPolicies UserOrganizationPolicy[]
 
   @@index([username])
-  @@schema("public")
+}
+
+model Membership {
+  userId         String       @db.Uuid
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([userId, organizationId])
+  @@index([userId, organizationId])
 }
 
 model Organization {
-  id                         Int                        @id @default(autoincrement())
+  id                         String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgName                    String                     @unique
   name                       String
-  users                      User[]
+  users                      Membership[]
   organizationResultPolicies OrganizationResultPolicy[]
   userOrganizationPolicies   UserOrganizationPolicy[]
 
   @@index([orgName])
-  @@schema("public")
 }
 
 model UserResultPolicy {
-  id                     Int      @id @default(autoincrement())
-  user                   User     @relation(fields: [username], references: [username], onDelete: Cascade)
-  username               String
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                 String   @db.Uuid
   results                Result[]
   resultDuosmiumIdRegExp String
   create                 Boolean  @default(false)
   read                   Boolean  @default(false)
   update                 Boolean  @default(false)
   delete                 Boolean  @default(false)
+  create_approval        Boolean  @default(false)
+  read_approval          Boolean  @default(false)
+  update_approval        Boolean  @default(false)
+  delete_approval        Boolean  @default(false)
 
-  @@unique([username, resultDuosmiumIdRegExp])
-  @@index([username, resultDuosmiumIdRegExp])
-  @@schema("public")
+  @@unique([userId, resultDuosmiumIdRegExp])
+  @@index([userId, resultDuosmiumIdRegExp])
 }
 
 model OrganizationResultPolicy {
-  id                     Int          @id @default(autoincrement())
-  organization           Organization @relation(fields: [orgName], references: [orgName], onDelete: Cascade)
-  orgName                String
+  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization           Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId         String       @db.Uuid
   results                Result[]
   resultDuosmiumIdRegExp String
   create                 Boolean      @default(false)
   read                   Boolean      @default(false)
   update                 Boolean      @default(false)
   delete                 Boolean      @default(false)
+  create_approval        Boolean      @default(false)
+  read_approval          Boolean      @default(false)
+  update_approval        Boolean      @default(false)
+  delete_approval        Boolean      @default(false)
 
-  @@unique([orgName, resultDuosmiumIdRegExp])
-  @@index([orgName, resultDuosmiumIdRegExp])
-  @@schema("public")
+  @@unique([organizationId, resultDuosmiumIdRegExp])
+  @@index([organizationId, resultDuosmiumIdRegExp])
 }
 
 model UserOrganizationPolicy {
-  id            Int          @id @default(autoincrement())
-  user          User         @relation(fields: [username], references: [username], onDelete: Cascade)
-  username      String
-  organization  Organization @relation(fields: [orgName], references: [orgName], onDelete: Cascade)
-  orgName       String
-  addMembers    Boolean      @default(false)
-  removeMembers Boolean      @default(false)
-  delete        Boolean      @default(false)
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String       @db.Uuid
+  addMembers     Boolean      @default(false)
+  removeMembers  Boolean      @default(false)
+  delete         Boolean      @default(false)
 
-  @@unique([username, orgName])
-  @@index([username, orgName])
-  @@schema("public")
+  @@unique([userId, organizationId])
+  @@index([userId, organizationId])
 }
