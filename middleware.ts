@@ -20,6 +20,9 @@ export async function middleware(req: NextRequest) {
 		});
 	}
 	const user = ses.data.session?.user;
+	if (user) {
+		user.id
+	}
 	const actualPath = await authorizeUser(user, req);
 	if (actualPath) {
 		return actualPath;
