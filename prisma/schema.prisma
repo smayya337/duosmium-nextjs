@@ -30,9 +30,11 @@ model Result {
 }
 
 model Tournament {
-  resultDuosmiumId String @id
+  resultDuosmiumId String   @id
   data             Json
-  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([resultDuosmiumId])
 }
@@ -44,6 +46,8 @@ model Team {
   penalties        Penalty?
   placings         Placing[]
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@id([resultDuosmiumId, number])
   @@index([resultDuosmiumId, number])
@@ -55,6 +59,8 @@ model Event {
   data             Json
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   Placing          Placing[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
@@ -64,7 +70,9 @@ model Track {
   name             String
   resultDuosmiumId String
   data             Json
-  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
@@ -75,9 +83,11 @@ model Placing {
   teamNumber       Int
   resultDuosmiumId String
   data             Json
-  event            Event  @relation(fields: [resultDuosmiumId, eventName], references: [resultDuosmiumId, name], onDelete: Cascade)
-  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  event            Event    @relation(fields: [resultDuosmiumId, eventName], references: [resultDuosmiumId, name], onDelete: Cascade)
+  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  team             Team     @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@id([resultDuosmiumId, eventName, teamNumber])
   @@index([resultDuosmiumId, eventName, teamNumber])
@@ -87,17 +97,21 @@ model Penalty {
   teamNumber       Int
   resultDuosmiumId String
   data             Json
-  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  team             Team     @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@id([resultDuosmiumId, teamNumber])
   @@index([resultDuosmiumId, teamNumber])
 }
 
 model Histogram {
-  resultDuosmiumId String @unique
+  resultDuosmiumId String   @unique
   data             Json
-  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@id([resultDuosmiumId])
 }
@@ -105,10 +119,12 @@ model Histogram {
 /// Fun stuff that I'd like to implement in the future
 
 model Location {
-  name    String
-  city    String @default("")
-  state   String
-  country String @default("United States")
+  name      String
+  city      String   @default("")
+  state     String
+  country   String   @default("United States")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([name, city, state, country])
   @@index([name, city, state, country])
@@ -122,6 +138,8 @@ model User {
   organizations            Membership[]
   userResultPolicies       UserResultPolicy[]
   userOrganizationPolicies UserOrganizationPolicy[]
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
 
   @@index([username])
 }
@@ -131,6 +149,8 @@ model Membership {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String       @db.Uuid
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@id([userId, organizationId])
   @@index([userId, organizationId])
@@ -143,6 +163,8 @@ model Organization {
   users                      Membership[]
   organizationResultPolicies OrganizationResultPolicy[]
   userOrganizationPolicies   UserOrganizationPolicy[]
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
 
   @@index([orgName])
 }
@@ -157,10 +179,12 @@ model UserResultPolicy {
   read                   Boolean  @default(false)
   update                 Boolean  @default(false)
   delete                 Boolean  @default(false)
-  create_approval        Boolean  @default(false)
-  read_approval          Boolean  @default(false)
-  update_approval        Boolean  @default(false)
-  delete_approval        Boolean  @default(false)
+  createApproval         Boolean  @default(false)
+  updateApproval         Boolean  @default(false)
+  deleteApproval         Boolean  @default(false)
+  approve                Boolean  @default(false)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   @@unique([userId, resultDuosmiumIdRegExp])
   @@index([userId, resultDuosmiumIdRegExp])
@@ -176,10 +200,12 @@ model OrganizationResultPolicy {
   read                   Boolean      @default(false)
   update                 Boolean      @default(false)
   delete                 Boolean      @default(false)
-  create_approval        Boolean      @default(false)
-  read_approval          Boolean      @default(false)
-  update_approval        Boolean      @default(false)
-  delete_approval        Boolean      @default(false)
+  createApproval         Boolean      @default(false)
+  updateApproval         Boolean      @default(false)
+  deleteApproval         Boolean      @default(false)
+  approve                Boolean      @default(false)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
 
   @@unique([organizationId, resultDuosmiumIdRegExp])
   @@index([organizationId, resultDuosmiumIdRegExp])
@@ -194,6 +220,8 @@ model UserOrganizationPolicy {
   addMembers     Boolean      @default(false)
   removeMembers  Boolean      @default(false)
   delete         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@unique([userId, organizationId])
   @@index([userId, organizationId])

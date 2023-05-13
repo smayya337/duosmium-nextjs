@@ -1,7 +1,7 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import { getInterpreter } from '@/app/lib/results/interpreter';
-import { getCompleteResult } from '@/app/lib/results/async';
+import { getCompleteResult, resultExists } from '@/app/lib/results/async';
 import {
 	dateString,
 	findBgColor,
@@ -15,8 +15,19 @@ import {
 import { Event, Team } from 'sciolyff/dist/src/interpreter/types';
 import styles from './page.module.css';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getServerComponentSupabaseClient } from '@/app/lib/global/supabase';
+import { cookies, headers } from 'next/headers';
+import { canRead } from '@/app/lib/auth/results';
+import { getCurrentUserID } from '@/app/lib/auth/helpers';
 
 async function getRequestedInterpreter(id: string) {
+	const supabase = getServerComponentSupabaseClient(headers, cookies);
+	const exists = await resultExists(id);
+	const readable = await canRead(await getCurrentUserID(supabase), id);
+	if (!(exists && readable)) {
+		notFound();
+	}
 	if (interpreter === null || generateFilename(interpreter) !== id) {
 		const result = await getCompleteResult(id);
 		interpreter = getInterpreter(result);
