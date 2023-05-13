@@ -1,6 +1,6 @@
-export const DUOSMIUM_ID_REGEX =
-	/^(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]$/;
-export const MONGO_ID_REGEX = /^[0-9a-f]{24}$/;
+export const DUOSMIUM_ID_REGEX_STRING =
+	'(19|20)\\d{2}-[01]\\d-[0-3]\\d_([\\w]+_invitational|([ns]?[A-Z]{2})_[\\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]';
+export const DUOSMIUM_ID_REGEX = new RegExp(DUOSMIUM_ID_REGEX_STRING);
 export const JSON_OPTIONS: object = { headers: { 'content-type': 'application/json' } };
 export const YAML_OPTIONS: object = {
 	headers: {

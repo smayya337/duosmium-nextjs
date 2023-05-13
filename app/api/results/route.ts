@@ -1,21 +1,28 @@
 import { load } from 'js-yaml';
-import {
-	getAllCompleteResults,
-	deleteAllResults,
-	addResult,
-	createResultDataInput
-} from '@/app/lib/results/async';
+import { addResult, createResultDataInput } from '@/app/lib/results/async';
 import { exportYAMLOrJSON } from '@/app/lib/results/helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { getInterpreter } from '@/app/lib/results/interpreter';
+import { deleteAllDeletableResults, getAllReadableCompleteResults } from '@/app/lib/results/filter';
+import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { cookies, headers } from 'next/headers';
+import { getCurrentUserID } from '@/app/lib/auth/helpers';
 
 export async function DELETE() {
-	await deleteAllResults();
+	const supabase = createRouteHandlerSupabaseClient({
+		headers,
+		cookies
+	});
+	await deleteAllDeletableResults(await getCurrentUserID(supabase));
 	return new NextResponse(null, { status: 204 });
 }
 
 export async function GET(request: NextRequest) {
-	const allResults = await getAllCompleteResults();
+	const supabase = createRouteHandlerSupabaseClient({
+		headers,
+		cookies
+	});
+	const allResults = await getAllReadableCompleteResults(await getCurrentUserID(supabase));
 	return exportYAMLOrJSON(new URL(request.url), allResults, 'results');
 }
 
