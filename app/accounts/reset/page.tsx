@@ -1,4 +1,4 @@
-import { supabase } from '@/app/lib/global/supabase';
+import { supabase } from '@/lib/global/supabase';
 
 async function changeUserPassword(password: string) {
 	const { data, error } = await supabase.auth.updateUser({

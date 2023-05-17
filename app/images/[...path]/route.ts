@@ -1,4 +1,4 @@
-import { supabase } from '@/app/lib/global/supabase';
+import { supabase } from '@/lib/global/supabase';
 import { NextResponse } from 'next/server';
 
 export async function DELETE() {

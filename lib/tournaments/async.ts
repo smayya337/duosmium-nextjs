@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { Tournament } from 'sciolyff/interpreter';
-import { prisma } from '@/app/lib/global/prisma';
+import { prisma } from '@/lib/global/prisma';
 
 export async function getTournament(duosmiumID: string) {
 	return await prisma.tournament.findUniqueOrThrow({
@@ -63,4 +63,26 @@ export async function createTournamentDataInput(tournament: Tournament) {
 	return {
 		data: tournament.rep
 	};
+}
+
+export async function getAllTournamentsByLevel(level: string) {
+	return await prisma.tournament.findMany({
+		where: {
+			data: {
+				path: ['level'],
+				equals: level
+			}
+		}
+	});
+}
+
+export async function countAllTournamentsByLevel(level: string) {
+	return await prisma.tournament.count({
+		where: {
+			data: {
+				path: ['level'],
+				equals: level
+			}
+		}
+	});
 }

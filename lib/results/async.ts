@@ -2,18 +2,24 @@
 
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
-import { findBgColor, findLogoPath, generateFilename } from './helpers';
+import {
+	createBgColor,
+	createLogoPath,
+	findBgColor,
+	findLogoPath,
+	generateFilename
+} from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { prisma } from '@/app/lib/global/prisma';
-import { createTournamentDataInput } from '@/app/lib/tournaments/async';
-import { createHistogramDataInput } from '@/app/lib/histograms/async';
+import { prisma } from '@/lib/global/prisma';
+import { createTournamentDataInput } from '@/lib/tournaments/async';
+import { createHistogramDataInput } from '@/lib/histograms/async';
 import { ResultsAddQueue } from './queue';
-import { createTeamDataInput } from '@/app/lib/teams/async';
-import { createEventDataInput } from '@/app/lib/events/async';
-import { createPlacingDataInput } from '@/app/lib/placings/async';
-import { createPenaltyDataInput } from '@/app/lib/penalties/async';
-import { createTrackDataInput } from '@/app/lib/tracks/async';
+import { createTeamDataInput } from '@/lib/teams/async';
+import { createEventDataInput } from '@/lib/events/async';
+import { createPlacingDataInput } from '@/lib/placings/async';
+import { createPenaltyDataInput } from '@/lib/penalties/async';
+import { createTrackDataInput } from '@/lib/tracks/async';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -337,4 +343,43 @@ export async function createResultDataInput(interpreter: Interpreter) {
 		};
 	}
 	return output;
+}
+
+export async function regenerateColorAndLogo(duosmiumID: string) {
+	const logo = await createLogoPath(duosmiumID);
+	const color = await createBgColor(duosmiumID);
+	return await prisma.result.update({
+		where: {
+			duosmiumId: duosmiumID
+		},
+		data: {
+			logo: logo,
+			color: color
+		}
+	});
+}
+
+export async function regenerateAllColorsAndLogos() {
+	const ids = (
+		await prisma.result.findMany({
+			select: {
+				duosmiumId: true
+			}
+		})
+	).map((result) => result.duosmiumId);
+	const operation = [];
+	for (const id of ids) {
+		operation.push(
+			prisma.result.update({
+				where: {
+					duosmiumId: id
+				},
+				data: {
+					logo: await createLogoPath(id),
+					color: await createBgColor(id)
+				}
+			})
+		);
+	}
+	return prisma.$transaction(operation);
 }

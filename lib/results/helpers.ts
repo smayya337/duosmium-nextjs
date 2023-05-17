@@ -1,9 +1,9 @@
 import { dump } from 'js-yaml';
 import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
-import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '@/app/lib/global/helpers';
+import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '@/lib/global/helpers';
 import { NextResponse } from 'next/server';
-import { supabase } from '@/app/lib/global/supabase';
-import { getResult, resultExists } from '@/app/lib/results/async';
+import { supabase } from '@/lib/global/supabase';
+import { getResult, resultExists } from '@/lib/results/async';
 // @ts-ignore
 import { Placing } from 'sciolyff/interpreter';
 import Vibrant from 'node-vibrant';
@@ -238,6 +238,10 @@ export async function findLogoPath(duosmiumID: string) {
 			return dbEntry;
 		}
 	}
+	return await createLogoPath(duosmiumID);
+}
+
+export async function createLogoPath(duosmiumID: string) {
 	const tournamentYear = parseInt(duosmiumID.slice(0, 4));
 	const tournamentName = duosmiumID.slice(11, -2).replace('_no_builds', '');
 	const getYear = (image: string) => parseInt(image.match(/^\d+/)?.[0] ?? '0');
@@ -289,6 +293,10 @@ export async function findBgColor(duosmiumID: string) {
 			return dbEntry;
 		}
 	}
+	return await createBgColor(duosmiumID);
+}
+
+export async function createBgColor(duosmiumID: string) {
 	const logo = await findLogoPath(duosmiumID);
 	const logoData = (await supabase.storage.from('images').download(logo.replace('/images/', '')))
 		.data;
@@ -318,7 +326,6 @@ export async function findBgColor(duosmiumID: string) {
 	}
 	return output;
 }
-
 const trophyAndMedalColors = [
 	'#ffee58',
 	'#cfd8dc',

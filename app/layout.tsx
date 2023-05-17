@@ -1,12 +1,23 @@
 import Script from 'next/script';
 import React from 'react';
 import SupabaseProvider from '@/app/supabase-provider';
+import { createServerComponentSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { headers, cookies } from 'next/headers';
 
 export const metadata = {
 	title: 'Duosmium Results'
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	const supabase = createServerComponentSupabaseClient({
+		headers,
+		cookies
+	});
+
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
+
 	return (
 		<html lang="en">
 			<head>
@@ -31,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				></Script>
 			</head>
 			<body>
-				<SupabaseProvider>{children}</SupabaseProvider>
+				<SupabaseProvider session={session}>{children}</SupabaseProvider>
 			</body>
 		</html>
 	);
