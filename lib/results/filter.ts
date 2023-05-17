@@ -1,8 +1,8 @@
-import { getAllPolicies } from '@/app/lib/auth/results';
-import { getAllResults, getCompleteResult } from '@/app/lib/results/async';
-import { prisma } from '@/app/lib/global/prisma';
+import { getAllPolicies } from '@/lib/auth/results';
+import { getAllResults, getCompleteResult } from '@/lib/results/async';
+import { prisma } from '@/lib/global/prisma';
 
-async function getReadablePolicyRegex(userID: string | null) {
+export async function getReadablePolicyRegex(userID: string | null) {
 	return new RegExp(
 		'^(' +
 			(await getAllPolicies(userID))
@@ -13,7 +13,7 @@ async function getReadablePolicyRegex(userID: string | null) {
 	);
 }
 
-async function getDeletablePolicyRegex(userID: string | null) {
+export async function getDeletablePolicyRegex(userID: string | null) {
 	return new RegExp(
 		'^(' +
 			(await getAllPolicies(userID))

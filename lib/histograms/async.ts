@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { Histogram } from 'sciolyff/interpreter';
-import { prisma } from '@/app/lib/global/prisma';
+import { prisma } from '@/lib/global/prisma';
 
 export async function getHistogram(duosmiumID: string) {
 	return await prisma.histogram.findUniqueOrThrow({

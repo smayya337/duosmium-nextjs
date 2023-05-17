@@ -1,10 +1,10 @@
 import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { deleteResult, getCompleteResult, resultExists } from '@/app/lib/results/async';
-import { exportYAMLOrJSON } from '@/app/lib/results/helpers';
+import { deleteResult, getCompleteResult, resultExists } from '@/lib/results/async';
+import { exportYAMLOrJSON } from '@/lib/results/helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { canDelete, canRead } from '@/app/lib/auth/results';
+import { canDelete, canRead } from '@/lib/auth/results';
 import { headers, cookies } from 'next/headers';
-import { getCurrentUserID } from '@/app/lib/auth/helpers';
+import { getCurrentUserID } from '@/lib/auth/helpers';
 
 export async function DELETE(request: NextRequest) {
 	const supabase = createRouteHandlerSupabaseClient({
@@ -56,13 +56,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH() {
-	return new NextResponse(null, { status: 405 });
+	return new NextResponse(null, { status: 405, headers: { Allow: 'DELETE, GET' } });
 }
 
 export async function POST() {
-	return new NextResponse(null, { status: 405 });
+	return new NextResponse(null, { status: 405, headers: { Allow: 'DELETE, GET' } });
 }
 
 export async function PUT() {
-	return new NextResponse(null, { status: 405 });
+	return new NextResponse(null, { status: 405, headers: { Allow: 'DELETE, GET' } });
 }

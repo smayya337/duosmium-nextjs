@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/global/prisma';
+import { prisma } from '@/lib/global/prisma';
 
 export async function isAdmin(userID: string | null) {
 	if (userID === null) {

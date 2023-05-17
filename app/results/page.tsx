@@ -1,14 +1,14 @@
-import { getInterpreter } from '@/app/lib/results/interpreter';
-import { dateString, fullTournamentTitle } from '@/app/lib/results/helpers';
+import { getInterpreter } from '@/lib/results/interpreter';
+import { dateString, fullTournamentTitle } from '@/lib/results/helpers';
 import { cache, Suspense } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCompleteResult } from '@/app/lib/results/async';
-import { getAllReadableResults } from '@/app/lib/results/filter';
-import { getServerComponentSupabaseClient } from '@/app/lib/global/supabase';
+import { getCompleteResult } from '@/lib/results/async';
+import { getAllReadableResults } from '@/lib/results/filter';
+import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
-import { getCurrentUserID } from '@/app/lib/auth/helpers';
+import { getCurrentUserID } from '@/lib/auth/helpers';
 
 // @ts-ignore
 async function Card({ meta }) {

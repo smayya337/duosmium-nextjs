@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ResultsAddQueue } from '@/app/lib/results/queue';
+import { ResultsAddQueue } from '@/lib/results/queue';
 
 export async function POST(request: NextRequest) {
 	return new NextResponse(null, { status: 405 });

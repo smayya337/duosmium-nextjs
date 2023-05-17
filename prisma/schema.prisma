@@ -30,11 +30,9 @@ model Result {
 }
 
 model Tournament {
-  resultDuosmiumId String   @id
+  resultDuosmiumId String @id
   data             Json
-  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
   @@index([resultDuosmiumId])
 }
@@ -46,8 +44,6 @@ model Team {
   penalties        Penalty?
   placings         Placing[]
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
 
   @@id([resultDuosmiumId, number])
   @@index([resultDuosmiumId, number])
@@ -59,8 +55,6 @@ model Event {
   data             Json
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
   Placing          Placing[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
 
   @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
@@ -70,9 +64,7 @@ model Track {
   name             String
   resultDuosmiumId String
   data             Json
-  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
   @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
@@ -83,11 +75,9 @@ model Placing {
   teamNumber       Int
   resultDuosmiumId String
   data             Json
-  event            Event    @relation(fields: [resultDuosmiumId, eventName], references: [resultDuosmiumId, name], onDelete: Cascade)
-  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  team             Team     @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  event            Event  @relation(fields: [resultDuosmiumId, eventName], references: [resultDuosmiumId, name], onDelete: Cascade)
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
 
   @@id([resultDuosmiumId, eventName, teamNumber])
   @@index([resultDuosmiumId, eventName, teamNumber])
@@ -97,21 +87,17 @@ model Penalty {
   teamNumber       Int
   resultDuosmiumId String
   data             Json
-  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  team             Team     @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  team             Team   @relation(fields: [resultDuosmiumId, teamNumber], references: [resultDuosmiumId, number], onDelete: Cascade)
 
   @@id([resultDuosmiumId, teamNumber])
   @@index([resultDuosmiumId, teamNumber])
 }
 
 model Histogram {
-  resultDuosmiumId String   @unique
+  resultDuosmiumId String @unique
   data             Json
-  result           Result   @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  result           Result @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
 
   @@id([resultDuosmiumId])
 }
@@ -119,12 +105,10 @@ model Histogram {
 /// Fun stuff that I'd like to implement in the future
 
 model Location {
-  name      String
-  city      String   @default("")
-  state     String
-  country   String   @default("United States")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  name    String
+  city    String @default("")
+  state   String
+  country String @default("United States")
 
   @@id([name, city, state, country])
   @@index([name, city, state, country])
@@ -132,25 +116,10 @@ model Location {
 
 /// Auth
 
-model User {
-  id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username                 String                   @unique
-  organizations            Membership[]
-  userResultPolicies       UserResultPolicy[]
-  userOrganizationPolicies UserOrganizationPolicy[]
-  createdAt                DateTime                 @default(now())
-  updatedAt                DateTime                 @updatedAt
-
-  @@index([username])
-}
-
 model Membership {
   userId         String       @db.Uuid
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String       @db.Uuid
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
 
   @@id([userId, organizationId])
   @@index([userId, organizationId])
@@ -171,7 +140,6 @@ model Organization {
 
 model UserResultPolicy {
   id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                 String   @db.Uuid
   results                Result[]
   resultDuosmiumIdRegExp String
@@ -213,7 +181,6 @@ model OrganizationResultPolicy {
 
 model UserOrganizationPolicy {
   id             Int          @id @default(autoincrement())
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String       @db.Uuid
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String       @db.Uuid

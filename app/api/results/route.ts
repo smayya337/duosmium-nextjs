@@ -1,12 +1,12 @@
 import { load } from 'js-yaml';
-import { addResult, createResultDataInput } from '@/app/lib/results/async';
-import { exportYAMLOrJSON } from '@/app/lib/results/helpers';
+import { addResult, createResultDataInput } from '@/lib/results/async';
+import { exportYAMLOrJSON } from '@/lib/results/helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { getInterpreter } from '@/app/lib/results/interpreter';
-import { deleteAllDeletableResults, getAllReadableCompleteResults } from '@/app/lib/results/filter';
+import { getInterpreter } from '@/lib/results/interpreter';
+import { deleteAllDeletableResults, getAllReadableCompleteResults } from '@/lib/results/filter';
 import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { cookies, headers } from 'next/headers';
-import { getCurrentUserID } from '@/app/lib/auth/helpers';
+import { getCurrentUserID } from '@/lib/auth/helpers';
 
 export async function DELETE() {
 	const supabase = createRouteHandlerSupabaseClient({
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH() {
-	return new NextResponse(null, { status: 405 });
+	return new NextResponse(null, { status: 405, headers: { Allow: 'DELETE, GET, POST' } });
 }
 
 export async function POST(request: NextRequest) {
@@ -62,5 +62,5 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT() {
-	return new NextResponse(null, { status: 405 });
+	return new NextResponse(null, { status: 405, headers: { Allow: 'DELETE, GET, POST' } });
 }
