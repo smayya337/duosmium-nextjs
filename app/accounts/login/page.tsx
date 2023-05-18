@@ -1,6 +1,6 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 export default async function Login() {
 	const { supabase } = useSupabase();

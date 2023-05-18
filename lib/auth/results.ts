@@ -59,8 +59,9 @@ export async function getAllPolicies(userID: string | null) {
 					organizationId: true
 				}
 			})
+		)
 			// @ts-ignore
-		).map((i) => i.organizationId);
+			.map((i) => i.organizationId);
 		const pols = await prisma.$transaction([
 			prisma.userResultPolicy.findMany({
 				where: {
