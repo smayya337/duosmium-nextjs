@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { Team } from 'sciolyff/interpreter';
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({

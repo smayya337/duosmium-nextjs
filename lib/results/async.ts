@@ -3,15 +3,16 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import {
-	createBgColor, createBgColorFromImagePath,
+	createBgColor,
+	createBgColorFromImagePath,
 	createLogoPath,
 	findBgColor,
 	findLogoPath,
 	generateFilename
-} from "./helpers";
+} from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 import { createTournamentDataInput } from '@/lib/tournaments/async';
 import { createHistogramDataInput } from '@/lib/histograms/async';
 import { ResultsAddQueue } from './queue';

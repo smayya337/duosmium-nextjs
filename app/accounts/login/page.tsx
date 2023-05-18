@@ -1,6 +1,6 @@
 'use client';
-import { useSupabase } from "@/app/supabase-provider";
-import { redirect } from "next/navigation";
+import { useSupabase } from '@/app/supabase-provider';
+import { redirect } from 'next/navigation';
 
 export default async function Login() {
 	const { supabase } = useSupabase();

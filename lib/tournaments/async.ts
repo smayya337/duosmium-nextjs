@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { Tournament } from 'sciolyff/interpreter';
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 
 export async function getTournament(duosmiumID: string) {
 	return await prisma.tournament.findUniqueOrThrow({

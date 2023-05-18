@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 
 export async function getMemberships(userID: string | null) {
 	if (userID === null) {
@@ -59,6 +59,7 @@ export async function getAllPolicies(userID: string | null) {
 					organizationId: true
 				}
 			})
+			// @ts-ignore
 		).map((i) => i.organizationId);
 		const pols = await prisma.$transaction([
 			prisma.userResultPolicy.findMany({
