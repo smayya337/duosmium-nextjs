@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { Track } from 'sciolyff/interpreter';
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 
 export async function getTrack(duosmiumID: string, name: string) {
 	return await prisma.track.findUniqueOrThrow({

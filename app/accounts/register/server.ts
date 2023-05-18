@@ -1,6 +1,6 @@
 'use server';
 import { User } from '@supabase/supabase-js';
-import { prisma } from '@/lib/global/prisma';
+import prisma from '@/lib/global/prisma';
 
 export async function createPrismaUser(user: User | null, username: FormDataEntryValue) {
 	if (user === null) {
