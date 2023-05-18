@@ -3,12 +3,12 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import {
-	createBgColor,
+	createBgColor, createBgColorFromImagePath,
 	createLogoPath,
 	findBgColor,
 	findLogoPath,
 	generateFilename
-} from './helpers';
+} from "./helpers";
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
 import { prisma } from '@/lib/global/prisma';
@@ -347,7 +347,7 @@ export async function createResultDataInput(interpreter: Interpreter) {
 
 export async function regenerateColorAndLogo(duosmiumID: string) {
 	const logo = await createLogoPath(duosmiumID);
-	const color = await createBgColor(duosmiumID);
+	const color = await createBgColorFromImagePath(duosmiumID);
 	return await prisma.result.update({
 		where: {
 			duosmiumId: duosmiumID
@@ -369,14 +369,16 @@ export async function regenerateAllColorsAndLogos() {
 	).map((result) => result.duosmiumId);
 	const operation = [];
 	for (const id of ids) {
+		const logoPath = await createLogoPath(id);
+		const bgColor = await createBgColorFromImagePath(logoPath);
 		operation.push(
 			prisma.result.update({
 				where: {
 					duosmiumId: id
 				},
 				data: {
-					logo: await createLogoPath(id),
-					color: await createBgColor(id)
+					logo: logoPath,
+					color: bgColor
 				}
 			})
 		);

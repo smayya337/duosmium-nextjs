@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import {
-	createBrowserSupabaseClient,
 	createServerComponentSupabaseClient
 } from '@supabase/auth-helpers-nextjs';
 

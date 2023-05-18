@@ -1,5 +1,6 @@
 'use client';
-import { useSupabase } from '@/app/supabase-provider';
+import { useSupabase } from "@/app/supabase-provider";
+import { redirect } from "next/navigation";
 
 export default async function Login() {
 	const { supabase } = useSupabase();
@@ -9,14 +10,14 @@ export default async function Login() {
 		if (!email || !password) {
 			throw new Error('Missing fields!');
 		}
-		const { data, error } = await supabase.auth.signInWithPassword({
+		const { error } = await supabase.auth.signInWithPassword({
 			email: email.toString(),
 			password: password.toString()
 		});
 		if (error) {
 			throw error;
 		}
-		return data;
+		redirect('/results');
 	}
 	return (
 		<form action={LogInEmailPassword}>
@@ -26,7 +27,7 @@ export default async function Login() {
 			<label form="password">Password: </label>
 			<input type={'password'} name={'password'} />
 			<br />
-			<button type="submit">Submit</button>
+			<button type="submit">Login</button>
 		</form>
 	);
 }

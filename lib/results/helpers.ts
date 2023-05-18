@@ -298,7 +298,11 @@ export async function findBgColor(duosmiumID: string) {
 
 export async function createBgColor(duosmiumID: string) {
 	const logo = await findLogoPath(duosmiumID);
-	const logoData = (await supabase.storage.from('images').download(logo.replace('/images/', '')))
+	return await createBgColorFromImagePath(logo);
+}
+
+export async function createBgColorFromImagePath(imagePath: string) {
+	const logoData = (await supabase.storage.from('images').download(imagePath.replace('/images/', '')))
 		.data;
 	let output: string;
 	if (!logoData) {
@@ -326,6 +330,7 @@ export async function createBgColor(duosmiumID: string) {
 	}
 	return output;
 }
+
 const trophyAndMedalColors = [
 	'#ffee58',
 	'#cfd8dc',
