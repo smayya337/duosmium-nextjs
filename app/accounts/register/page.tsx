@@ -41,7 +41,7 @@ export default async function Register() {
 			<label form="confirm">Confirm password: </label>
 			<input type={'password'} name={'confirm'} />
 			<br />
-			<button type="submit">Submit</button>
+			<button type="submit">Register</button>
 		</form>
 	);
 }

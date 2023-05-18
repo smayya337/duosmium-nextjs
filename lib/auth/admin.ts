@@ -8,7 +8,7 @@ export async function isAdmin(userID: string | null) {
 		await prisma.membership.findMany({
 			where: {
 				organization: {
-					name: 'admin'
+					orgName: 'admin'
 				}
 			},
 			select: {
