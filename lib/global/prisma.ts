@@ -4,7 +4,7 @@ import type { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 let prisma: PrismaClient;
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === 'production') {
 	prisma = new PrismaClient();
 } else {
 	// @ts-ignore

@@ -20,6 +20,7 @@ import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { canRead } from '@/lib/auth/results';
 import { getCurrentUserID } from '@/lib/auth/helpers';
+import colors from '@/lib/global/colors';
 
 async function getRequestedInterpreter(id: string) {
 	const supabase = getServerComponentSupabaseClient(headers, cookies);
@@ -61,13 +62,12 @@ function penaltyPoints(team: Team): number {
 export default async function Page({ params }) {
 	const id = params.id;
 	const interpreter: Interpreter = await getRequestedInterpreter(id);
+	// @ts-ignore
+	const bgColor = colors[await findBgColor(id)];
 	// noinspection HtmlUnknownTarget
 	return (
 		<div className={styles.resultsWrapper}>
-			<div
-				className={styles.resultsHeaderContainer}
-				style={{ backgroundColor: await findBgColor(id) }}
-			>
+			<div className={styles.resultsHeaderContainer} style={{ backgroundColor: bgColor }}>
 				<div className={styles.resultsHeader}>
 					<div className={styles.info}>
 						<h1>{fullTournamentTitle(interpreter.tournament)}</h1>
@@ -147,7 +147,9 @@ export default async function Page({ params }) {
 					{interpreter.teams.map((value: Team) => {
 						return (
 							<tr key={value.number} className={styles.team}>
-								<td className={styles.teamNumber}>{value.number}</td>
+								<td className={styles.teamNumber} style={{ color: bgColor }}>
+									{value.number}
+								</td>
 								<td className={styles.teamName}>
 									{formatSchool(value)}
 									{value.suffix ? ' ' + value.suffix : ''}

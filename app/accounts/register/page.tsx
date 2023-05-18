@@ -1,6 +1,5 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
-import { createPrismaUser } from '@/app/accounts/register/server';
 import { redirect } from 'next/navigation';
 
 export default async function Register() {
@@ -16,14 +15,13 @@ export default async function Register() {
 		if (password !== confirm) {
 			throw new Error('Passwords do not match!');
 		}
-		const { data, error } = await supabase.auth.signUp({
+		const { error } = await supabase.auth.signUp({
 			email: email.toString(),
 			password: password.toString()
 		});
 		if (error) {
 			throw error;
 		}
-		await createPrismaUser(data.user, username);
 		redirect('/results');
 	}
 

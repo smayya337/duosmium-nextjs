@@ -12,6 +12,7 @@ import chroma from 'chroma-js';
 
 // @ts-ignore
 import { ContrastChecker } from 'color-contrast-calc';
+import colors from '@/lib/global/colors';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
@@ -301,32 +302,65 @@ export async function createBgColor(duosmiumID: string) {
 	return await createBgColorFromImagePath(logo);
 }
 
-export async function createBgColorFromImagePath(imagePath: string) {
-	const logoData = (await supabase.storage.from('images').download(imagePath.replace('/images/', '')))
-		.data;
-	let output: string;
-	if (!logoData) {
-		output = '#1f1b35';
-	} else {
+export async function createBgColorFromImagePath(imagePath: string, dark = false) {
+	const logoData = (
+		await supabase.storage.from('images').download(imagePath.replace('/images/', ''))
+	).data;
+	let output: string = 'Indigo 900';
+	if (logoData) {
 		// @ts-ignore
 		const arrayBuffer = await logoData.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
 		const builder = Vibrant.from(buffer);
 		const extracted = await builder.getPalette();
-		const colors = [
-			extracted.DarkVibrant,
-			extracted.Vibrant,
-			extracted.LightVibrant,
-			extracted.DarkMuted,
-			extracted.Muted,
-			extracted.LightMuted
-		].filter((color) => color != null);
-		// @ts-ignore
-		let chosenColor = chroma(colors[0].hex);
-		while (ContrastChecker.contrastRatio('#ffffff', chosenColor.hex()) < 5.5) {
-			chosenColor = chosenColor.darken();
+		let possibleColors;
+		if (dark) {
+			possibleColors = [
+				extracted.LightMuted,
+				extracted.Muted,
+				extracted.DarkMuted,
+				extracted.LightVibrant,
+				extracted.Vibrant,
+				extracted.DarkVibrant
+			].filter((color) => color != null);
+		} else {
+			possibleColors = [
+				extracted.DarkVibrant,
+				extracted.Vibrant,
+				extracted.LightVibrant,
+				extracted.DarkMuted,
+				extracted.Muted,
+				extracted.LightMuted
+			].filter((color) => color != null);
 		}
-		output = chosenColor.hex();
+		if (possibleColors.length > 0) {
+			let nearest = require('nearest-color').from(colors);
+			// @ts-ignore
+			output = nearest(possibleColors[0].hex).name;
+			let order;
+			let base;
+			if (dark) {
+				order = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50];
+				base = '#000000';
+			} else {
+				order = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+				base = '#ffffff';
+			}
+			let currentNumber = Number(output.split(' ').pop());
+			let currentColor = output.replace(` ${currentNumber}`, '');
+			for (let i = 0; i < order.length; i++) {
+				if (i < order.indexOf(currentNumber)) {
+					continue;
+				}
+				currentNumber = order[i];
+				const colorName = [currentColor, currentNumber].join(' ');
+				// @ts-ignore
+				if (ContrastChecker.contrastRatio(base, colors[colorName]) >= 5.5) {
+					break;
+				}
+			}
+			output = [currentColor, currentNumber].join(' ');
+		}
 	}
 	return output;
 }

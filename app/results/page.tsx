@@ -9,6 +9,7 @@ import { getAllReadableResults } from '@/lib/results/filter';
 import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { getCurrentUserID } from '@/lib/auth/helpers';
+import colors from '@/lib/global/colors';
 
 // @ts-ignore
 async function Card({ meta }) {
@@ -23,7 +24,7 @@ async function Card({ meta }) {
 				className="mdc-card"
 				style={{
 					// @ts-ignore
-					'--mdc-theme-primary': meta.color,
+					'--mdc-theme-primary': colors[meta.color],
 					height: '100%',
 					display: 'flex',
 					flexDirection: 'column',
@@ -92,7 +93,7 @@ function CardFallback({ meta }) {
 	return (
 		<div className="mdc-layout-grid__cell">
 			{/*@ts-ignore*/}
-			<div className="mdc-card" style={{ '--mdc-theme-primary': '#1f1b35' }}>
+			<div className="mdc-card" style={{ '--mdc-theme-primary': colors['Indigo 900'] }}>
 				<Link href={`/results/${id}`} className={styles.primaryCardLink}>
 					<div className="mdc-card__primary-action" tabIndex={0}>
 						<div className={`mdc-card__content ${styles.cardHeader}`}>
