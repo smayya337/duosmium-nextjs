@@ -1,9 +1,10 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
-import { redirect } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default async function Login() {
 	const { supabase } = useSupabase();
+	const router = useRouter();
 	async function LogInEmailPassword(formData: FormData) {
 		const email = formData.get('email');
 		const password = formData.get('password');
@@ -17,7 +18,7 @@ export default async function Login() {
 		if (error) {
 			throw error;
 		}
-		redirect('/results');
+		router.push('/results');
 	}
 	return (
 		<form action={LogInEmailPassword}>
