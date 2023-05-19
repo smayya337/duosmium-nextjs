@@ -1,6 +1,7 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
 import { redirect } from 'next/navigation';
+import prisma from "@/lib/global/prisma";
 
 export default async function Register() {
 	const { supabase } = useSupabase();
@@ -14,12 +15,35 @@ export default async function Register() {
 		if (password !== confirm) {
 			throw new Error('Passwords do not match!');
 		}
-		const { error } = await supabase.auth.signUp({
+		const { data, error } = await supabase.auth.signUp({
 			email: email.toString(),
 			password: password.toString()
 		});
 		if (error) {
 			throw error;
+		}
+		if (data.user) {
+			const mp = prisma.membership.create({
+				data: {
+					userId: data.user?.id,
+					organization: {
+						connect: {
+							orgName: "public"
+						}
+					}
+				}
+			});
+			const mu = prisma.membership.create({
+				data: {
+					userId: data.user?.id,
+					organization: {
+						connect: {
+							orgName: "users"
+						}
+					}
+				}
+			});
+			await prisma.$transaction([mp, mu]);
 		}
 		redirect('/results');
 	}
