@@ -6,10 +6,9 @@ export default async function Register() {
 	const { supabase } = useSupabase();
 	async function RegisterUser(formData: FormData) {
 		const email = formData.get('email');
-		const username = formData.get('username');
 		const password = formData.get('password');
 		const confirm = formData.get('confirm');
-		if (!email || !username || !password || !confirm) {
+		if (!email || !password || !confirm) {
 			throw new Error('Missing fields!');
 		}
 		if (password !== confirm) {
@@ -29,9 +28,6 @@ export default async function Register() {
 		<form action={RegisterUser}>
 			<label form="email">Email: </label>
 			<input type={'text'} name={'email'} />
-			<br />
-			<label form="username">Username: </label>
-			<input type={'text'} name={'username'} />
 			<br />
 			<label form="password">Password: </label>
 			<input type={'password'} name={'password'} />
