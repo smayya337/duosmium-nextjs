@@ -74,8 +74,8 @@ async function Card({ meta }) {
 						<button
 							className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}
 							tabIndex={-1}
+							style={{ cursor: 'default' }}
 						>
-							{/*<div className="mdc-button__ripple" />*/}
 							<span className="mdc-button__label">
 								{interpreter.tournament.nonExhibitionTeamsCount} Teams
 							</span>
