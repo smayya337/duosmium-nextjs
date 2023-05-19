@@ -37,10 +37,10 @@ async function Card({ meta }) {
 							<h6 className={`${styles.cardTitle} mdc-typography--headline6`}>
 								{fullTournamentTitle(interpreter.tournament)}
 							</h6>
-							<p className={`${styles.cardDate} mdc-typography--subtitle1`}>
+							<p className={`${styles.cardDate} mdc-typography--subtitle2`}>
 								{dateString(interpreter)}
 							</p>
-							<p className={`${styles.cardLocation} mdc-typography--subtitle1`}>
+							<p className={`${styles.cardLocation} mdc-typography--subtitle2`}>
 								@ {interpreter.tournament.location}
 							</p>
 						</div>
@@ -70,17 +70,17 @@ async function Card({ meta }) {
 							</button>
 						</Link>
 					</div>
-					<div className="mdc-card__action-icons">
-						<button
-							className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}
-							tabIndex={-1}
-							style={{ cursor: 'default' }}
-						>
-							<span className="mdc-button__label">
-								{interpreter.tournament.nonExhibitionTeamsCount} Teams
-							</span>
-						</button>
-					</div>
+					{/*<div className="mdc-card__action-icons">*/}
+					{/*	<button*/}
+					{/*		className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}*/}
+					{/*		tabIndex={-1}*/}
+					{/*		style={{ cursor: 'default' }}*/}
+					{/*	>*/}
+					{/*		<span className="mdc-button__label">*/}
+					{/*			{interpreter.tournament.nonExhibitionTeamsCount} Teams*/}
+					{/*		</span>*/}
+					{/*	</button>*/}
+					{/*</div>*/}
 				</div>
 			</div>
 		</div>

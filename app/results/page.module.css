@@ -1,7 +1,7 @@
 .mdcCard__mediaContent {
 	background-repeat: no-repeat;
 	background-position: center;
-	background-color: var(--mdc-theme-background);
+	background-color: var(--mdc-theme-surface);
 }
 
 .cardHeader {
@@ -9,9 +9,15 @@
 }
 
 .primaryCardLink {
-	background-color: var(--mdc-theme-primary);
-	color: var(--mdc-theme-surface);
 	text-decoration: none;
+}
+
+.cardTitle {
+	color: var(--mdc-theme-text-primary-on-background);
+}
+
+.cardDate, .cardLocation {
+	color: var(--mdc-theme-text-secondary-on-background);
 }
 
 .cardTitle,
