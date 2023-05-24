@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ResultsAddQueue } from '@/lib/results/queue';
-import { createRouteHandlerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { cookies, headers } from "next/headers";
-import { getCurrentUserID } from "@/lib/auth/helpers";
-import { isAdmin } from "@/lib/auth/admin";
+import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { cookies, headers } from 'next/headers';
+import { getCurrentUserID } from '@/lib/auth/helpers';
+import { isAdmin } from '@/lib/auth/admin';
 
 export async function POST(request: NextRequest) {
 	const supabase = createRouteHandlerSupabaseClient({

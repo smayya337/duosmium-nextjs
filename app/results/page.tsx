@@ -9,7 +9,7 @@ import { getAllReadableResults } from '@/lib/results/filter';
 import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { getCurrentUserID } from '@/lib/auth/helpers';
-import colors from '@/lib/colors/material';
+import { colors, defaultColor } from '@/lib/colors/default';
 
 // @ts-ignore
 async function Card({ meta }) {
@@ -93,7 +93,7 @@ function CardFallback({ meta }) {
 	return (
 		<div className="mdc-layout-grid__cell">
 			{/*@ts-ignore*/}
-			<div className="mdc-card" style={{ '--mdc-theme-primary': colors['Indigo 900'] }}>
+			<div className="mdc-card" style={{ '--mdc-theme-primary': colors[defaultColor] }}>
 				<Link href={`/results/${id}`} className={styles.primaryCardLink}>
 					<div className="mdc-card__primary-action" tabIndex={0}>
 						<div className={`mdc-card__content ${styles.cardHeader}`}>

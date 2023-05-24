@@ -1,14 +1,14 @@
-import { getServerComponentSupabaseClient } from "@/lib/global/supabase";
-import { cookies, headers } from "next/headers";
-import { getCurrentUserID } from "@/lib/auth/helpers";
-import { isAdmin } from "@/lib/auth/admin";
-import { redirect } from "next/navigation";
+import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
+import { cookies, headers } from 'next/headers';
+import { getCurrentUserID } from '@/lib/auth/helpers';
+import { isAdmin } from '@/lib/auth/admin';
+import { redirect } from 'next/navigation';
 
 export default async function Upload() {
 	const supabase = getServerComponentSupabaseClient(headers, cookies);
 	const userID = await getCurrentUserID(supabase);
 	if (!(await isAdmin(userID))) {
-		redirect("/results");
+		redirect('/results');
 	}
 	return (
 		<form action="/results/upload/submit" method="POST" encType="multipart/form-data">

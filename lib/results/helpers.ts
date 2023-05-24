@@ -12,7 +12,16 @@ import chroma from 'chroma-js';
 
 // @ts-ignore
 import { ContrastChecker } from 'color-contrast-calc';
-import colors from '@/lib/colors/material';
+import {
+	colorOrder,
+	colors,
+	darkColorOrder,
+	defaultColor,
+	getColor,
+	getFullName,
+	getNumber,
+	trophyAndMedalColors
+} from '@/lib/colors/default';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
@@ -306,7 +315,7 @@ export async function createBgColorFromImagePath(imagePath: string, dark = false
 	const logoData = (
 		await supabase.storage.from('images').download(imagePath.replace('/images/', ''))
 	).data;
-	let output: string = 'Indigo 900';
+	let output: string = defaultColor;
 	if (logoData) {
 		// @ts-ignore
 		const arrayBuffer = await logoData.arrayBuffer();
@@ -340,53 +349,30 @@ export async function createBgColorFromImagePath(imagePath: string, dark = false
 			let order;
 			let base;
 			if (dark) {
-				order = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50];
+				order = darkColorOrder;
 				base = '#000000';
 			} else {
-				order = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+				order = colorOrder;
 				base = '#ffffff';
 			}
-			let currentNumber = Number(output.split(' ').pop());
-			let currentColor = output.replace(` ${currentNumber}`, '');
+			let currentNumber = getNumber(output);
+			let currentColor = getColor(output);
 			for (let i = 0; i < order.length; i++) {
 				if (i < order.indexOf(currentNumber)) {
 					continue;
 				}
 				currentNumber = order[i];
-				const colorName = [currentColor, currentNumber].join(' ');
+				const colorName = getFullName(currentColor, currentNumber);
 				// @ts-ignore
 				if (ContrastChecker.contrastRatio(base, colors[colorName]) >= 5.5) {
 					break;
 				}
 			}
-			output = [currentColor, currentNumber].join(' ');
+			output = getFullName(currentColor, currentNumber);
 		}
 	}
 	return output;
 }
-
-const trophyAndMedalColors = [
-	'#FFF176', // Yellow 300
-	'#E0E0E0', // Gray 300
-	'#BCAAA4', // Brown 200
-	'#FFECB3', // Amber 100
-	'#C5E1A5', // Light Green 200
-	'#E1BEE7', // Purple 100
-	'#FFE0B2', // Orange 100
-	'#B2EBF2', // Cyan 100
-	'#F8BBD0', // Pink 100
-	'#D1C4E9', // Deep Purple 100
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-];
 
 function trophyAndMedalCss(trophies: number, medals: number, reverse = false) {
 	return trophyAndMedalColors

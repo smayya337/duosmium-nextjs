@@ -1,5 +1,5 @@
 // Material Design 2014 colors
-const colors = {
+export const colors = {
 	'Red 50': '#FFEBEE',
 	'Red 100': '#FFCDD2',
 	'Red 200': '#EF9A9A',
@@ -191,4 +191,43 @@ const colors = {
 	'Blue Gray 800': '#37474F',
 	'Blue Gray 900': '#263238'
 };
-export default colors;
+
+export const trophyAndMedalColors = [
+	'#FFF176', // Yellow 300
+	'#E0E0E0', // Gray 300
+	'#BCAAA4', // Brown 200
+	'#FFECB3', // Amber 100
+	'#C5E1A5', // Light Green 200
+	'#E1BEE7', // Purple 100
+	'#FFE0B2', // Orange 100
+	'#B2EBF2', // Cyan 100
+	'#F8BBD0', // Pink 100
+	'#D1C4E9', // Deep Purple 100
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5' // Gray 100
+];
+
+export const defaultColor = 'Indigo 900';
+
+export const colorOrder = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+export const darkColorOrder = [900, 800, 700, 600, 500, 400, 300, 200, 100, 50];
+
+export function getColor(fullName: string) {
+	return fullName.replace(` ${getNumber(fullName)}`, '');
+}
+
+export function getNumber(fullName: string) {
+	return Number(fullName.split(' ').pop());
+}
+
+export function getFullName(color: string, number: number) {
+	return [color, number].join(' ');
+}
