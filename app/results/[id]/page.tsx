@@ -20,7 +20,7 @@ import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { canRead } from '@/lib/auth/results';
 import { getCurrentUserID } from '@/lib/auth/helpers';
-import colors from '@/lib/global/colors';
+import colors from '@/lib/colors/material';
 
 async function getRequestedInterpreter(id: string) {
 	const supabase = getServerComponentSupabaseClient(headers, cookies);

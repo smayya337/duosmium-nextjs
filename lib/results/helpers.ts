@@ -12,7 +12,7 @@ import chroma from 'chroma-js';
 
 // @ts-ignore
 import { ContrastChecker } from 'color-contrast-calc';
-import colors from '@/lib/global/colors';
+import colors from '@/lib/colors/material';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
@@ -366,26 +366,26 @@ export async function createBgColorFromImagePath(imagePath: string, dark = false
 }
 
 const trophyAndMedalColors = [
-	'#ffee58',
-	'#cfd8dc',
-	'#d8bf99',
-	'#ffefc0',
-	'#dcedc8',
-	'#eeccff',
-	'#fdd5b4',
-	'#d4f0f1',
-	'#ffc8db',
-	'#dab9d1',
-	'#e5e5e5',
-	'#e5e5e5',
-	'#e5e5e5',
-	'#e5e5e5',
-	'#e5e5e5',
-	'#f4f4f4',
-	'#f4f4f4',
-	'#f4f4f4',
-	'#f4f4f4',
-	'#f4f4f4'
+	'#FFF176', // Yellow 300
+	'#E0E0E0', // Gray 300
+	'#BCAAA4', // Brown 200
+	'#FFECB3', // Amber 100
+	'#C5E1A5', // Light Green 200
+	'#E1BEE7', // Purple 100
+	'#FFE0B2', // Orange 100
+	'#B2EBF2', // Cyan 100
+	'#F8BBD0', // Pink 100
+	'#D1C4E9', // Deep Purple 100
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#EEEEEE', // Gray 200
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
+	'#F5F5F5', // Gray 100
 ];
 
 function trophyAndMedalCss(trophies: number, medals: number, reverse = false) {

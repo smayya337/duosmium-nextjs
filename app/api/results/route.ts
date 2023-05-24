@@ -31,6 +31,11 @@ export async function PATCH() {
 }
 
 export async function POST(request: NextRequest) {
+	// TODO: restrict
+	const supabase = createRouteHandlerSupabaseClient({
+		headers,
+		cookies
+	});
 	const body = request.body;
 	if (body === null) {
 		return new NextResponse('No data provided!', { status: 400 });

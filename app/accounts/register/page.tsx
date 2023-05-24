@@ -1,10 +1,11 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
-import { redirect } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import prisma from "@/lib/global/prisma";
 
 export default async function Register() {
 	const { supabase } = useSupabase();
+	const router = useRouter();
 	async function RegisterUser(formData: FormData) {
 		const email = formData.get('email');
 		const password = formData.get('password');
@@ -45,7 +46,7 @@ export default async function Register() {
 			});
 			await prisma.$transaction([mp, mu]);
 		}
-		redirect('/results');
+		router.push('/results');
 	}
 
 	return (
