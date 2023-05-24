@@ -1,7 +1,7 @@
 'use client';
 import { useSupabase } from '@/app/supabase-provider';
-import { useRouter } from "next/navigation";
-import prisma from "@/lib/global/prisma";
+import { useRouter } from 'next/navigation';
+import prisma from '@/lib/global/prisma';
 
 export default async function Register() {
 	const { supabase } = useSupabase();
@@ -29,7 +29,7 @@ export default async function Register() {
 					userId: data.user?.id,
 					organization: {
 						connect: {
-							orgName: "public"
+							orgName: 'public'
 						}
 					}
 				}
@@ -39,7 +39,7 @@ export default async function Register() {
 					userId: data.user?.id,
 					organization: {
 						connect: {
-							orgName: "users"
+							orgName: 'users'
 						}
 					}
 				}

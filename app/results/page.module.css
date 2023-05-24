@@ -16,7 +16,8 @@
 	color: var(--mdc-theme-text-primary-on-background);
 }
 
-.cardDate, .cardLocation {
+.cardDate,
+.cardLocation {
 	color: var(--mdc-theme-text-secondary-on-background);
 }
 
