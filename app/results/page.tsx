@@ -9,7 +9,7 @@ import { getAllReadableResults } from '@/lib/results/filter';
 import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { getCurrentUserID } from '@/lib/auth/helpers';
-import colors from '@/lib/global/colors';
+import colors from '@/lib/colors/material';
 
 // @ts-ignore
 async function Card({ meta }) {
