@@ -3,7 +3,6 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import {
-	createBgColor,
 	createBgColorFromImagePath,
 	createLogoPath,
 	findBgColor,
@@ -21,6 +20,7 @@ import { createEventDataInput } from '@/lib/events/async';
 import { createPlacingDataInput } from '@/lib/placings/async';
 import { createPenaltyDataInput } from '@/lib/penalties/async';
 import { createTrackDataInput } from '@/lib/tracks/async';
+import { cache } from 'react';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -385,4 +385,22 @@ export async function regenerateAllColorsAndLogos() {
 		);
 	}
 	return prisma.$transaction(operation);
+}
+
+export const cacheCompleteResult = cache(async (id: string) => {
+	return await getCompleteResult(id);
+});
+
+export async function getRecentResults(ascending = true, limit = 0) {
+	return await prisma.result.findMany({
+		orderBy: [
+			{
+				duosmiumId: ascending ? 'asc' : 'desc'
+			},
+			{
+				createdAt: 'desc'
+			}
+		],
+		take: limit === 0 ? undefined : limit
+	});
 }
