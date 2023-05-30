@@ -1,5 +1,5 @@
 import { getAllPolicies } from '@/lib/auth/results';
-import { getAllResults, getCompleteResult } from '@/lib/results/async';
+import { getAllResults, getCompleteResult, getRecentResults } from '@/lib/results/async';
 import prisma from '@/lib/global/prisma';
 
 export async function getReadablePolicyRegex(userID: string | null) {
@@ -26,7 +26,9 @@ export async function getDeletablePolicyRegex(userID: string | null) {
 
 export async function getAllReadableResults(userID: string | null, ascending = true, limit = 0) {
 	const policyRegex = await getReadablePolicyRegex(userID);
-	return (await getAllResults(ascending, limit)).filter((i) => i.duosmiumId.match(policyRegex));
+	return (await getAllResults(ascending, 0))
+		.filter((i) => i.duosmiumId.match(policyRegex))
+		.slice(0, limit);
 }
 
 export async function getAllReadableCompleteResults(userID: string | null) {
@@ -54,4 +56,11 @@ export async function deleteAllDeletableResults(userID: string | null) {
 			})
 		);
 	return await prisma.$transaction(deletableResults);
+}
+
+export async function getRecentReadableResults(userID: string | null, limit = 0) {
+	const policyRegex = await getReadablePolicyRegex(userID);
+	return (await getRecentResults(false, 0))
+		.filter((i) => i.duosmiumId.match(policyRegex))
+		.slice(0, limit);
 }

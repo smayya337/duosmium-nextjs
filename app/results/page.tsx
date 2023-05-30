@@ -1,130 +1,15 @@
-import { getInterpreter } from '@/lib/results/interpreter';
-import { dateString, fullTournamentTitle } from '@/lib/results/helpers';
-import { cache, Suspense } from 'react';
-import styles from './page.module.css';
-import Image from 'next/image';
-import Link from 'next/link';
-import { getCompleteResult } from '@/lib/results/async';
-import { getAllReadableResults } from '@/lib/results/filter';
+import { Suspense } from 'react';
+import { cacheCompleteResult } from '@/lib/results/async';
+import { getAllReadableResults, getRecentReadableResults } from '@/lib/results/filter';
 import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
 import { cookies, headers } from 'next/headers';
 import { getCurrentUserID } from '@/lib/auth/helpers';
-import { colors, defaultColor } from '@/lib/colors/default';
-
-// @ts-ignore
-async function Card({ meta }) {
-	const completeResult = await cacheCompleteResult(meta.duosmiumId);
-	if (!completeResult) {
-		return null;
-	}
-	const interpreter = getInterpreter(completeResult);
-	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop">
-			<div
-				className="mdc-card"
-				style={{
-					// @ts-ignore
-					'--mdc-theme-primary': colors[meta.color],
-					height: '100%',
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'space-between'
-				}}
-			>
-				<Link href={`/results/${meta.duosmiumId}`} className={styles.primaryCardLink} tabIndex={-1}>
-					<div className="mdc-card__primary-action" tabIndex={0}>
-						<div className={`mdc-card__content ${styles.cardHeader}`}>
-							<h6 className={`${styles.cardTitle} mdc-typography--headline6`}>
-								{fullTournamentTitle(interpreter.tournament)}
-							</h6>
-							<p className={`${styles.cardDate} mdc-typography--subtitle2`}>
-								{dateString(interpreter)}
-							</p>
-							<p className={`${styles.cardLocation} mdc-typography--subtitle2`}>
-								@ {interpreter.tournament.location}
-							</p>
-						</div>
-						<div className="mdc-card__media mdc-card__media--16-9">
-							<div className={`mdc-card__media-content ${styles.mdcCard__mediaContent}`}>
-								<Image
-									src={`${process.env.BASE_URL}${meta.logo}`}
-									alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}
-									fill={true}
-									className={styles.cardImage}
-								/>
-							</div>
-						</div>
-						<div className="mdc-card__ripple" />
-					</div>
-				</Link>
-				<div className="mdc-card__actions">
-					<div className="mdc-card__action-buttons">
-						<button className="mdc-button mdc-card__action mdc-card__action--button">
-							<div className="mdc-button__ripple" />
-							<span className="mdc-button__label">Summary</span>
-						</button>
-						<Link href={`/results/${meta.duosmiumId}`} tabIndex={-1}>
-							<button className="mdc-button mdc-card__action mdc-card__action--button">
-								<div className="mdc-button__ripple" />
-								<span className="mdc-button__label">Full Results</span>
-							</button>
-						</Link>
-					</div>
-					{/*<div className="mdc-card__action-icons">*/}
-					{/*	<button*/}
-					{/*		className={`mdc-button mdc-button--unelevated ${styles.teamCountButton}`}*/}
-					{/*		tabIndex={-1}*/}
-					{/*		style={{ cursor: 'default' }}*/}
-					{/*	>*/}
-					{/*		<span className="mdc-button__label">*/}
-					{/*			{interpreter.tournament.nonExhibitionTeamsCount} Teams*/}
-					{/*		</span>*/}
-					{/*	</button>*/}
-					{/*</div>*/}
-				</div>
-			</div>
-		</div>
-	);
-}
-
-// @ts-ignore
-function CardFallback({ meta }) {
-	const id = meta.id;
-	return (
-		<div className="mdc-layout-grid__cell">
-			{/*@ts-ignore*/}
-			<div className="mdc-card" style={{ '--mdc-theme-primary': colors[defaultColor] }}>
-				<Link href={`/results/${id}`} className={styles.primaryCardLink}>
-					<div className="mdc-card__primary-action" tabIndex={0}>
-						<div className={`mdc-card__content ${styles.cardHeader}`}>
-							<h6
-								className={`${styles.cardTitle} mdc-typography--headline6`}
-								style={{ wordWrap: 'break-word' }}
-							>
-								Loading result {id}...
-							</h6>
-						</div>
-						<div className="mdc-card__ripple" />
-					</div>
-				</Link>
-				<div className="mdc-card__actions">
-					<div className="mdc-card__action-buttons">
-						<Link href={`/results/${id}`}>
-							<button className="mdc-button mdc-card__action mdc-card__action--button">
-								<div className="mdc-button__ripple" />
-								<span className="mdc-button__label">Full Results</span>
-							</button>
-						</Link>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-const cacheCompleteResult = cache(async (id: string) => {
-	return await getCompleteResult(id);
-});
+import { ResultCard } from '@/components/results/home/ResultCard';
+import { ResultCardGrid } from '@/components/results/home/ResultCardGrid';
+import { Navbar } from '@/components/global/Navbar';
+import { Main } from '@/components/global/Main';
+import { Hero } from '@/components/results/home/Hero';
+import { getAllReadableTournamentsByLevel } from '@/lib/tournaments/filter';
 
 function preload(duosmiumID: string) {
 	void cacheCompleteResult(duosmiumID);
@@ -132,24 +17,49 @@ function preload(duosmiumID: string) {
 
 export default async function Page() {
 	const supabase = getServerComponentSupabaseClient(headers, cookies);
-	const allResults = await getAllReadableResults(await getCurrentUserID(supabase), false, 24);
+	const userID = await getCurrentUserID(supabase);
+	const allResults = await getAllReadableResults(userID, false, 24);
+	const recents = await getRecentReadableResults(userID, 5);
 	for (const res of allResults) {
 		preload(res.duosmiumId);
 	}
+	for (const res of recents) {
+		preload(res.duosmiumId);
+	}
+	const countsByLevel = {};
+	let totalTournaments = 0;
+	const levelToPretty = {
+		Nationals: 'National Tournaments',
+		States: 'State Tournaments',
+		Regionals: 'Regionals',
+		Invitational: 'Invitationals'
+	};
+	for (const level of Object.keys(levelToPretty)) {
+		// @ts-ignore
+		const pretty: string = levelToPretty[level];
+		// @ts-ignore
+		countsByLevel[pretty] = (await getAllReadableTournamentsByLevel(userID, level)).length;
+		// @ts-ignore
+		totalTournaments += countsByLevel[pretty];
+	}
+	// @ts-ignore
+	countsByLevel['Total'] = totalTournaments;
 	return (
-		<div className="results-index">
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
+		<>
+			<Navbar />
+			<Main>
+				<Hero countsByLevel={countsByLevel} recentIDs={recents} />
+				<ResultCardGrid>
 					{allResults.map((r) => {
 						return (
-							<Suspense key={r.duosmiumId} fallback={<CardFallback meta={{ id: r.duosmiumId }} />}>
+							<Suspense key={r.duosmiumId}>
 								{/* @ts-ignore */}
-								<Card meta={r} />
+								<ResultCard meta={r} />
 							</Suspense>
 						);
 					})}
-				</div>
-			</div>
-		</div>
+				</ResultCardGrid>
+			</Main>
+		</>
 	);
 }
