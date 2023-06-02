@@ -48,7 +48,7 @@ export default async function Page() {
 		<>
 			<Navbar />
 			<Main>
-				<Hero countsByLevel={countsByLevel} recentIDs={recents} />
+				<Hero countsByLevel={countsByLevel} recentIDs={recents.map(r => r.duosmiumId)} />
 				<ResultCardGrid>
 					{allResults.map((r) => {
 						return (
