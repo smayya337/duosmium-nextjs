@@ -11,20 +11,20 @@ datasource db {
 /// SciolyFF
 
 model Result {
-  duosmiumId                 String                     @id
-  logo                       String
-  color                      String
-  createdAt                  DateTime                   @default(now())
-  updatedAt                  DateTime                   @updatedAt
-  events                     Event[]
-  histogram                  Histogram?
-  penalties                  Penalty[]
-  placings                   Placing[]
-  teams                      Team[]
-  tournament                 Tournament?
-  tracks                     Track[]
-  userResultPolicies         UserResultPolicy[]
-  organizationResultPolicies OrganizationResultPolicy[]
+  duosmiumId  String      @id
+  logo        String
+  color       String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  events      Event[]
+  histogram   Histogram?
+  penalties   Penalty[]
+  placings    Placing[]
+  teams       Team[]
+  tournament  Tournament?
+  tracks      Track[]
+  official    Boolean     @default(false)
+  preliminary Boolean     @default(false)
 
   @@index([duosmiumId])
 }
@@ -112,84 +112,4 @@ model Location {
 
   @@id([name, city, state, country])
   @@index([name, city, state, country])
-}
-
-/// Auth
-
-model Membership {
-  userId         String       @db.Uuid
-  organizationId String       @db.Uuid
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@id([userId, organizationId])
-  @@index([userId, organizationId])
-}
-
-model Organization {
-  id                         String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgName                    String                     @unique
-  name                       String
-  users                      Membership[]
-  organizationResultPolicies OrganizationResultPolicy[]
-  userOrganizationPolicies   UserOrganizationPolicy[]
-  createdAt                  DateTime                   @default(now())
-  updatedAt                  DateTime                   @updatedAt
-
-  @@index([orgName])
-}
-
-model UserResultPolicy {
-  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                 String   @db.Uuid
-  results                Result[]
-  resultDuosmiumIdRegExp String
-  create                 Boolean  @default(false)
-  read                   Boolean  @default(false)
-  update                 Boolean  @default(false)
-  delete                 Boolean  @default(false)
-  createApproval         Boolean  @default(false)
-  updateApproval         Boolean  @default(false)
-  deleteApproval         Boolean  @default(false)
-  approve                Boolean  @default(false)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-
-  @@unique([userId, resultDuosmiumIdRegExp])
-  @@index([userId, resultDuosmiumIdRegExp])
-}
-
-model OrganizationResultPolicy {
-  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organization           Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId         String       @db.Uuid
-  results                Result[]
-  resultDuosmiumIdRegExp String
-  create                 Boolean      @default(false)
-  read                   Boolean      @default(false)
-  update                 Boolean      @default(false)
-  delete                 Boolean      @default(false)
-  createApproval         Boolean      @default(false)
-  updateApproval         Boolean      @default(false)
-  deleteApproval         Boolean      @default(false)
-  approve                Boolean      @default(false)
-  createdAt              DateTime     @default(now())
-  updatedAt              DateTime     @updatedAt
-
-  @@unique([organizationId, resultDuosmiumIdRegExp])
-  @@index([organizationId, resultDuosmiumIdRegExp])
-}
-
-model UserOrganizationPolicy {
-  id             Int          @id @default(autoincrement())
-  userId         String       @db.Uuid
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId String       @db.Uuid
-  addMembers     Boolean      @default(false)
-  removeMembers  Boolean      @default(false)
-  delete         Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  @@unique([userId, organizationId])
-  @@index([userId, organizationId])
 }

@@ -1,17 +1,3 @@
-import { dump } from 'js-yaml';
-import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
-import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '@/lib/global/helpers';
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/global/supabase';
-import { getResult, resultExists } from '@/lib/results/async';
-// @ts-ignore
-import { Placing } from 'sciolyff/interpreter';
-import Vibrant from 'node-vibrant';
-// @ts-ignore
-import chroma from 'chroma-js';
-
-// @ts-ignore
-import { ContrastChecker } from 'color-contrast-calc';
 import {
 	colorOrder,
 	colors,
@@ -22,6 +8,19 @@ import {
 	getNumber,
 	trophyAndMedalColors
 } from '@/lib/colors/default';
+import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '@/lib/global/helpers';
+import { supabase } from '@/lib/global/supabase';
+import { getResult, resultExists } from '@/lib/results/async';
+// @ts-ignore
+import chroma from 'chroma-js';
+// @ts-ignore
+import { ContrastChecker } from 'color-contrast-calc';
+import { dump } from 'js-yaml';
+import { NextResponse } from 'next/server';
+import Vibrant from 'node-vibrant';
+import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
+// @ts-ignore
+import { Placing } from 'sciolyff/interpreter';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');

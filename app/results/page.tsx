@@ -1,25 +1,19 @@
-import { Suspense } from 'react';
-import { cacheCompleteResult } from '@/lib/results/async';
-import { getAllReadableResults, getRecentReadableResults } from '@/lib/results/filter';
-import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
-import { cookies, headers } from 'next/headers';
-import { getCurrentUserID } from '@/lib/auth/helpers';
+import { Main } from '@/components/global/Main';
+import { Navbar } from '@/components/global/Navbar';
+import { Hero } from '@/components/results/home/Hero';
 import { ResultCard } from '@/components/results/home/ResultCard';
 import { ResultCardGrid } from '@/components/results/home/ResultCardGrid';
-import { Navbar } from '@/components/global/Navbar';
-import { Main } from '@/components/global/Main';
-import { Hero } from '@/components/results/home/Hero';
-import { getAllReadableTournamentsByLevel } from '@/lib/tournaments/filter';
+import { cacheCompleteResult, getAllResults, getRecentResults } from '@/lib/results/async';
+import { getAllTournamentsByLevel } from '@/lib/tournaments/async';
+import { Suspense } from 'react';
 
 function preload(duosmiumID: string) {
 	void cacheCompleteResult(duosmiumID);
 }
 
 export default async function Page() {
-	const supabase = getServerComponentSupabaseClient(headers, cookies);
-	const userID = await getCurrentUserID(supabase);
-	const allResults = await getAllReadableResults(userID, false, 24);
-	const recents = await getRecentReadableResults(userID, 5);
+	const allResults = await getAllResults(false, 24);
+	const recents = await getRecentResults(false, 5);
 	for (const res of allResults) {
 		preload(res.duosmiumId);
 	}
@@ -38,7 +32,7 @@ export default async function Page() {
 		// @ts-ignore
 		const pretty: string = levelToPretty[level];
 		// @ts-ignore
-		countsByLevel[pretty] = (await getAllReadableTournamentsByLevel(userID, level)).length;
+		countsByLevel[pretty] = (await getAllTournamentsByLevel(level)).length;
 		// @ts-ignore
 		totalTournaments += countsByLevel[pretty];
 	}
@@ -46,20 +40,18 @@ export default async function Page() {
 	countsByLevel['Total'] = totalTournaments;
 	return (
 		<>
-			<Navbar />
-			<Main>
-				<Hero countsByLevel={countsByLevel} recentIDs={recents.map(r => r.duosmiumId)} />
-				<ResultCardGrid>
-					{allResults.map((r) => {
-						return (
-							<Suspense key={r.duosmiumId}>
-								{/* @ts-ignore */}
-								<ResultCard meta={r} />
-							</Suspense>
-						);
-					})}
-				</ResultCardGrid>
-			</Main>
+			<Hero countsByLevel={countsByLevel} recentIDs={recents.map((r) => r.duosmiumId)} />
+			<h2 className={"pb-4 text-3xl font-semibold tracking-tight transition-colors text-center"}>Recent Tournaments</h2>
+			<ResultCardGrid>
+				{allResults.map((r) => {
+					return (
+						<Suspense key={r.duosmiumId}>
+							{/* @ts-ignore */}
+							<ResultCard meta={r} />
+						</Suspense>
+					);
+				})}
+			</ResultCardGrid>
 		</>
 	);
 }

@@ -1,11 +1,14 @@
-import { getInterpreter } from '@/lib/results/interpreter';
-import { colors } from '@/lib/colors/material';
-import Link from 'next/link';
 import styles from '@/app/results/page.module.css';
-import { dateString, fullTournamentTitle } from '@/lib/results/helpers';
-import Image from 'next/image';
-import { Result } from '@prisma/client';
+import { colors } from '@/lib/colors/material';
 import { cacheCompleteResult } from '@/lib/results/async';
+import { dateString, fullTournamentTitle } from '@/lib/results/helpers';
+import { getInterpreter } from '@/lib/results/interpreter';
+import { Result } from '@prisma/client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export async function ResultCard({ meta }: { meta: Result }) {
 	const completeResult = await cacheCompleteResult(meta.duosmiumId);
@@ -13,85 +16,26 @@ export async function ResultCard({ meta }: { meta: Result }) {
 		return null;
 	}
 	const interpreter = getInterpreter(completeResult);
+	const tournamentTitle = fullTournamentTitle(interpreter.tournament);
 	return (
-		<div className={'mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop'}>
-			<div
-				className={'mdc-card'}
-				style={{
-					// @ts-ignore
-					'--mdc-theme-primary': colors[meta.color],
-					height: '100%',
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'space-between'
-				}}
-			>
-				<Link href={`/results/${meta.duosmiumId}`} style={{ textDecoration: 'none' }} tabIndex={-1}>
-					<div className="mdc-card__primary-action" tabIndex={0}>
-						<div className={'mdc-card__content'} style={{ padding: '1rem' }}>
-							<h6
-								className={'mdc-typography--headline6'}
-								style={{ margin: 0, color: 'var(--mdc-theme-text-primary-on-background)' }}
-							>
-								{fullTournamentTitle(interpreter.tournament)}
-							</h6>
-							<p
-								className={'mdc-typography--subtitle2'}
-								style={{ margin: 0, color: 'var(--mdc-theme-text-secondary-on-background)' }}
-							>
-								{dateString(interpreter)}
-							</p>
-							<p
-								className={'mdc-typography--subtitle2'}
-								style={{ margin: 0, color: 'var(--mdc-theme-text-secondary-on-background)' }}
-							>
-								@ {interpreter.tournament.location}
-							</p>
-						</div>
-						<div className={'mdc-card__media mdc-card__media--16-9'}>
-							<div
-								className={'mdc-card__media-content'}
-								style={{
-									backgroundRepeat: 'no-repeat',
-									backgroundPosition: 'center',
-									backgroundColor: 'var(--mdc-theme-surface)'
-								}}
-							>
-								<Image
-									src={`${process.env.BASE_URL}${meta.logo}`}
-									alt={`Logo for the ${fullTournamentTitle(interpreter.tournament)}`}
-									fill={true}
-									style={{
-										objectFit: 'contain',
-										width: '100%',
-										height: '100%',
-										position: 'absolute',
-										left: '0',
-										right: '0',
-										top: '0',
-										bottom: '0'
-									}}
-								/>
-							</div>
-						</div>
-						<div className="mdc-card__ripple" />
+		<Card className={"flex flex-col"}>
+			<Link href={`/results/${meta.duosmiumId}`} className={"flex flex-grow flex-col"}>
+				<CardHeader>
+					<CardTitle className={"leading-tight"}>{tournamentTitle}</CardTitle>
+					<CardDescription>{dateString(interpreter)} @ {interpreter.tournament.location}</CardDescription>
+					<div className={"flex gap-x-2"}>
+						{meta.official && <Badge variant={"outline"}>Official</Badge>}
+						{meta.preliminary && <Badge variant={"outline"}>Preliminary</Badge>}
 					</div>
-				</Link>
-				<div className="mdc-card__actions">
-					<div className="mdc-card__action-buttons">
-						{/*<button className="mdc-button mdc-card__action mdc-card__action--button">*/}
-						{/*    <div className="mdc-button__ripple" />*/}
-						{/*    <span className="mdc-button__label">Summary</span>*/}
-						{/*</button>*/}
-						<Link href={`/results/${meta.duosmiumId}`} tabIndex={-1}>
-							<button className="mdc-button mdc-card__action mdc-card__action--button">
-								<div className="mdc-button__ripple" />
-								<span className="mdc-button__label">Full Results</span>
-							</button>
-						</Link>
-					</div>
-				</div>
-			</div>
-		</div>
+				</CardHeader>
+				<CardContent className={"bg-no-repeat bg-center flex-grow"}>
+					<Image src={`${process.env.BASE_URL}${meta.logo}`} alt={`Logo for the ${tournamentTitle}`} width={1024} height={1024} className={"object-contain inset-0 m-auto"} />
+				</CardContent>
+			</Link>
+			{/*<div className={"flex-grow"}></div>*/}
+			<CardFooter>
+				<Button asChild><Link href={`/results/${meta.duosmiumId}`}>Full Results</Link></Button>
+			</CardFooter>
+		</Card>
 	);
 }

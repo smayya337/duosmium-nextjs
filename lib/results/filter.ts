@@ -1,6 +1,6 @@
 import { getAllPolicies } from '@/lib/auth/results';
-import { getAllResults, getCompleteResult, getRecentResults } from '@/lib/results/async';
 import prisma from '@/lib/global/prisma';
+import { getAllResults, getCompleteResult, getRecentResults } from '@/lib/results/async';
 
 export async function getReadablePolicyRegex(userID: string | null) {
 	return new RegExp(

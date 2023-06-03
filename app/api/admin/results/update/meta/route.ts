@@ -1,8 +1,7 @@
 import { isAdmin } from '@/lib/auth/admin';
-import { getCurrentUserID } from '@/lib/auth/helpers';
+import { getRouteHandlerClient } from '@/lib/global/supabase';
 import { regenerateAllColorsAndLogos } from '@/lib/results/async';
-import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 
 export async function DELETE() {
 	return new Response(null, { status: 405, headers: { Allow: 'POST' } });
@@ -17,18 +16,11 @@ export async function PATCH() {
 }
 
 export async function POST() {
-	const supabase = createRouteHandlerSupabaseClient({
-		headers,
-		cookies
-	});
-	const user = await getCurrentUserID(supabase);
-	if (user === null) {
-		return new Response(null, { status: 401 });
-	} else if (!(await isAdmin(user))) {
-		return new Response(null, { status: 403 });
-	} else {
-		return new Response(JSON.stringify(await regenerateAllColorsAndLogos()), { status: 200 });
-	}
+	// const supabase = getRouteHandlerClient(cookies);
+	// if (!(await isAdmin(supabase))) {
+	// 	return new Response(null, { status: 403 });
+	// }
+	return new Response(JSON.stringify(await regenerateAllColorsAndLogos()), { status: 200 });
 }
 
 export async function PUT() {

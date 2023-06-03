@@ -1,6 +1,8 @@
 // @ts-ignore
-import Interpreter from 'sciolyff/interpreter';
-import { getInterpreter } from '@/lib/results/interpreter';
+import { getCurrentUserID } from '@/lib/auth/helpers';
+import { canRead } from '@/lib/auth/results';
+import { colors } from '@/lib/colors/default';
+import { getServerComponentClient } from '@/lib/global/supabase';
 import { getCompleteResult, resultExists } from '@/lib/results/async';
 import {
 	dateString,
@@ -12,23 +14,16 @@ import {
 	teamAttended,
 	teamLocation
 } from '@/lib/results/helpers';
-import { Event, Team } from 'sciolyff/dist/src/interpreter/types';
-import styles from './page.module.css';
+import { getInterpreter } from '@/lib/results/interpreter';
+import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getServerComponentSupabaseClient } from '@/lib/global/supabase';
-import { cookies, headers } from 'next/headers';
-import { canRead } from '@/lib/auth/results';
-import { getCurrentUserID } from '@/lib/auth/helpers';
-import { colors } from '@/lib/colors/default';
+import { Event, Team } from 'sciolyff/dist/src/interpreter/types';
+// @ts-ignore
+import Interpreter from 'sciolyff/interpreter';
+import styles from './page.module.css';
 
 async function getRequestedInterpreter(id: string) {
-	const supabase = getServerComponentSupabaseClient(headers, cookies);
-	const exists = await resultExists(id);
-	const readable = await canRead(await getCurrentUserID(supabase), id);
-	if (!(exists && readable)) {
-		notFound();
-	}
 	if (interpreter === null || generateFilename(interpreter) !== id) {
 		const result = await getCompleteResult(id);
 		interpreter = getInterpreter(result);

@@ -1,20 +1,11 @@
-import prisma from '@/lib/global/prisma';
+import { getCurrentUser } from '@/lib/auth/helpers';
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs';
 
-export async function isAdmin(userID: string | null) {
-	if (userID === null) {
+export async function isAdmin(supabase: SupabaseClient) {
+	const user = await getCurrentUser(supabase);
+	if (user === undefined) {
 		return false;
+	} else {
+		return user.email?.endsWith('duosmium.org');
 	}
-	const adminList = (
-		await prisma.membership.findMany({
-			where: {
-				organization: {
-					orgName: 'admin'
-				}
-			},
-			select: {
-				userId: true
-			}
-		})
-	).map((i) => i.userId);
-	return adminList.includes(userID);
 }

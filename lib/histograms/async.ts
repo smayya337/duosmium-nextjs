@@ -1,8 +1,8 @@
 // noinspection ES6RedundantAwait
 
+import prisma from '@/lib/global/prisma';
 // @ts-ignore
 import { Histogram } from 'sciolyff/interpreter';
-import prisma from '@/lib/global/prisma';
 
 export async function getHistogram(duosmiumID: string) {
 	return await prisma.histogram.findUniqueOrThrow({

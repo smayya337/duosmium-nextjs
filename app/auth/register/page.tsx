@@ -1,10 +1,10 @@
 'use client';
-import { useSupabase } from '@/app/supabase-provider';
+
 import { useRouter } from 'next/navigation';
-import prisma from '@/lib/global/prisma';
+import { getClientComponentClient } from "@/lib/global/supabase";
 
 export default async function Register() {
-	const { supabase } = useSupabase();
+	const supabase = getClientComponentClient();
 	const router = useRouter();
 	async function RegisterUser(formData: FormData) {
 		const email = formData.get('email');
@@ -16,35 +16,12 @@ export default async function Register() {
 		if (password !== confirm) {
 			throw new Error('Passwords do not match!');
 		}
-		const { data, error } = await supabase.auth.signUp({
+		const { error } = await supabase.auth.signUp({
 			email: email.toString(),
 			password: password.toString()
 		});
 		if (error) {
 			throw error;
-		}
-		if (data.user) {
-			const mp = prisma.membership.create({
-				data: {
-					userId: data.user?.id,
-					organization: {
-						connect: {
-							orgName: 'public'
-						}
-					}
-				}
-			});
-			const mu = prisma.membership.create({
-				data: {
-					userId: data.user?.id,
-					organization: {
-						connect: {
-							orgName: 'users'
-						}
-					}
-				}
-			});
-			await prisma.$transaction([mp, mu]);
 		}
 		router.push('/results');
 	}
