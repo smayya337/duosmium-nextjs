@@ -193,26 +193,26 @@ export const colors = {
 };
 
 export const trophyAndMedalColors = [
-	'#FFF176', // Yellow 300
-	'#E0E0E0', // Gray 300
-	'#BCAAA4', // Brown 200
-	'#FFECB3', // Amber 100
-	'#C5E1A5', // Light Green 200
-	'#E1BEE7', // Purple 100
-	'#FFE0B2', // Orange 100
-	'#B2EBF2', // Cyan 100
-	'#F8BBD0', // Pink 100
-	'#D1C4E9', // Deep Purple 100
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#EEEEEE', // Gray 200
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5', // Gray 100
-	'#F5F5F5' // Gray 100
+	colors['Yellow 300'],
+	colors['Gray 300'],
+	colors['Brown 200'],
+	colors['Amber 100'],
+	colors['Light Green 200'],
+	colors['Purple 100'],
+	colors['Orange 100'],
+	colors['Cyan 100'],
+	colors['Pink 100'],
+	colors['Deep Purple 100'],
+	colors['Gray 200'],
+	colors['Gray 200'],
+	colors['Gray 200'],
+	colors['Gray 200'],
+	colors['Gray 200'],
+	colors['Gray 100'],
+	colors['Gray 100'],
+	colors['Gray 100'],
+	colors['Gray 100'],
+	colors['Gray 100'],
 ];
 
 export const defaultColor = 'Indigo 900';

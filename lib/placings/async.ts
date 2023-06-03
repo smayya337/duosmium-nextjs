@@ -1,7 +1,6 @@
-// @ts-ignore
-
-import { Placing } from 'sciolyff/interpreter';
 import prisma from '@/lib/global/prisma';
+// @ts-ignore
+import { Placing } from 'sciolyff/interpreter';
 
 export async function getPlacing(duosmiumID: string, eventName: string, teamNumber: number) {
 	// noinspection ES6RedundantAwait

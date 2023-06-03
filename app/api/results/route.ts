@@ -1,28 +1,28 @@
-import { load } from 'js-yaml';
-import { addResult, createResultDataInput } from '@/lib/results/async';
+import { isAdmin } from '@/lib/auth/admin';
+import { getRouteHandlerClient } from '@/lib/global/supabase';
+import {
+	addResult,
+	createResultDataInput,
+	deleteAllResults,
+	getAllCompleteResults
+} from '@/lib/results/async';
 import { exportYAMLOrJSON } from '@/lib/results/helpers';
-import { NextRequest, NextResponse } from 'next/server';
 import { getInterpreter } from '@/lib/results/interpreter';
-import { deleteAllDeletableResults, getAllReadableCompleteResults } from '@/lib/results/filter';
-import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { cookies, headers } from 'next/headers';
-import { getCurrentUserID } from '@/lib/auth/helpers';
+import { load } from 'js-yaml';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE() {
-	const supabase = createRouteHandlerSupabaseClient({
-		headers,
-		cookies
-	});
-	await deleteAllDeletableResults(await getCurrentUserID(supabase));
+	const supabase = getRouteHandlerClient(cookies);
+	if (!(await isAdmin(supabase))) {
+		return new Response(null, { status: 403 });
+	}
+	await deleteAllResults();
 	return new NextResponse(null, { status: 204 });
 }
 
 export async function GET(request: NextRequest) {
-	const supabase = createRouteHandlerSupabaseClient({
-		headers,
-		cookies
-	});
-	const allResults = await getAllReadableCompleteResults(await getCurrentUserID(supabase));
+	const allResults = await getAllCompleteResults();
 	return exportYAMLOrJSON(new URL(request.url), allResults, 'results');
 }
 
@@ -31,11 +31,10 @@ export async function PATCH() {
 }
 
 export async function POST(request: NextRequest) {
-	// TODO: restrict
-	const supabase = createRouteHandlerSupabaseClient({
-		headers,
-		cookies
-	});
+	const supabase = getRouteHandlerClient(cookies);
+	if (!(await isAdmin(supabase))) {
+		return new Response(null, { status: 403 });
+	}
 	const body = request.body;
 	if (body === null) {
 		return new NextResponse('No data provided!', { status: 400 });

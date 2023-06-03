@@ -1,5 +1,15 @@
 // noinspection ES6RedundantAwait
 
+import { createEventDataInput } from '@/lib/events/async';
+import prisma from '@/lib/global/prisma';
+import { createHistogramDataInput } from '@/lib/histograms/async';
+import { createPenaltyDataInput } from '@/lib/penalties/async';
+import { createPlacingDataInput } from '@/lib/placings/async';
+import { createTeamDataInput } from '@/lib/teams/async';
+import { createTournamentDataInput } from '@/lib/tournaments/async';
+import { createTrackDataInput } from '@/lib/tracks/async';
+import { load } from 'js-yaml';
+import { cache } from 'react';
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import {
@@ -9,18 +19,8 @@ import {
 	findLogoPath,
 	generateFilename
 } from './helpers';
-import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import prisma from '@/lib/global/prisma';
-import { createTournamentDataInput } from '@/lib/tournaments/async';
-import { createHistogramDataInput } from '@/lib/histograms/async';
 import { ResultsAddQueue } from './queue';
-import { createTeamDataInput } from '@/lib/teams/async';
-import { createEventDataInput } from '@/lib/events/async';
-import { createPlacingDataInput } from '@/lib/placings/async';
-import { createPenaltyDataInput } from '@/lib/penalties/async';
-import { createTrackDataInput } from '@/lib/tracks/async';
-import { cache } from 'react';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -395,10 +395,10 @@ export async function getRecentResults(ascending = true, limit = 0) {
 	return await prisma.result.findMany({
 		orderBy: [
 			{
-				duosmiumId: ascending ? 'asc' : 'desc'
+				createdAt: 'desc'
 			},
 			{
-				createdAt: 'desc'
+				duosmiumId: ascending ? 'asc' : 'desc'
 			}
 		],
 		take: limit === 0 ? undefined : limit

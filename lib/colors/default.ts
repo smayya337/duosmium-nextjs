@@ -1,13 +1,13 @@
 import {
-	colors,
-	trophyAndMedalColors,
-	defaultColor,
 	colorOrder,
+	colors,
 	darkColorOrder,
+	defaultColor,
 	getColor,
+	getFullName,
 	getNumber,
-	getFullName
-} from './material';
+	trophyAndMedalColors
+} from './tailwind';
 
 export {
 	colors,

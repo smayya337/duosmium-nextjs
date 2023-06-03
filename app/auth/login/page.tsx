@@ -1,9 +1,10 @@
 'use client';
-import { useSupabase } from '@/app/supabase-provider';
+
 import { useRouter } from 'next/navigation';
+import { getClientComponentClient } from "@/lib/global/supabase";
 
 export default async function Login() {
-	const { supabase } = useSupabase();
+	const supabase = getClientComponentClient();
 	const router = useRouter();
 	async function LogInEmailPassword(formData: FormData) {
 		const email = formData.get('email');
