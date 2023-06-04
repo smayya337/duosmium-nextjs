@@ -8,7 +8,9 @@ export async function ResultRecent({ duosmiumID }: { duosmiumID: string }) {
 	const interpreter = getInterpreter(completeResult);
 	return (
 		<li>
-			<Link href={`/results/${duosmiumID}`} className={"text-md"}>{fullTournamentTitle(interpreter.tournament)}</Link>
+			<Link href={`/results/${duosmiumID}`} className={'text-md hover:underline'}>
+				{fullTournamentTitle(interpreter.tournament)}
+			</Link>
 		</li>
 	);
 }

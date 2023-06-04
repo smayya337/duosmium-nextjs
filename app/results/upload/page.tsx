@@ -1,8 +1,8 @@
 'use client';
 
 import { isAdmin } from '@/lib/auth/admin';
-import { getClientComponentClient } from "@/lib/global/supabase";
-import { redirect, useRouter } from "next/navigation";
+import { getClientComponentClient } from '@/lib/global/supabase';
+import { redirect, useRouter } from 'next/navigation';
 
 export default async function Upload() {
 	const supabase = getClientComponentClient();

@@ -41,7 +41,9 @@ export default async function Page() {
 	return (
 		<>
 			<Hero countsByLevel={countsByLevel} recentIDs={recents.map((r) => r.duosmiumId)} />
-			<h2 className={"pb-4 text-3xl font-semibold tracking-tight transition-colors text-center"}>Recent Tournaments</h2>
+			<h2 className={'pb-4 text-3xl font-semibold tracking-tight transition-colors text-center'}>
+				Recent Tournaments
+			</h2>
 			<ResultCardGrid>
 				{allResults.map((r) => {
 					return (

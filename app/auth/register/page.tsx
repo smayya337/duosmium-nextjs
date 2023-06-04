@@ -1,7 +1,7 @@
 'use client';
 
+import { getClientComponentClient } from '@/lib/global/supabase';
 import { useRouter } from 'next/navigation';
-import { getClientComponentClient } from "@/lib/global/supabase";
 
 export default async function Register() {
 	const supabase = getClientComponentClient();

@@ -4,6 +4,11 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 module.exports = {
 	darkMode: ['class'],
 	content: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
+	safelist: [
+		{
+			pattern: /place-[0-9]+/
+		}
+	],
 	theme: {
 		container: {
 			center: true,

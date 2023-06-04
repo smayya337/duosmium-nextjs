@@ -1,10 +1,10 @@
 import { isAdmin } from '@/lib/auth/admin';
 import { getCurrentUserID } from '@/lib/auth/helpers';
+import { getRouteHandlerClient } from '@/lib/global/supabase';
 import { ResultsAddQueue } from '@/lib/results/queue';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies, headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { getRouteHandlerClient } from "@/lib/global/supabase";
 
 export async function POST(request: NextRequest) {
 	const supabase = getRouteHandlerClient(cookies);

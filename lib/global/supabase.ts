@@ -2,7 +2,7 @@ import {
 	createClientComponentClient,
 	createRouteHandlerClient,
 	createServerComponentClient
-} from "@supabase/auth-helpers-nextjs";
+} from '@supabase/auth-helpers-nextjs';
 import { createClient } from '@supabase/supabase-js';
 
 export const PUBLIC_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
@@ -22,8 +22,7 @@ export function getServerComponentClient(cookies: () => any) {
 		},
 		{
 			supabaseUrl: PUBLIC_SUPABASE_URL,
-			supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
-
+			supabaseKey: PUBLIC_SUPABASE_ANON_KEY
 		}
 	);
 }
