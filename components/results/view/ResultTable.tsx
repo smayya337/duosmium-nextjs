@@ -54,14 +54,14 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 		<Table className={'text-center'}>
 			<TableHeader>
 				<TableRow>
-					<TableHead key={'number'} className={'text-right'}>
+					<TableHead key={'number'} className={'text-right px-2 max-h-96 align-bottom'}>
 						#
 					</TableHead>
-					<TableHead key={'team'}>Team</TableHead>
-					<TableHead key={'rank'} className={'text-center'}>
+					<TableHead key={'team'} className={'px-2 max-h-96 align-bottom'}>Team</TableHead>
+					<TableHead key={'rank'} className={'text-center px-2 max-h-96 align-bottom'}>
 						Overall
 					</TableHead>
-					<TableHead key={'points'} className={'text-center'}>
+					<TableHead key={'points'} className={'text-center px-2 max-h-96 align-bottom'}>
 						Total
 					</TableHead>
 					{/*@ts-ignore*/}
@@ -69,17 +69,17 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						// @ts-ignore
 						const evt = eventsByName[e];
 						return (
-							<TableHead key={nameToKey(e)} className={'text-center whitespace-nowrap'}>
+							<TableHead key={nameToKey(e)} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1'}>
 								{e}
-								{evt.trial && <TrialBadge className={'ml-1'} />}
+								{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
 								{evt.trialed && (
-									<TrialedBadge className={'ml-1'} />
+									<TrialedBadge className={'mb-1 py-2.5 px-0.5'} />
 								)}
 							</TableHead>
 						);
 					})}
-					<TableHead key={'penalties'} className={'text-center'}>
-						Penalties
+					<TableHead key={'penalties'} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1'}>
+						Team Penalties
 					</TableHead>
 				</TableRow>
 			</TableHeader>
@@ -90,26 +90,27 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						<TableRow key={t.number}>
 							<TableCell
 								key={'number'}
-								className={'text-right text-muted-foreground hover:underline'}
+								className={'text-right text-muted-foreground hover:underline p-2'}
 							>
 								{t.number}
 							</TableCell>
-							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:underline'}>
-								{formatSchool(t)} ({teamLocation(t)})
+							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:underline p-2'}>
+								{formatSchool(t)}{t.suffix ? ` ${t.suffix}` : ''}
+								<span className={'text-xs text-muted-foreground ml-1'}>({teamLocation(t)})</span>
 								{t.disqualified && <DisqualifiedBadge className={'ml-1'} />}
 								{t.exhibition && teamAttended(t) && <ExhibitionBadge className={'ml-1'} />}
 								{t.exhibition && !teamAttended(t) && <AbsentBadge className={'ml-1'} />}
 							</TableCell>
 							{t.rank <= interpreter.tournament.trophies &&
 								(
-									<TableCell key={'rank'} className={`place-${t.rank}`}>
+									<TableCell key={'rank'} className={`place-${t.rank} p-2`}>
 										{t.rank}
 									</TableCell>
 								)}
 							{!(
 								t.rank <= interpreter.tournament.trophies
-							) && <TableCell key={'rank'}>{t.rank}</TableCell>}
-							<TableCell key={'points'}>{t.points}</TableCell>
+							) && <TableCell key={'rank'} className={'p-2'}>{t.rank}</TableCell>}
+							<TableCell key={'points'} className={'p-2'}>{t.points}</TableCell>
 							{eventNames.map((value: string, index: number) => {
 								// @ts-ignore
 								const placing = placingsByTeam[t.number][index];
@@ -117,16 +118,16 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 								if ((placing <= eventsByName[value].medals || (eventsByName[value].medals === undefined && placing <= interpreter.tournament.medals))
 								) {
 									return (
-										<TableCell key={nameToKey(value)} className={`place-${placing}`}>{placing}</TableCell>
+										<TableCell key={nameToKey(value)} className={`place-${placing} p-2`}>{placing}</TableCell>
 									);
 								}
 								else {
 									return (
-										<TableCell key={nameToKey(value)}>{placing}</TableCell>
+										<TableCell key={nameToKey(value)} className={'p-2'}>{placing}</TableCell>
 									);
 								}
 							})}
-							<TableCell key={'penalties'} className={'text-muted-foreground'}>
+							<TableCell key={'penalties'} className={'text-muted-foreground p-2'}>
 								{totalPenalty(t)}
 							</TableCell>
 						</TableRow>
