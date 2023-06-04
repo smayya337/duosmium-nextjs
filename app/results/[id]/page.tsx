@@ -65,8 +65,8 @@ export default async function Page({ params }) {
 	return (
 		<>
 			<h1 className={"text-3xl tracking-tight font-bold text-center pb-4"}>{fullTournamentTitle(interpreter.tournament)}</h1>
-			<p className={"text-lg tracking-tight font-medium text-muted-foreground text-center"}>{dateString(interpreter)}</p>
-			<p className={"text-lg tracking-tight font-medium text-muted-foreground text-center pb-4"}>@ {interpreter.tournament.location}</p>
+			<p className={"text-lg tracking-tight text-muted-foreground text-center"}>{dateString(interpreter)}</p>
+			<p className={"text-lg tracking-tight text-muted-foreground text-center pb-4"}>@ {interpreter.tournament.location}</p>
 			<ResultTable interpreter={interpreter} />
 		</>
 		// <div className={styles.resultsWrapper}>
