@@ -54,14 +54,14 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 		<Table className={'text-center'}>
 			<TableHeader>
 				<TableRow>
-					<TableHead key={'number'} className={'text-right px-2 max-h-96 align-bottom'}>
+					<TableHead key={'number'} className={'text-right px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
 						#
 					</TableHead>
-					<TableHead key={'team'} className={'px-2 max-h-96 align-bottom'}>Team</TableHead>
-					<TableHead key={'rank'} className={'text-center px-2 max-h-96 align-bottom'}>
+					<TableHead key={'team'} className={'px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>Team</TableHead>
+					<TableHead key={'rank'} className={'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
 						Overall
 					</TableHead>
-					<TableHead key={'points'} className={'text-center px-2 max-h-96 align-bottom'}>
+					<TableHead key={'points'} className={'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
 						Total
 					</TableHead>
 					{/*@ts-ignore*/}
@@ -69,7 +69,7 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						// @ts-ignore
 						const evt = eventsByName[e];
 						return (
-							<TableHead key={nameToKey(e)} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1'}>
+							<TableHead key={nameToKey(e)} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'}>
 								{e}
 								{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
 								{evt.trialed && (
@@ -78,7 +78,7 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 							</TableHead>
 						);
 					})}
-					<TableHead key={'penalties'} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1'}>
+					<TableHead key={'penalties'} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'}>
 						Team Penalties
 					</TableHead>
 				</TableRow>
@@ -90,11 +90,11 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						<TableRow key={t.number}>
 							<TableCell
 								key={'number'}
-								className={'text-right text-muted-foreground hover:underline p-2'}
+								className={'text-right text-muted-foreground hover:cursor-pointer hover:underline p-2'}
 							>
 								{t.number}
 							</TableCell>
-							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:underline p-2'}>
+							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:cursor-pointer hover:underline p-2'}>
 								{formatSchool(t)}{t.suffix ? ` ${t.suffix}` : ''}
 								<span className={'text-xs text-muted-foreground ml-1'}>({teamLocation(t)})</span>
 								{t.disqualified && <DisqualifiedBadge className={'ml-1'} />}
