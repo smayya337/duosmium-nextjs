@@ -1,5 +1,4 @@
 import { TrialBadge } from '@/components/results/view/TrialBadge';
-import { Badge } from '@/components/ui/badge';
 import {
 	Table,
 	TableBody,
@@ -8,11 +7,13 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table';
-import { trophyAndMedalColors } from '@/lib/colors/default';
-import { formatSchool, teamLocation } from '@/lib/results/helpers';
+import { formatSchool, teamAttended, teamLocation } from "@/lib/results/helpers";
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
 import { TrialedBadge } from "@/components/results/view/TrialedBadge";
+import { ExhibitionBadge } from "@/components/results/view/ExhibitionBadge";
+import { AbsentBadge } from "@/components/results/view/AbsentBadge";
+import { DisqualifiedBadge } from "@/components/results/view/DisqualifiedBadge";
 
 function nameToKey(name: string) {
 	return name.toLowerCase().replaceAll(' ', '-');
@@ -70,9 +71,9 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						return (
 							<TableHead key={nameToKey(e)} className={'text-center whitespace-nowrap'}>
 								{e}
-								{evt.trial && <TrialBadge className={'my-1'} />}
+								{evt.trial && <TrialBadge className={'ml-1'} />}
 								{evt.trialed && (
-									<TrialedBadge className={'my-1'} />
+									<TrialedBadge className={'ml-1'} />
 								)}
 							</TableHead>
 						);
@@ -94,8 +95,10 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 								{t.number}
 							</TableCell>
 							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:underline'}>
-								{formatSchool(t)}
-								<span className={'text-xs'}> ({teamLocation(t)})</span>
+								{formatSchool(t)} ({teamLocation(t)})
+								{t.disqualified && <DisqualifiedBadge className={'ml-1'} />}
+								{t.exhibition && teamAttended(t) && <ExhibitionBadge className={'ml-1'} />}
+								{t.exhibition && !teamAttended(t) && <AbsentBadge className={'ml-1'} />}
 							</TableCell>
 							{t.rank <= interpreter.tournament.trophies &&
 								(
