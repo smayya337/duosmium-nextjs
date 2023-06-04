@@ -80,21 +80,22 @@
 	}
 }
 
+/*TODO: add dark theme colors*/
 @layer components {
 	.place-1 {
-		@apply bg-yellow-200 dark:bg-yellow-700;
+		@apply bg-yellow-200;
 	}
 	.place-2 {
-		@apply bg-neutral-200 dark:bg-neutral-700;
+		@apply bg-neutral-200;
 	}
 	.place-3 {
-		@apply bg-stone-400 dark:bg-yellow-900;
+		@apply bg-stone-400;
 	}
 	.place-4 {
-		@apply bg-yellow-100 dark:bg-yellow-900;
+		@apply bg-yellow-100;
 	}
 	.place-5 {
-		@apply bg-lime-200 dark:bg-lime-800;
+		@apply bg-lime-200;
 	}
 	.place-6 {
 		@apply bg-purple-300;

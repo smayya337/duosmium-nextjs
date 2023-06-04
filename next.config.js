@@ -14,7 +14,16 @@ const nextConfig = {
 	},
 	images: {
 		domains: [process.env.BASE_URL.replace(/https?:\/\//, '').replace(/:\d+/, '')]
-	}
+	},
+	async redirects() {
+		return [
+			{
+				source: '/',
+				destination: '/results',
+				permanent: true,
+			},
+		];
+	},
 };
 
 module.exports = nextConfig;
