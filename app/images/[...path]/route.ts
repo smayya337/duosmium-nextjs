@@ -1,6 +1,6 @@
-import { getRouteHandlerClient } from "@/lib/global/supabase";
+import { getRouteHandlerClient } from '@/lib/global/supabase';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { cookies } from "next/headers";
 
 export async function DELETE() {
 	return new NextResponse(null, { status: 405 });

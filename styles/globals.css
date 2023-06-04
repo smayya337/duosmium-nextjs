@@ -79,3 +79,66 @@
 		font-feature-settings: 'rlig' 1, 'calt' 1;
 	}
 }
+
+@layer components {
+	.place-1 {
+		@apply bg-yellow-200 dark:bg-yellow-700;
+	}
+	.place-2 {
+		@apply bg-neutral-200 dark:bg-neutral-700;
+	}
+	.place-3 {
+		@apply bg-stone-400 dark:bg-yellow-900;
+	}
+	.place-4 {
+		@apply bg-yellow-100 dark:bg-yellow-900;
+	}
+	.place-5 {
+		@apply bg-lime-200 dark:bg-lime-800;
+	}
+	.place-6 {
+		@apply bg-purple-300;
+	}
+	.place-7 {
+		@apply bg-orange-200;
+	}
+	.place-8 {
+		@apply bg-sky-200;
+	}
+	.place-9 {
+		@apply bg-red-200;
+	}
+	.place-10 {
+		@apply bg-indigo-200;
+	}
+	.place-11 {
+		@apply bg-zinc-100;
+	}
+	.place-12 {
+		@apply bg-zinc-100;
+	}
+	.place-13 {
+		@apply bg-zinc-100;
+	}
+	.place-14 {
+		@apply bg-zinc-100;
+	}
+	.place-15 {
+		@apply bg-zinc-100;
+	}
+	.place-16 {
+		@apply bg-neutral-100;
+	}
+	.place-17 {
+		@apply bg-neutral-100;
+	}
+	.place-18 {
+		@apply bg-neutral-100;
+	}
+	.place-19 {
+		@apply bg-neutral-100;
+	}
+	.place-20 {
+		@apply bg-neutral-100;
+	}
+}
