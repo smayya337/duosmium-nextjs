@@ -20,10 +20,10 @@ const nextConfig = {
 			{
 				source: '/',
 				destination: '/results',
-				permanent: true,
-			},
+				permanent: true
+			}
 		];
-	},
+	}
 };
 
 module.exports = nextConfig;
