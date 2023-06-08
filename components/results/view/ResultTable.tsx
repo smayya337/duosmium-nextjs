@@ -1,4 +1,8 @@
+import { AbsentBadge } from '@/components/results/view/AbsentBadge';
+import { DisqualifiedBadge } from '@/components/results/view/DisqualifiedBadge';
+import { ExhibitionBadge } from '@/components/results/view/ExhibitionBadge';
 import { TrialBadge } from '@/components/results/view/TrialBadge';
+import { TrialedBadge } from '@/components/results/view/TrialedBadge';
 import {
 	Table,
 	TableBody,
@@ -7,13 +11,9 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table';
-import { formatSchool, teamAttended, teamLocation } from "@/lib/results/helpers";
+import { formatSchool, teamAttended, teamLocation } from '@/lib/results/helpers';
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
-import { TrialedBadge } from "@/components/results/view/TrialedBadge";
-import { ExhibitionBadge } from "@/components/results/view/ExhibitionBadge";
-import { AbsentBadge } from "@/components/results/view/AbsentBadge";
-import { DisqualifiedBadge } from "@/components/results/view/DisqualifiedBadge";
 
 function nameToKey(name: string) {
 	return name.toLowerCase().replaceAll(' ', '-');
@@ -54,14 +54,32 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 		<Table className={'text-center'}>
 			<TableHeader>
 				<TableRow>
-					<TableHead key={'number'} className={'text-right px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
+					<TableHead
+						key={'number'}
+						className={'text-right px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}
+					>
 						#
 					</TableHead>
-					<TableHead key={'team'} className={'px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>Team</TableHead>
-					<TableHead key={'rank'} className={'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
+					<TableHead
+						key={'team'}
+						className={'px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}
+					>
+						Team
+					</TableHead>
+					<TableHead
+						key={'rank'}
+						className={
+							'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'
+						}
+					>
 						Overall
 					</TableHead>
-					<TableHead key={'points'} className={'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'}>
+					<TableHead
+						key={'points'}
+						className={
+							'text-center px-2 max-h-96 align-bottom hover:cursor-pointer hover:underline'
+						}
+					>
 						Total
 					</TableHead>
 					{/*@ts-ignore*/}
@@ -69,16 +87,24 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						// @ts-ignore
 						const evt = eventsByName[e];
 						return (
-							<TableHead key={nameToKey(e)} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'}>
+							<TableHead
+								key={nameToKey(e)}
+								className={
+									'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'
+								}
+							>
 								{e}
 								{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
-								{evt.trialed && (
-									<TrialedBadge className={'mb-1 py-2.5 px-0.5'} />
-								)}
+								{evt.trialed && <TrialedBadge className={'mb-1 py-2.5 px-0.5'} />}
 							</TableHead>
 						);
 					})}
-					<TableHead key={'penalties'} className={'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'}>
+					<TableHead
+						key={'penalties'}
+						className={
+							'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'
+						}
+					>
 						Team Penalties
 					</TableHead>
 				</TableRow>
@@ -90,40 +116,55 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						<TableRow key={t.number}>
 							<TableCell
 								key={'number'}
-								className={'text-right text-muted-foreground hover:cursor-pointer hover:underline p-2'}
+								className={
+									'text-right text-muted-foreground hover:cursor-pointer hover:underline p-2'
+								}
 							>
 								{t.number}
 							</TableCell>
-							<TableCell key={'school'} className={'text-left whitespace-nowrap hover:cursor-pointer hover:underline p-2'}>
-								{formatSchool(t)}{t.suffix ? ` ${t.suffix}` : ''}
+							<TableCell
+								key={'school'}
+								className={'text-left whitespace-nowrap hover:cursor-pointer hover:underline p-2'}
+							>
+								{formatSchool(t)}
+								{t.suffix ? ` ${t.suffix}` : ''}
 								<span className={'text-xs text-muted-foreground ml-1'}>({teamLocation(t)})</span>
 								{t.disqualified && <DisqualifiedBadge className={'ml-1'} />}
 								{t.exhibition && teamAttended(t) && <ExhibitionBadge className={'ml-1'} />}
 								{t.exhibition && !teamAttended(t) && <AbsentBadge className={'ml-1'} />}
 							</TableCell>
-							{t.rank <= interpreter.tournament.trophies &&
-								(
-									<TableCell key={'rank'} className={`place-${t.rank} p-2`}>
-										{t.rank}
-									</TableCell>
-								)}
-							{!(
-								t.rank <= interpreter.tournament.trophies
-							) && <TableCell key={'rank'} className={'p-2'}>{t.rank}</TableCell>}
-							<TableCell key={'points'} className={'p-2'}>{t.points}</TableCell>
+							{t.rank <= interpreter.tournament.trophies && (
+								<TableCell key={'rank'} className={`place-${t.rank} p-2`}>
+									{t.rank}
+								</TableCell>
+							)}
+							{!(t.rank <= interpreter.tournament.trophies) && (
+								<TableCell key={'rank'} className={'p-2'}>
+									{t.rank}
+								</TableCell>
+							)}
+							<TableCell key={'points'} className={'p-2'}>
+								{t.points}
+							</TableCell>
 							{eventNames.map((value: string, index: number) => {
 								// @ts-ignore
 								const placing = placingsByTeam[t.number][index];
 								// @ts-ignore
-								if ((placing <= eventsByName[value].medals || (eventsByName[value].medals === undefined && placing <= interpreter.tournament.medals))
+								if (
+									placing <= eventsByName[value].medals ||
+									(eventsByName[value].medals === undefined &&
+										placing <= interpreter.tournament.medals)
 								) {
 									return (
-										<TableCell key={nameToKey(value)} className={`place-${placing} p-2`}>{placing}</TableCell>
+										<TableCell key={nameToKey(value)} className={`place-${placing} p-2`}>
+											{placing}
+										</TableCell>
 									);
-								}
-								else {
+								} else {
 									return (
-										<TableCell key={nameToKey(value)} className={'p-2'}>{placing}</TableCell>
+										<TableCell key={nameToKey(value)} className={'p-2'}>
+											{placing}
+										</TableCell>
 									);
 								}
 							})}

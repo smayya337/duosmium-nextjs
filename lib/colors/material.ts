@@ -212,7 +212,7 @@ export const trophyAndMedalColors = [
 	colors['Gray 100'],
 	colors['Gray 100'],
 	colors['Gray 100'],
-	colors['Gray 100'],
+	colors['Gray 100']
 ];
 
 export const defaultColor = 'Indigo 900';

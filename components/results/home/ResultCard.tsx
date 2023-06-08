@@ -1,4 +1,6 @@
 import styles from '@/app/results/page.module.css';
+import { OfficialBadge } from '@/components/results/home/OfficialBadge';
+import { PreliminaryBadge } from '@/components/results/home/PreliminaryBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,8 +18,6 @@ import { getInterpreter } from '@/lib/results/interpreter';
 import { Result } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { OfficialBadge } from "@/components/results/home/OfficialBadge";
-import { PreliminaryBadge } from "@/components/results/home/PreliminaryBadge";
 
 export async function ResultCard({ meta }: { meta: Result }) {
 	const completeResult = await cacheCompleteResult(meta.duosmiumId);
