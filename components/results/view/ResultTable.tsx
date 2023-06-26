@@ -149,9 +149,10 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 							{eventNames.map((value: string, index: number) => {
 								// @ts-ignore
 								const placing = placingsByTeam[t.number][index];
-								// @ts-ignore
 								if (
+									// @ts-ignore
 									placing <= eventsByName[value].medals ||
+									// @ts-ignore
 									(eventsByName[value].medals === undefined &&
 										placing <= interpreter.tournament.medals)
 								) {

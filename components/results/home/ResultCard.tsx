@@ -20,19 +20,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export async function ResultCard({ meta }: { meta: Result }) {
-	const completeResult = await cacheCompleteResult(meta.duosmiumId);
-	if (!completeResult) {
-		return null;
-	}
-	const interpreter = getInterpreter(completeResult);
-	const tournamentTitle = fullTournamentTitle(interpreter.tournament);
+	const tournamentTitle = meta.fullTitle;
 	return (
 		<Card className={'flex flex-col'}>
 			<Link href={`/results/${meta.duosmiumId}`} className={'flex flex-grow flex-col'}>
 				<CardHeader>
 					<CardTitle className={'leading-tight hover:underline'}>{tournamentTitle}</CardTitle>
 					<CardDescription>
-						{dateString(interpreter)} @ {interpreter.tournament.location}
+						{meta.date} @ {meta.location}
 					</CardDescription>
 					<div className={'flex gap-x-2'}>
 						{meta.official && <OfficialBadge className={undefined} />}
@@ -40,6 +35,7 @@ export async function ResultCard({ meta }: { meta: Result }) {
 					</div>
 				</CardHeader>
 				<CardContent className={'bg-no-repeat bg-center flex-grow'}>
+					{/* TODO: center this within the container -- currently, it's aligned to the top */}
 					<Image
 						src={`${process.env.BASE_URL}${meta.logo}`}
 						alt={`Logo for the ${tournamentTitle}`}
@@ -49,7 +45,6 @@ export async function ResultCard({ meta }: { meta: Result }) {
 					/>
 				</CardContent>
 			</Link>
-			{/*<div className={"flex-grow"}></div>*/}
 			<CardFooter>
 				<Button asChild>
 					<Link href={`/results/${meta.duosmiumId}`}>Full Results</Link>

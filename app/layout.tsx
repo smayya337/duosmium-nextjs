@@ -40,6 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 						<div className="relative flex min-h-screen flex-col">
 							<SiteHeader />
 							<div className="flex-1 container mx-auto py-8">{children}</div>
+							{/* TODO: add a footer */}
 						</div>
 					</ThemeProvider>
 				</body>

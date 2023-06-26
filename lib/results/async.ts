@@ -14,11 +14,11 @@ import { cache } from 'react';
 import Interpreter from 'sciolyff/interpreter';
 import {
 	createBgColorFromImagePath,
-	createLogoPath,
+	createLogoPath, dateString,
 	findBgColor,
-	findLogoPath,
-	generateFilename
-} from './helpers';
+	findLogoPath, fullTournamentTitle, fullTournamentTitleShort,
+	generateFilename, tournamentTitle, tournamentTitleShort
+} from "./helpers";
 import { getInterpreter } from './interpreter';
 import { ResultsAddQueue } from './queue';
 
@@ -330,7 +330,13 @@ export async function createResultDataInput(interpreter: Interpreter) {
 			connectOrCreate: penaltyData
 		},
 		logo: await findLogoPath(duosmiumID),
-		color: await findBgColor(duosmiumID)
+		color: await findBgColor(duosmiumID),
+		title: tournamentTitle(interpreter),
+		fullTitle: fullTournamentTitle(interpreter.tournament),
+		shortTitle: tournamentTitleShort(interpreter.tournament),
+		fullShortTitle: fullTournamentTitleShort(interpreter.tournament),
+		date: dateString(interpreter),
+		location: interpreter.tournament.location
 	};
 	if (interpreter.histograms) {
 		// @ts-ignore
@@ -346,21 +352,34 @@ export async function createResultDataInput(interpreter: Interpreter) {
 	return output;
 }
 
-export async function regenerateColorAndLogo(duosmiumID: string) {
+export async function regenerateMetadata(duosmiumID: string) {
+	const interpreter = getInterpreter(await getCompleteResult(duosmiumID));
 	const logo = await createLogoPath(duosmiumID);
 	const color = await createBgColorFromImagePath(duosmiumID);
+	const title = tournamentTitle(interpreter.tournament);
+	const fullTitle = fullTournamentTitle(interpreter.tournament);
+	const shortTitle = tournamentTitleShort(interpreter.tournament);
+	const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
+	const date = dateString(interpreter);
+	const location = interpreter.tournament.location;
 	return await prisma.result.update({
 		where: {
 			duosmiumId: duosmiumID
 		},
 		data: {
 			logo: logo,
-			color: color
+			color: color,
+			title: title,
+			fullTitle: fullTitle,
+			shortTitle: shortTitle,
+			fullShortTitle: fullShortTitle,
+			date: date,
+			location: location,
 		}
 	});
 }
 
-export async function regenerateAllColorsAndLogos() {
+export async function regenerateAllMetadata() {
 	const ids = (
 		await prisma.result.findMany({
 			select: {
@@ -370,8 +389,15 @@ export async function regenerateAllColorsAndLogos() {
 	).map((result) => result.duosmiumId);
 	const operation = [];
 	for (const id of ids) {
+		const interpreter = getInterpreter(await getCompleteResult(id));
 		const logoPath = await createLogoPath(id);
 		const bgColor = await createBgColorFromImagePath(logoPath);
+		const title = tournamentTitle(interpreter.tournament);
+		const fullTitle = fullTournamentTitle(interpreter.tournament);
+		const shortTitle = tournamentTitleShort(interpreter.tournament);
+		const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
+		const date = dateString(interpreter);
+		const location = interpreter.tournament.location;
 		operation.push(
 			prisma.result.update({
 				where: {
@@ -379,7 +405,13 @@ export async function regenerateAllColorsAndLogos() {
 				},
 				data: {
 					logo: logoPath,
-					color: bgColor
+					color: bgColor,
+					title: title,
+					fullTitle: fullTitle,
+					shortTitle: shortTitle,
+					fullShortTitle: fullShortTitle,
+					date: date,
+					location: location,
 				}
 			})
 		);

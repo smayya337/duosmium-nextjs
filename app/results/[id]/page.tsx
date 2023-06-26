@@ -1,7 +1,5 @@
 // @ts-ignore
 import { ResultDataTable } from '@/components/results/view/ResultDataTable';
-import { ResultTable } from '@/components/results/view/ResultTable';
-import { getCurrentUserID } from '@/lib/auth/helpers';
 import { colors } from '@/lib/colors/default';
 import { getCompleteResult, resultExists } from '@/lib/results/async';
 import {
@@ -15,10 +13,8 @@ import {
 	teamLocation
 } from '@/lib/results/helpers';
 import { getInterpreter } from '@/lib/results/interpreter';
-import { cookies, headers } from 'next/headers';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Event, Team } from 'sciolyff/dist/src/interpreter/types';
+import { Team } from 'sciolyff/dist/src/interpreter/types';
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 
