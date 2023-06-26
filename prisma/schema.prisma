@@ -11,20 +11,27 @@ datasource db {
 /// SciolyFF
 
 model Result {
-  duosmiumId  String      @id
-  logo        String
-  color       String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  events      Event[]
-  histogram   Histogram?
-  penalties   Penalty[]
-  placings    Placing[]
-  teams       Team[]
-  tournament  Tournament?
-  tracks      Track[]
-  official    Boolean     @default(false)
-  preliminary Boolean     @default(false)
+  duosmiumId     String      @id
+  logo           String
+  color          String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  events         Event[]
+  histogram      Histogram?
+  penalties      Penalty[]
+  placings       Placing[]
+  teams          Team[]
+  tournament     Tournament?
+  tracks         Track[]
+  official       Boolean     @default(false)
+  preliminary    Boolean     @default(false)
+  title          String      @default("")
+  fullTitle      String      @default("")
+  shortTitle     String      @default("")
+  fullShortTitle String      @default("")
+  date           String      @default("")
+  // TODO: deprecate this eventually -- don't want to have to retrieve the whole tournament JSON just for this
+  location       String      @default("")
 
   @@index([duosmiumId])
 }

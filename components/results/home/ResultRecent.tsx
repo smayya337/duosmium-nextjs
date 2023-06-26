@@ -1,15 +1,11 @@
-import { cacheCompleteResult } from '@/lib/results/async';
-import { fullTournamentTitle } from '@/lib/results/helpers';
-import { getInterpreter } from '@/lib/results/interpreter';
 import Link from 'next/link';
+import { Result } from "@prisma/client";
 
-export async function ResultRecent({ duosmiumID }: { duosmiumID: string }) {
-	const completeResult = await cacheCompleteResult(duosmiumID);
-	const interpreter = getInterpreter(completeResult);
+export async function ResultRecent({ result }: { result: Result }) {
 	return (
-		<li>
-			<Link href={`/results/${duosmiumID}`} className={'text-md hover:underline'}>
-				{fullTournamentTitle(interpreter.tournament)}
+		<li className={'list-inside'}>
+			<Link href={`/results/${result.duosmiumId}`} className={'text-md hover:underline'}>
+				{result.fullShortTitle}
 			</Link>
 		</li>
 	);
