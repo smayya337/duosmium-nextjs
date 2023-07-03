@@ -1,7 +1,7 @@
 // @ts-ignore
 import { ResultDataTable } from '@/components/results/view/ResultDataTable';
 import { colors } from '@/lib/colors/default';
-import { getCompleteResult, resultExists } from '@/lib/results/async';
+import { getCompleteResult, getResult, resultExists } from "@/lib/results/async";
 import {
 	dateString,
 	findBgColor,
@@ -17,6 +17,7 @@ import { notFound } from 'next/navigation';
 import { Team } from 'sciolyff/dist/src/interpreter/types';
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
+import { Result } from "@prisma/client";
 
 async function getRequestedInterpreter(id: string) {
 	if (!(await resultExists(id))) {
@@ -38,8 +39,8 @@ let interpreter: Interpreter = null;
 // @ts-ignore
 export async function generateMetadata({ params }) {
 	const id = params.id;
-	const interpreter: Interpreter = await getRequestedInterpreter(id);
-	return { title: `${fullTournamentTitleShort(interpreter.tournament)} | Duosmium Results` };
+	const res: Result = await getResult(id);
+	return { title: `${res.fullShortTitle} | Duosmium Results` };
 }
 
 function penaltyPoints(team: Team): number {
@@ -104,7 +105,7 @@ function processTeamData(interpreter: Interpreter) {
 }
 
 // @ts-ignore
-export default async function Page({ params }) {
+export default async function Page({ params, searchParams }: { params: { id: string }, searchParams: { team: number | undefined } }) {
 	const id = params.id;
 	const interpreter: Interpreter = await getRequestedInterpreter(id);
 	// @ts-ignore

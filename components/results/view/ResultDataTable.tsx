@@ -13,7 +13,6 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table';
-import { teamAttended, teamLocation } from '@/lib/results/helpers';
 import {
 	ColumnDef,
 	flexRender,
@@ -126,11 +125,12 @@ function columnsFromEvents(eventData: any, trophies: number) {
 			accessorKey: evt.id,
 			// @ts-ignore
 			header: ({ column }) => {
+				let cls = 'text-left whitespace-nowrap sideways py-1';
+				if (!evt.trial && !evt.trialed) {
+					cls += ' mx-px';
+				}
 				return (
-					<div
-						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-						className={'text-left whitespace-nowrap sideways py-1'}
-					>
+					<div onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className={cls}>
 						{evt.name}
 						{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
 						{evt.trialed && <TrialedBadge className={'mb-1 py-2.5 px-0.5'} />}

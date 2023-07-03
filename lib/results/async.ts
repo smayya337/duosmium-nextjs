@@ -1,8 +1,9 @@
 // noinspection ES6RedundantAwait
 
 import { createEventDataInput } from '@/lib/events/async';
-import prisma from '@/lib/global/prisma';
+import prisma, { keepTryingUntilItWorks } from '@/lib/global/prisma';
 import { createHistogramDataInput } from '@/lib/histograms/async';
+import { createLocationDataInput } from '@/lib/locations/async';
 import { createPenaltyDataInput } from '@/lib/penalties/async';
 import { createPlacingDataInput } from '@/lib/placings/async';
 import { createTeamDataInput } from '@/lib/teams/async';
@@ -14,11 +15,16 @@ import { cache } from 'react';
 import Interpreter from 'sciolyff/interpreter';
 import {
 	createBgColorFromImagePath,
-	createLogoPath, dateString,
+	createLogoPath,
+	dateString,
 	findBgColor,
-	findLogoPath, fullTournamentTitle, fullTournamentTitleShort,
-	generateFilename, tournamentTitle, tournamentTitleShort
-} from "./helpers";
+	findLogoPath,
+	fullTournamentTitle,
+	fullTournamentTitleShort,
+	generateFilename,
+	tournamentTitle,
+	tournamentTitleShort
+} from './helpers';
 import { getInterpreter } from './interpreter';
 import { ResultsAddQueue } from './queue';
 
@@ -165,9 +171,9 @@ export async function getAllResults(ascending = true, limit = 0) {
 	});
 }
 
-export async function getAllCompleteResults() {
+export async function getAllCompleteResults(ascending = true, limit = 0) {
 	const output = {};
-	for (const result of await getAllResults()) {
+	for (const result of await getAllResults(ascending, limit)) {
 		const duosmiumID = result.duosmiumId;
 		// @ts-ignore
 		output[duosmiumID] = await getCompleteResult(duosmiumID);
@@ -213,8 +219,8 @@ export async function addResultFromYAMLFile(
 	const resultData: object = await createResultDataInput(interpreter);
 	// console.log(resultData);
 	try {
-		// await keepTryingUntilItWorks(addResult, resultData);
-		await addResult(resultData);
+		await keepTryingUntilItWorks(addResult, resultData);
+		// await addResult(resultData);
 		callback(generateFilename(interpreter));
 	} catch (e) {
 		console.log(`ERROR: could not add ${generateFilename(interpreter)}!`);
@@ -239,6 +245,8 @@ export async function createResultDataInput(interpreter: Interpreter) {
 	const tournamentData = await createTournamentDataInput(interpreter.tournament);
 	const tournament = interpreter.tournament;
 	const eventData = [];
+	const locationName = tournament.location;
+	const locationState = tournament.state;
 	for (const event of tournament.events) {
 		const thisEventData = await createEventDataInput(event);
 		eventData.push({
@@ -331,12 +339,12 @@ export async function createResultDataInput(interpreter: Interpreter) {
 		},
 		logo: await findLogoPath(duosmiumID),
 		color: await findBgColor(duosmiumID),
-		title: tournamentTitle(interpreter),
+		title: tournamentTitle(interpreter.tournament),
 		fullTitle: fullTournamentTitle(interpreter.tournament),
 		shortTitle: tournamentTitleShort(interpreter.tournament),
 		fullShortTitle: fullTournamentTitleShort(interpreter.tournament),
 		date: dateString(interpreter),
-		location: interpreter.tournament.location
+		location: await createLocationDataInput(locationName, locationState)
 	};
 	if (interpreter.histograms) {
 		// @ts-ignore
@@ -361,7 +369,8 @@ export async function regenerateMetadata(duosmiumID: string) {
 	const shortTitle = tournamentTitleShort(interpreter.tournament);
 	const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
 	const date = dateString(interpreter);
-	const location = interpreter.tournament.location;
+	const locationName = interpreter.tournament.location;
+	const locationState = interpreter.tournament.state;
 	return await prisma.result.update({
 		where: {
 			duosmiumId: duosmiumID
@@ -374,7 +383,7 @@ export async function regenerateMetadata(duosmiumID: string) {
 			shortTitle: shortTitle,
 			fullShortTitle: fullShortTitle,
 			date: date,
-			location: location,
+			location: await createLocationDataInput(locationName, locationState)
 		}
 	});
 }
@@ -397,7 +406,8 @@ export async function regenerateAllMetadata() {
 		const shortTitle = tournamentTitleShort(interpreter.tournament);
 		const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
 		const date = dateString(interpreter);
-		const location = interpreter.tournament.location;
+		const locationName = interpreter.tournament.location;
+		const locationState = interpreter.tournament.state;
 		operation.push(
 			prisma.result.update({
 				where: {
@@ -411,7 +421,7 @@ export async function regenerateAllMetadata() {
 					shortTitle: shortTitle,
 					fullShortTitle: fullShortTitle,
 					date: date,
-					location: location,
+					location: await createLocationDataInput(locationName, locationState)
 				}
 			})
 		);

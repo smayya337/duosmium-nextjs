@@ -5,10 +5,10 @@ import { getClientComponentClient } from '@/lib/global/supabase';
 import { redirect } from 'next/navigation';
 
 export default async function Upload() {
-	const supabase = getClientComponentClient();
-	if (!(await isAdmin(supabase))) {
-		redirect('/results');
-	}
+	// const supabase = getClientComponentClient();
+	// if (!(await isAdmin(supabase))) {
+	// 	redirect('/');
+	// }
 	return (
 		<form action="/results/upload/submit" method="POST" encType="multipart/form-data">
 			<label htmlFor="yaml">Upload YAML file: </label>

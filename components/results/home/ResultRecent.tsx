@@ -1,5 +1,5 @@
+import { Result } from '@prisma/client';
 import Link from 'next/link';
-import { Result } from "@prisma/client";
 
 export async function ResultRecent({ result }: { result: Result }) {
 	return (
