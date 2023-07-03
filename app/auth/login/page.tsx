@@ -19,7 +19,7 @@ export default async function Login() {
 		if (error) {
 			throw error;
 		}
-		router.push('/results');
+		router.push('/');
 	}
 	return (
 		<form action={LogInEmailPassword}>

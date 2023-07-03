@@ -1,12 +1,10 @@
-import { Main } from '@/components/global/Main';
-import { Navbar } from '@/components/global/Navbar';
 import { Hero } from '@/components/results/home/Hero';
 import { ResultCard } from '@/components/results/home/ResultCard';
 import { ResultCardGrid } from '@/components/results/home/ResultCardGrid';
 import { cacheCompleteResult, getAllResults, getRecentResults } from '@/lib/results/async';
 import { getAllTournamentsByLevel } from '@/lib/tournaments/async';
+import Link from 'next/link';
 import { Suspense } from 'react';
-import Link from "next/link";
 
 function preload(duosmiumID: string) {
 	void cacheCompleteResult(duosmiumID);
@@ -58,7 +56,13 @@ export default async function Page() {
 			<h2 className={'py-4 text-3xl font-bold tracking-tight transition-colors text-center'}>
 				Past Tournaments
 			</h2>
-			<p className={'text-center'}>Searching for something that&apos;s not listed here? Check out our <Link href={'/results/all'} className={'text-sky-700 dark:text-sky-500 hover:underline'}>full list</Link>!</p>
+			<p className={'text-center'}>
+				Searching for something that&apos;s not listed here? Check out our{' '}
+				<Link href={'/results/all'} className={'text-sky-700 dark:text-sky-500 hover:underline'}>
+					full list
+				</Link>
+				!
+			</p>
 		</>
 	);
 }

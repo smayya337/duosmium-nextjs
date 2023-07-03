@@ -27,7 +27,7 @@ export async function ResultCard({ meta }: { meta: Result }) {
 				<CardHeader>
 					<CardTitle className={'leading-tight hover:underline'}>{tournamentTitle}</CardTitle>
 					<CardDescription>
-						{meta.date} @ {meta.location}
+						{meta.date} @ {meta.locationName}
 					</CardDescription>
 					<div className={'flex gap-x-2'}>
 						{meta.official && <OfficialBadge className={undefined} />}

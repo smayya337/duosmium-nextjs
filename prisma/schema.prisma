@@ -11,27 +11,30 @@ datasource db {
 /// SciolyFF
 
 model Result {
-  duosmiumId     String      @id
-  logo           String
-  color          String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  events         Event[]
-  histogram      Histogram?
-  penalties      Penalty[]
-  placings       Placing[]
-  teams          Team[]
-  tournament     Tournament?
-  tracks         Track[]
-  official       Boolean     @default(false)
-  preliminary    Boolean     @default(false)
-  title          String      @default("")
-  fullTitle      String      @default("")
-  shortTitle     String      @default("")
-  fullShortTitle String      @default("")
-  date           String      @default("")
-  // TODO: deprecate this eventually -- don't want to have to retrieve the whole tournament JSON just for this
-  location       String      @default("")
+  duosmiumId      String      @id
+  logo            String
+  color           String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  events          Event[]
+  histogram       Histogram?
+  penalties       Penalty[]
+  placings        Placing[]
+  teams           Team[]
+  tournament      Tournament?
+  tracks          Track[]
+  official        Boolean     @default(false)
+  preliminary     Boolean     @default(false)
+  title           String
+  fullTitle       String
+  shortTitle      String
+  fullShortTitle  String
+  date            String
+  locationName    String
+  locationCity    String      @default("")
+  locationState   String
+  locationCountry String      @default("United States")
+  location        Location    @relation(fields: [locationName, locationCity, locationState, locationCountry], references: [name, city, state, country])
 
   @@index([duosmiumId])
 }
@@ -51,6 +54,11 @@ model Team {
   penalties        Penalty?
   placings         Placing[]
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  name             String
+  city             String    @default("")
+  state            String
+  country          String    @default("United States")
+  location         Location  @relation(fields: [name, city, state, country], references: [name, city, state, country], onDelete: Restrict)
 
   @@id([resultDuosmiumId, number])
   @@index([resultDuosmiumId, number])
@@ -109,13 +117,13 @@ model Histogram {
   @@id([resultDuosmiumId])
 }
 
-/// Fun stuff that I'd like to implement in the future
-
 model Location {
   name    String
-  city    String @default("")
+  city    String   @default("")
   state   String
-  country String @default("United States")
+  country String   @default("United States")
+  teams   Team[]
+  results Result[]
 
   @@id([name, city, state, country])
   @@index([name, city, state, country])
