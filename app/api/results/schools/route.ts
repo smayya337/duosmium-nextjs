@@ -1,5 +1,5 @@
 import { exportYAMLOrJSON } from '@/lib/results/helpers';
-import { getAllSchoolsAndRanks } from "@/lib/teams/async";
+import { getAllSchoolsAndRanks } from '@/lib/teams/async';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE() {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 			state: k.state,
 			country: k.country,
 			rankings: v
-		}
+		};
 	}
 	return exportYAMLOrJSON(new URL(request.url), output, 'schools');
 }
