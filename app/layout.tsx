@@ -31,7 +31,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
 	return (
 		<>
-			<html lang="en" suppressHydrationWarning>
+			<html lang="en" suppressHydrationWarning className={'overflow-scroll scroll-pt-16'}>
 				<head>
 					<title>{siteConfig.name}</title>
 				</head>

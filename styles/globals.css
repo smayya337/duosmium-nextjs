@@ -80,70 +80,70 @@
 	}
 }
 
-/*TODO: add dark theme colors*/
 @layer components {
 	.place-1 {
-		@apply bg-yellow-200;
+		@apply bg-yellow-200 dark:text-background;
 	}
 	.place-2 {
-		@apply bg-neutral-200;
+		@apply bg-neutral-200 dark:text-background;
 	}
 	.place-3 {
-		@apply bg-stone-400;
+		@apply bg-stone-400 dark:text-background;
 	}
 	.place-4 {
-		@apply bg-yellow-100;
+		@apply bg-yellow-100 dark:text-background;
 	}
 	.place-5 {
-		@apply bg-lime-200;
+		@apply bg-lime-200 dark:text-background;
 	}
 	.place-6 {
-		@apply bg-purple-300;
+		@apply bg-purple-300 dark:text-background;
 	}
 	.place-7 {
-		@apply bg-orange-200;
+		@apply bg-orange-200 dark:text-background;
 	}
 	.place-8 {
-		@apply bg-sky-200;
+		@apply bg-sky-200 dark:text-background;
 	}
 	.place-9 {
-		@apply bg-red-200;
+		@apply bg-red-200 dark:text-background;
 	}
 	.place-10 {
-		@apply bg-indigo-200;
+		@apply bg-indigo-200 dark:text-background;
 	}
 	.place-11 {
-		@apply bg-zinc-100;
+		@apply bg-zinc-100 dark:text-background;
 	}
 	.place-12 {
-		@apply bg-zinc-100;
+		@apply bg-zinc-100 dark:text-background;
 	}
 	.place-13 {
-		@apply bg-zinc-100;
+		@apply bg-zinc-100 dark:text-background;
 	}
 	.place-14 {
-		@apply bg-zinc-100;
+		@apply bg-zinc-100 dark:text-background;
 	}
 	.place-15 {
-		@apply bg-zinc-100;
+		@apply bg-zinc-100 dark:text-background;
 	}
 	.place-16 {
-		@apply bg-neutral-100;
+		@apply bg-neutral-100 dark:text-background;
 	}
 	.place-17 {
-		@apply bg-neutral-100;
+		@apply bg-neutral-100 dark:text-background;
 	}
 	.place-18 {
-		@apply bg-neutral-100;
+		@apply bg-neutral-100 dark:text-background;
 	}
 	.place-19 {
-		@apply bg-neutral-100;
+		@apply bg-neutral-100 dark:text-background;
 	}
 	.place-20 {
-		@apply bg-neutral-100;
+		@apply bg-neutral-100 dark:text-background;
 	}
 }
 
 .sideways {
-	writing-mode: sideways-lr;
+	writing-mode: vertical-lr;
+	rotate: 180deg;
 }

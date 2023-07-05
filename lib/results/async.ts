@@ -6,6 +6,8 @@ import { createHistogramDataInput } from '@/lib/histograms/async';
 import { createLocationDataInput } from '@/lib/locations/async';
 import { createPenaltyDataInput } from '@/lib/penalties/async';
 import { createPlacingDataInput } from '@/lib/placings/async';
+import { createBgColorFromImagePath, findBgColor } from '@/lib/results/color';
+import { createLogoPath, findLogoPath } from '@/lib/results/logo';
 import { createTeamDataInput } from '@/lib/teams/async';
 import { createTournamentDataInput } from '@/lib/tournaments/async';
 import { createTrackDataInput } from '@/lib/tracks/async';
@@ -14,11 +16,7 @@ import { cache } from 'react';
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import {
-	createBgColorFromImagePath,
-	createLogoPath,
 	dateString,
-	findBgColor,
-	findLogoPath,
 	fullTournamentTitle,
 	fullTournamentTitleShort,
 	generateFilename,

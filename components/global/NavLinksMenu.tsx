@@ -1,12 +1,10 @@
-import { NavItem } from "@/types/nav";
+import { NavItem } from '@/types/nav';
 
 interface MainNavProps {
-  items?: NavItem[];
+	items?: NavItem[];
 }
 
 export default function NavLinksMenu({ items }: MainNavProps) {
-  // TODO: make the actual menu lol
-  return (
-    <div></div>
-  );
+	// TODO: make the actual menu lol
+	return <div></div>;
 }

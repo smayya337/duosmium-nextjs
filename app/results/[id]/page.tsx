@@ -1,23 +1,35 @@
 // @ts-ignore
 import { ResultDataTable } from '@/components/results/view/ResultDataTable';
-import { colors } from '@/lib/colors/default';
-import { getCompleteResult, getResult, resultExists } from "@/lib/results/async";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog';
+import { colors } from '@/lib/colors/default';
+import { getCompleteResult, getResult, resultExists } from '@/lib/results/async';
+import { findBgColor } from '@/lib/results/color';
+import {
+	bidsSupTagNote,
 	dateString,
-	findBgColor,
 	formatSchool,
 	fullTournamentTitle,
-	fullTournamentTitleShort,
 	generateFilename,
+	ordinalize,
+	placingNotes,
+	supTag,
 	teamAttended,
 	teamLocation
 } from '@/lib/results/helpers';
 import { getInterpreter } from '@/lib/results/interpreter';
+import { Result } from '@prisma/client';
 import { notFound } from 'next/navigation';
+import * as React from 'react';
 import { Team } from 'sciolyff/dist/src/interpreter/types';
 // @ts-ignore
-import Interpreter from 'sciolyff/interpreter';
-import { Result } from "@prisma/client";
+import Interpreter, { Placing, Tournament } from 'sciolyff/interpreter';
 
 async function getRequestedInterpreter(id: string) {
 	if (!(await resultExists(id))) {
@@ -39,8 +51,12 @@ let interpreter: Interpreter = null;
 // @ts-ignore
 export async function generateMetadata({ params }) {
 	const id = params.id;
-	const res: Result = await getResult(id);
-	return { title: `${res.fullShortTitle} | Duosmium Results` };
+	try {
+		const res: Result = await getResult(id);
+		return { title: `${res.fullShortTitle} | Duosmium Results` };
+	} catch (e) {
+		notFound();
+	}
 }
 
 function penaltyPoints(team: Team): number {
@@ -86,6 +102,8 @@ function processTeamData(interpreter: Interpreter) {
 		const data = {
 			number: tm.number,
 			team: `${formatSchool(tm)}${tm.suffix ? ' ' + tm.suffix : ''}`,
+			school: tm.school,
+			suffix: tm.suffix,
 			location: teamLocation(tm),
 			disqualified: tm.disqualified,
 			exhibition: tm.exhibition,
@@ -96,22 +114,120 @@ function processTeamData(interpreter: Interpreter) {
 			penalties: penaltyPoints(tm)
 		};
 		for (const evt of interpreter.events) {
+			const pl = evt.placingFor(tm);
 			// @ts-ignore
-			data[className(evt.name)] = evt.placingFor(tm)?.isolatedPoints;
+			data[className(evt.name)] = pl.isolatedPoints;
+			// @ts-ignore
+			data[`${className(evt.name)}-suptag`] = supTag(pl);
 		}
 		output.push(data);
 	}
 	return output;
 }
 
+function processPlacingData(interpreter: Interpreter, teamObj: Team) {
+	const placingMap: Map<string, Map<string, string>> = new Map();
+	for (const evt of interpreter.events) {
+		const evtMap: Map<string, string> = new Map();
+		const placing: Placing = evt.placingFor(teamObj);
+		evtMap.set('points', placing.isolatedPoints.toString());
+		evtMap.set('place', ordinalize(placing.place));
+		evtMap.set('notes', placingNotes(placing));
+		placingMap.set(evt.name, evtMap);
+	}
+	return placingMap;
+}
+
+function createTableData(placingData: Map<string, Map<string, string>>, eventData: object[]) {
+	const tableData: {
+		name: string;
+		points: string;
+		place: string;
+		notes: string;
+		medals: number;
+	}[] = [];
+	for (const evt of eventData) {
+		// @ts-ignore
+		const res: Map<string, string> = placingData.get(evt.name);
+		const dataPoint: {
+			name: string;
+			points: string;
+			place: string;
+			notes: string;
+			medals: number;
+		} = {
+			// @ts-ignore
+			name: evt.name,
+			// @ts-ignore
+			points: res.get('points'),
+			// @ts-ignore
+			place: res.get('place'),
+			// @ts-ignore
+			notes: res.get('notes'),
+			// @ts-ignore
+			medals: evt.medals
+		};
+		tableData.push(dataPoint);
+	}
+	return tableData;
+}
+
+function createFootnotes(tournament: Tournament) {
+	const footnotes: any[] = [];
+	if (tournament.bids > 0) {
+		footnotes.push(
+			<p className="footnote">
+				<sup>✧</sup>
+				{bidsSupTagNote(tournament)}
+			</p>
+		);
+	}
+	if (tournament.exemptPlacings || tournament.worstPlacingsDropped) {
+		footnotes.push(
+			<p className="footnote">
+				<sup>◊</sup>Result was not counted as part of total score
+			</p>
+		);
+	}
+	if (tournament.tiesOutsideOfMaximumPlaces) {
+		footnotes.push(
+			<p className="footnote">
+				<sup>*</sup>Tied with another team
+			</p>
+		);
+	}
+	return footnotes;
+}
+
 // @ts-ignore
-export default async function Page({ params, searchParams }: { params: { id: string }, searchParams: { team: number | undefined } }) {
+export default async function Page({
+	params,
+	searchParams
+}: {
+	params: { id: string };
+	searchParams: { team: number | undefined };
+}) {
 	const id = params.id;
 	const interpreter: Interpreter = await getRequestedInterpreter(id);
 	// @ts-ignore
 	const bgColor = colors[await findBgColor(id)];
 	const eventData = processEventData(interpreter);
 	const teamData = processTeamData(interpreter);
+	let team: number | undefined = undefined;
+	if (searchParams.team) {
+		try {
+			team = Number(searchParams.team);
+		} catch (e) {
+			team = undefined;
+		}
+	}
+	const tableData: Map<number, { name: string; points: string; place: string; notes: string }[]> =
+		new Map();
+	for (const tm of interpreter.teams) {
+		const placingData = processPlacingData(interpreter, tm);
+		tableData.set(tm.number, createTableData(placingData, eventData));
+	}
+	const footnotes = createFootnotes(interpreter.tournament);
 	// noinspection HtmlUnknownTarget
 	return (
 		<>
@@ -129,7 +245,10 @@ export default async function Page({ params, searchParams }: { params: { id: str
 				teamData={teamData}
 				eventData={eventData}
 				trophies={interpreter.tournament.trophies}
+				tableData={tableData}
+				dialogToOpen={team}
 			/>
+			<div>{footnotes}</div>
 		</>
 	);
 }

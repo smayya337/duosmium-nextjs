@@ -1,6 +1,7 @@
 // @ts-ignore
 import { PrismaClient } from '@prisma/client';
 import type { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import 'server-only';
 
 let prisma: PrismaClient;
 

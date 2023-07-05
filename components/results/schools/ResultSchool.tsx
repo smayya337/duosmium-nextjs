@@ -33,11 +33,13 @@ export function ResultSchool({
 	results.forEach((value) => {
 		resultMap.set(value.duosmiumId, value);
 	});
+	const formattedSchoolName = `${location.name} (${location.city ? `${location.city}, ` : ''}${
+		location.state ?? location.country
+	})`;
 	return (
 		<div className={'py-2'}>
-			<h2 className={'font-bold text-2xl tracking-tight text-left pb-1'}>
-				{location.name} ({location.city.length > 0 ? `${location.city}, ` : ''}
-				{location.state ?? location.country})
+			<h2 className={'font-bold text-2xl tracking-tight text-left pb-1'} id={formattedSchoolName}>
+				{formattedSchoolName}
 			</h2>
 			<hr />
 			<ul className={'list-disc pt-1'}>

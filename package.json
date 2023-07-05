@@ -15,6 +15,7 @@
 	},
 	"dependencies": {
 		"@prisma/client": "^4.15.0",
+		"@radix-ui/react-accordion": "^1.1.2",
 		"@radix-ui/react-dialog": "^1.0.4",
 		"@radix-ui/react-slot": "^1.0.2",
 		"@radix-ui/react-tooltip": "^1.0.6",
@@ -38,6 +39,7 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"sciolyff": "^0.13.0",
+		"server-only": "^0.0.1",
 		"sharp": "^0.32.0",
 		"strftime": "^0.10.2",
 		"tailwind-merge": "^1.13.2",

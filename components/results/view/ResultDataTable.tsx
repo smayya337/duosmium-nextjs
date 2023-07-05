@@ -3,6 +3,7 @@
 import { AbsentBadge } from '@/components/results/view/AbsentBadge';
 import { DisqualifiedBadge } from '@/components/results/view/DisqualifiedBadge';
 import { ExhibitionBadge } from '@/components/results/view/ExhibitionBadge';
+import TeamDialog from '@/components/results/view/TeamDialog';
 import { TrialBadge } from '@/components/results/view/TrialBadge';
 import { TrialedBadge } from '@/components/results/view/TrialedBadge';
 import {
@@ -23,9 +24,55 @@ import {
 	useReactTable
 } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-function columnsFromEvents(eventData: any, trophies: number) {
+interface DataTableProps<TData, TValue> {
+	columns: ColumnDef<TData, TValue>[];
+	data: TData[];
+}
+
+// TODO: move tooltip to be by the actual badge, not over the table
+
+// @ts-ignore
+const CompatibleDisqualifiedBadge = React.forwardRef(({ onClick, href }, ref) => {
+	return <DisqualifiedBadge className={'ml-1'} ref={ref} />;
+});
+CompatibleDisqualifiedBadge.displayName = 'CompatibleDisqualifiedBadge';
+
+// @ts-ignore
+const CompatibleAbsentBadge = React.forwardRef(({ onClick, href }, ref) => {
+	return <AbsentBadge className={'ml-1'} ref={ref} />;
+});
+CompatibleAbsentBadge.displayName = 'CompatibleAbsentBadge';
+
+// @ts-ignore
+const CompatibleExhibitionBadge = React.forwardRef(({ onClick, href }, ref) => {
+	return <ExhibitionBadge className={'ml-1'} ref={ref} />;
+});
+CompatibleExhibitionBadge.displayName = 'CompatibleExhibitionBadge';
+
+// @ts-ignore
+const CompatibleTrialBadge = React.forwardRef(({ onClick, href }, ref) => {
+	return <TrialBadge className={'mt-1 py-2.5 px-0.5'} ref={ref} />;
+});
+CompatibleTrialBadge.displayName = 'CompatibleTrialBadge';
+
+// @ts-ignore
+const CompatibleTrialedBadge = React.forwardRef(({ onClick, href }, ref) => {
+	return <TrialedBadge className={'mt-1 py-2.5 px-0.5'} ref={ref} />;
+});
+CompatibleTrialedBadge.displayName = 'CompatibleTrialedBadge';
+
+function columnsFromEvents(
+	eventData: any,
+	trophies: number,
+	tableData: Map<number, { name: string; points: string; place: string; notes: string, medals: number }[]>,
+	toOpen: number | undefined,
+	client: boolean
+) {
+	const tableDataMap = new Map(tableData);
 	const output = [
 		{
 			accessorKey: 'number',
@@ -61,20 +108,43 @@ function columnsFromEvents(eventData: any, trophies: number) {
 			},
 			// @ts-ignore
 			cell: ({ row }) => {
-				const amount = row.getValue('team');
-				return (
+				const num = row.getValue('number');
+				const rowTableData = tableDataMap.get(num);
+				const teamDataTeam = row.original;
+				const teamName = (
 					<div className="text-left whitespace-nowrap hover:cursor-pointer hover:underline">
-						{amount}
-						<span className={'text-xs text-muted-foreground ml-1'}>({row.original.location})</span>
-						{row.original.disqualified && <DisqualifiedBadge className={'ml-1'} />}
-						{row.original.exhibition && row.original.attended && (
-							<ExhibitionBadge className={'ml-1'} />
-						)}
-						{row.original.exhibition && !row.original.attended && (
-							<AbsentBadge className={'ml-1'} />
-						)}
+						{/*@ts-ignore*/}
+						{teamDataTeam.team}
+						{/*@ts-ignore*/}
+						<span className={'text-xs text-muted-foreground ml-1'}>({teamDataTeam.location})</span>
+						{/*@ts-ignore*/}
+						{teamDataTeam.disqualified && <CompatibleDisqualifiedBadge />}
+						{/*@ts-ignore*/}
+						{teamDataTeam.exhibition && teamDataTeam.attended && <CompatibleExhibitionBadge />}
+						{/*@ts-ignore*/}
+						{teamDataTeam.exhibition && !teamDataTeam.attended && <CompatibleAbsentBadge />}
 					</div>
 				);
+				// @ts-ignore
+				const CompatibleTeamDialog = React.forwardRef(({ onClick, href }, ref) => {
+					return (
+						<TeamDialog
+							teamNumber={num}
+							open={toOpen === num}
+							eventData={eventData}
+							// @ts-ignore
+							tableData={rowTableData}
+							teamData={teamDataTeam}
+							ref={ref}
+						>
+							{/*<Link href={`?team=${num}`} passHref legacyBehavior>*/}
+							{teamName}
+							{/*</Link>*/}
+						</TeamDialog>
+					);
+				});
+				CompatibleTeamDialog.displayName = 'CompatibleTeamDialog';
+				return client ? <CompatibleTeamDialog /> : teamName;
 			}
 		},
 		{
@@ -125,26 +195,33 @@ function columnsFromEvents(eventData: any, trophies: number) {
 			accessorKey: evt.id,
 			// @ts-ignore
 			header: ({ column }) => {
-				let cls = 'text-left whitespace-nowrap sideways py-1';
-				if (!evt.trial && !evt.trialed) {
-					cls += ' mx-px';
-				}
+				let cls = 'text-left whitespace-nowrap sideways py-1 w-5';
+				// if (!evt.trial && !evt.trialed) {
+				// 	cls += ' mx-px';
+				// }
 				return (
 					<div onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className={cls}>
 						{evt.name}
-						{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
-						{evt.trialed && <TrialedBadge className={'mb-1 py-2.5 px-0.5'} />}
+						{evt.trial && <CompatibleTrialBadge />}
+						{evt.trialed && <CompatibleTrialedBadge />}
 					</div>
 				);
 			},
 			// @ts-ignore
 			cell: ({ row }) => {
 				const amount = row.getValue(evt.id);
-				let cls = '';
+				let cls = 'w-5 flex flex-row justify-center';
 				if (amount <= evt.medals) {
-					cls = `place-${amount}`;
+					cls += ` place-${amount}`;
 				}
-				return <div className={cls}>{amount}</div>;
+				return (
+					<div className={cls}>
+						{amount}
+						{row.original[`${evt.id}-suptag`] ? (
+							<div dangerouslySetInnerHTML={{ __html: row.original[`${evt.id}-suptag`] }} />
+						) : null}
+					</div>
+				);
 			}
 		});
 	}
@@ -170,21 +247,28 @@ function columnsFromEvents(eventData: any, trophies: number) {
 	return output;
 }
 
-interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
-}
-
 export function ResultDataTable<TData, TValue>({
 	eventData,
 	teamData,
-	trophies
+	trophies,
+	tableData,
+	dialogToOpen
 }: {
 	eventData: TData[];
 	teamData: TData[];
 	trophies: number;
+	tableData: Map<number, { name: string; points: string; place: string; notes: string, medals: number }[]>;
+	dialogToOpen: number | undefined;
 }) {
-	const columns: ColumnDef<TData, any>[] = columnsFromEvents(eventData, trophies);
+	const [client, setClient] = useState(false);
+	useEffect(() => setClient(true), []);
+	const columns: ColumnDef<TData, any>[] = columnsFromEvents(
+		eventData,
+		trophies,
+		tableData,
+		dialogToOpen,
+		client
+	);
 	return <DataTable columns={columns} data={teamData} />;
 }
 function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
