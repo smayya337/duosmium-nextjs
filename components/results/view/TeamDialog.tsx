@@ -27,7 +27,7 @@ export default function TeamDialog({
 	tableData,
 	teamData,
 	children,
-	ref
+	// ref
 }: {
 	teamNumber: number;
 	teamData: {
@@ -48,7 +48,7 @@ export default function TeamDialog({
 	eventData: object[];
 	tableData: { name: string; points: string; place: string; notes: string; medals: number }[];
 	children: React.ReactNode;
-	ref: any;
+	// ref: any;
 }) {
 	// TODO: make this open on click
 	const formattedTeamName = `${teamData.school}${teamData.suffix ? ` ${teamData.suffix}` : ''} (${
@@ -57,7 +57,7 @@ export default function TeamDialog({
 	const formattedSchoolName = `${teamData.school} (${teamData.location})`;
 	return (
 		<Dialog open={open}>
-			<DialogTrigger className={'w-full h-full'} ref={ref}>
+			<DialogTrigger className={'w-full h-full'} asChild>
 				{children}
 			</DialogTrigger>
 			<DialogContent className={'max-h-[90vh] overflow-y-auto'}>
