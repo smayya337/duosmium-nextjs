@@ -69,7 +69,7 @@ model Event {
   resultDuosmiumId String
   data             Json
   result           Result    @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
-  Placing          Placing[]
+  placings         Placing[]
 
   @@id([resultDuosmiumId, name])
   @@index([resultDuosmiumId, name])
