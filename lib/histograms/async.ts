@@ -1,23 +1,21 @@
 // noinspection ES6RedundantAwait
 
-import prisma from '@/lib/global/prisma';
+import { db } from '@/lib/global/drizzle';
+import { histograms } from '@/lib/global/schema';
+import { eq, sql } from 'drizzle-orm';
 // @ts-ignore
 import { Histogram } from 'sciolyff/interpreter';
 
 export async function getHistogram(duosmiumID: string) {
-	return await prisma.histogram.findUniqueOrThrow({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	return (
+		await db.selectDistinct().from(histograms).where(eq(histograms.resultDuosmiumId, duosmiumID))
+	)[0];
 }
 
 export async function getHistogramData(duosmiumID: string) {
-	const rawData = await prisma.histogram.findUnique({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	const rawData = (
+		await db.select().from(histograms).where(eq(histograms.resultDuosmiumId, duosmiumID))
+	)[0];
 	if (rawData === null) {
 		return null;
 	} else {
@@ -27,42 +25,36 @@ export async function getHistogramData(duosmiumID: string) {
 
 export async function histogramExists(duosmiumID: string) {
 	return (
-		(await prisma.histogram.count({
-			where: {
-				resultDuosmiumId: duosmiumID
-			}
-		})) > 0
+		(
+			await db
+				.select({ count: sql<number>`count(*)` })
+				.from(histograms)
+				.where(eq(histograms.resultDuosmiumId, duosmiumID))
+		)[0].count > 0
 	);
 }
 
 export async function deleteHistogram(duosmiumID: string) {
-	return await prisma.histogram.delete({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	return (
+		await db.delete(histograms).where(eq(histograms.resultDuosmiumId, duosmiumID)).returning()
+	)[0];
 }
 
 export async function deleteAllHistograms() {
-	return await prisma.histogram.deleteMany({});
+	return await db.delete(histograms).returning();
 }
 
 export async function addHistogram(histogramData: object) {
-	return await prisma.histogram.upsert({
-		where: {
-			// @ts-ignore
-			tournamentId: histogramData.tournament.connect.id
-		},
+	return await db
+		.insert(histograms)
 		// @ts-ignore
-		create: histogramData,
-		update: histogramData
-	});
+		.values(histogramData)
+		.onConflictDoUpdate({ target: histograms.resultDuosmiumId, set: histogramData });
 }
 
-export async function createHistogramDataInput(histogram: Histogram) {
+export async function createHistogramDataInput(histogram: Histogram, duosmiumID: string) {
 	return {
-		data: {
-			connectOrCreate: histogram.rep
-		}
+		resultDuosmiumId: duosmiumID,
+		data: histogram.rep
 	};
 }

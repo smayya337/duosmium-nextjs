@@ -1,23 +1,21 @@
 // noinspection ES6RedundantAwait
 
-import prisma from '@/lib/global/prisma';
 // @ts-ignore
+import { db } from '@/lib/global/drizzle';
+import { tournaments } from '@/lib/global/schema';
+import { eq, sql } from 'drizzle-orm';
 import { Tournament } from 'sciolyff/interpreter';
 
 export async function getTournament(duosmiumID: string) {
-	return await prisma.tournament.findUniqueOrThrow({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	return (
+		await db.selectDistinct().from(tournaments).where(eq(tournaments.resultDuosmiumId, duosmiumID))
+	)[0];
 }
 
 export async function getTournamentData(duosmiumID: string) {
-	const rawData = await prisma.tournament.findUnique({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	const rawData = (
+		await db.select().from(tournaments).where(eq(tournaments.resultDuosmiumId, duosmiumID))
+	)[0];
 	if (rawData === null) {
 		return null;
 	} else {
@@ -27,62 +25,52 @@ export async function getTournamentData(duosmiumID: string) {
 
 export async function tournamentExists(duosmiumID: string) {
 	return (
-		(await prisma.tournament.count({
-			where: {
-				resultDuosmiumId: duosmiumID
-			}
-		})) > 0
+		(
+			await db
+				.select({ count: sql<number>`count(*)` })
+				.from(tournaments)
+				.where(eq(tournaments.resultDuosmiumId, duosmiumID))
+		)[0].count > 0
 	);
 }
 
 export async function deleteTournament(duosmiumID: string) {
-	return await prisma.tournament.delete({
-		where: {
-			resultDuosmiumId: duosmiumID
-		}
-	});
+	return (
+		await db.delete(tournaments).where(eq(tournaments.resultDuosmiumId, duosmiumID)).returning()
+	)[0];
 }
 
 export async function deleteAllTournaments() {
-	return await prisma.tournament.deleteMany({});
+	return await db.delete(tournaments).returning();
 }
 
 export async function addTournament(tournamentData: object) {
-	return await prisma.tournament.upsert({
-		where: {
-			// @ts-ignore
-			resultDuosmiumId: tournamentData.resultDuosmiumId
-		},
-		// @ts-ignore
-		create: tournamentData,
-		update: tournamentData
-	});
+	// @ts-ignore
+	return await db
+		.insert(tournaments)
+		.values(tournamentData)
+		.onConflictDoUpdate({ target: tournaments.resultDuosmiumId, set: tournamentData });
 }
 
-export async function createTournamentDataInput(tournament: Tournament) {
+export async function createTournamentDataInput(tournament: Tournament, duosmiumID: string) {
 	return {
+		resultDuosmiumId: duosmiumID,
 		data: tournament.rep
 	};
 }
 
 export async function getAllTournamentsByLevel(level: string) {
-	return await prisma.tournament.findMany({
-		where: {
-			data: {
-				path: ['level'],
-				equals: level
-			}
-		}
-	});
+	// @ts-ignore
+	return (await db.select().from(tournaments)).filter((t) => t.data.level === level);
 }
 
 export async function countAllTournamentsByLevel(level: string) {
-	return await prisma.tournament.count({
-		where: {
-			data: {
-				path: ['level'],
-				equals: level
-			}
+	let output = 0;
+	(await db.select().from(tournaments)).forEach((t) => {
+		//  @ts-ignore
+		if (t.data.level === level) {
+			output += 1;
 		}
 	});
+	return output;
 }

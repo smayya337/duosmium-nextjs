@@ -1,75 +1,67 @@
 // noinspection ES6RedundantAwait
 
-import prisma from '@/lib/global/prisma';
+import { db } from '@/lib/global/drizzle';
+import { events } from '@/lib/global/schema';
+import { and, eq, sql } from 'drizzle-orm';
 // @ts-ignore
 import { Event } from 'sciolyff/interpreter';
 
 export async function getEvent(duosmiumID: string, eventName: string) {
-	return await prisma.event.findUniqueOrThrow({
-		where: {
-			resultDuosmiumId_name: {
-				resultDuosmiumId: duosmiumID,
-				name: eventName
-			}
-		}
-	});
+	return (
+		await db
+			.selectDistinct()
+			.from(events)
+			.where(and(eq(events.resultDuosmiumId, duosmiumID), eq(events.name, eventName)))
+	)[0];
 }
 
 export async function getEventData(duosmiumID: string) {
-	const rawData = await prisma.event.findMany({
-		where: {
-			resultDuosmiumId: duosmiumID
-		},
-		select: {
-			data: true
-		},
-		orderBy: {
-			name: 'asc'
-		}
-	});
+	const rawData = await db
+		.select({ data: events.data })
+		.from(events)
+		.where(eq(events.resultDuosmiumId, duosmiumID))
+		.orderBy(events.name);
 	return rawData.map((i) => i.data);
 }
 
 export async function eventExists(duosmiumID: string, eventName: string) {
 	return (
-		(await prisma.event.count({
-			where: {
-				resultDuosmiumId: duosmiumID,
-				name: eventName
-			}
-		})) > 0
+		(
+			await db
+				.select({ count: sql<number>`count(*)` })
+				.from(events)
+				.where(and(eq(events.resultDuosmiumId, duosmiumID), eq(events.name, eventName)))
+		)[0].count > 0
 	);
 }
 
 export async function deleteEvent(duosmiumID: string, eventName: string) {
-	return await prisma.event.delete({
-		where: {
-			resultDuosmiumId_name: {
-				resultDuosmiumId: duosmiumID,
-				name: eventName
-			}
-		}
-	});
+	return (
+		await db
+			.delete(events)
+			.where(and(eq(events.resultDuosmiumId, duosmiumID), eq(events.name, eventName)))
+			.returning()
+	)[0];
 }
 
 export async function deleteAllEvents() {
-	return await prisma.event.deleteMany({});
+	return await db.delete(events).returning();
 }
 
 export async function addEvent(resultEventData: object) {
-	return await prisma.event.upsert({
-		where: {
-			resultDuosmiumId_name: {
+	return (
+		(
+			await db
+				.insert(events)
 				// @ts-ignore
-				resultDuosmiumId: resultEventData.resultDuosmiumId,
-				// @ts-ignore
-				name: resultEventData.name
-			}
-		},
-		// @ts-ignore
-		create: resultEventData,
-		update: resultEventData
-	});
+				.values(resultEventData)
+				.onConflictDoUpdate({
+					target: [events.resultDuosmiumId, events.name],
+					set: resultEventData
+				})
+				.returning()
+		)[0]
+	);
 }
 
 export async function createEventDataInput(event: Event) {

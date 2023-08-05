@@ -68,7 +68,10 @@ CompatibleTrialedBadge.displayName = 'CompatibleTrialedBadge';
 function columnsFromEvents(
 	eventData: any,
 	trophies: number,
-	tableData: Map<number, { name: string; points: string; place: string; notes: string, medals: number }[]>,
+	tableData: Map<
+		number,
+		{ name: string; points: string; place: string; notes: string; medals: number }[]
+	>,
 	toOpen: number | undefined,
 	client: boolean
 ) {
@@ -257,7 +260,10 @@ export function ResultDataTable<TData, TValue>({
 	eventData: TData[];
 	teamData: TData[];
 	trophies: number;
-	tableData: Map<number, { name: string; points: string; place: string; notes: string, medals: number }[]>;
+	tableData: Map<
+		number,
+		{ name: string; points: string; place: string; notes: string; medals: number }[]
+	>;
 	dialogToOpen: number | undefined;
 }) {
 	const [client, setClient] = useState(false);

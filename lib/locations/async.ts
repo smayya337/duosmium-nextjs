@@ -1,3 +1,11 @@
+import { db } from '@/lib/global/drizzle';
+import { locations } from '@/lib/global/schema';
+
+export async function addLocation(locationData: object) {
+	// @ts-ignore
+	return (await db.insert(locations).values(locationData).onConflictDoNothing().returning())[0];
+}
+
 export async function createLocationDataInput(
 	name: string,
 	state: string,
@@ -5,21 +13,9 @@ export async function createLocationDataInput(
 	country = 'United States'
 ) {
 	return {
-		connectOrCreate: {
-			where: {
-				name_city_state_country: {
-					name: name,
-					city: city,
-					state: state,
-					country: country
-				}
-			},
-			create: {
-				name: name,
-				city: city,
-				state: state,
-				country: country
-			}
-		}
+		name: name,
+		city: city,
+		state: state,
+		country: country
 	};
 }

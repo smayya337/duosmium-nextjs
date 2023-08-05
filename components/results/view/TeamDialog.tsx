@@ -26,9 +26,9 @@ export default function TeamDialog({
 	open,
 	tableData,
 	teamData,
-	children,
-	// ref
-}: {
+	children
+}: // ref
+{
 	teamNumber: number;
 	teamData: {
 		number: any;
