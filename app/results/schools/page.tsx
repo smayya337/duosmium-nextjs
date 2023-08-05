@@ -1,11 +1,4 @@
-import { ResultSeason } from '@/components/results/all/ResultSeason';
-import { ResultSchool } from '@/components/results/schools/ResultSchool';
-import { siteConfig } from '@/config/site';
-import prisma from '@/lib/global/prisma';
-import { getAllResults } from '@/lib/results/async';
-import { getAllSchoolsAndRanks, getAllTeamsBySchool } from '@/lib/teams/async';
-import { Location } from '@prisma/client';
-import Link from 'next/link';
+import { getAllTeamsBySchool } from '@/lib/teams/async';
 import { redirect } from 'next/navigation';
 
 // @ts-ignore

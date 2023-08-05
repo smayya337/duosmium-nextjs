@@ -1,4 +1,4 @@
-export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
 	graphql_public: {
@@ -59,6 +59,7 @@ export interface Database {
 					rolled_back_at?: string | null;
 					started_at?: string;
 				};
+				Relationships: [];
 			};
 			Event: {
 				Row: {
@@ -76,6 +77,14 @@ export interface Database {
 					name?: string;
 					resultDuosmiumId?: string;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Event_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					}
+				];
 			};
 			Histogram: {
 				Row: {
@@ -90,6 +99,14 @@ export interface Database {
 					data?: Json;
 					resultDuosmiumId?: string;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Histogram_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					}
+				];
 			};
 			Location: {
 				Row: {
@@ -110,6 +127,7 @@ export interface Database {
 					name?: string;
 					state?: string;
 				};
+				Relationships: [];
 			};
 			Penalty: {
 				Row: {
@@ -127,6 +145,20 @@ export interface Database {
 					resultDuosmiumId?: string;
 					teamNumber?: number;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Penalty_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					},
+					{
+						foreignKeyName: 'Penalty_resultDuosmiumId_teamNumber_fkey';
+						columns: ['resultDuosmiumId', 'teamNumber'];
+						referencedRelation: 'Team';
+						referencedColumns: ['resultDuosmiumId', 'number'];
+					}
+				];
 			};
 			Placing: {
 				Row: {
@@ -147,52 +179,136 @@ export interface Database {
 					resultDuosmiumId?: string;
 					teamNumber?: number;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Placing_resultDuosmiumId_eventName_fkey';
+						columns: ['resultDuosmiumId', 'eventName'];
+						referencedRelation: 'Event';
+						referencedColumns: ['resultDuosmiumId', 'name'];
+					},
+					{
+						foreignKeyName: 'Placing_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					},
+					{
+						foreignKeyName: 'Placing_resultDuosmiumId_teamNumber_fkey';
+						columns: ['resultDuosmiumId', 'teamNumber'];
+						referencedRelation: 'Team';
+						referencedColumns: ['resultDuosmiumId', 'number'];
+					}
+				];
 			};
 			Result: {
 				Row: {
 					color: string;
 					createdAt: string;
+					date: string;
 					duosmiumId: string;
+					fullShortTitle: string;
+					fullTitle: string;
+					locationCity: string;
+					locationCountry: string;
+					locationName: string;
+					locationState: string;
 					logo: string;
 					official: boolean;
 					preliminary: boolean;
+					shortTitle: string;
+					title: string;
 					updatedAt: string;
 				};
 				Insert: {
 					color: string;
 					createdAt?: string;
+					date: string;
 					duosmiumId: string;
+					fullShortTitle: string;
+					fullTitle: string;
+					locationCity?: string;
+					locationCountry?: string;
+					locationName: string;
+					locationState: string;
 					logo: string;
 					official?: boolean;
 					preliminary?: boolean;
+					shortTitle: string;
+					title: string;
 					updatedAt: string;
 				};
 				Update: {
 					color?: string;
 					createdAt?: string;
+					date?: string;
 					duosmiumId?: string;
+					fullShortTitle?: string;
+					fullTitle?: string;
+					locationCity?: string;
+					locationCountry?: string;
+					locationName?: string;
+					locationState?: string;
 					logo?: string;
 					official?: boolean;
 					preliminary?: boolean;
+					shortTitle?: string;
+					title?: string;
 					updatedAt?: string;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Result_locationName_locationCity_locationState_locationCou_fkey';
+						columns: ['locationName', 'locationCity', 'locationState', 'locationCountry'];
+						referencedRelation: 'Location';
+						referencedColumns: ['name', 'city', 'state', 'country'];
+					}
+				];
 			};
 			Team: {
 				Row: {
+					city: string;
+					country: string;
 					data: Json;
+					name: string;
 					number: number;
 					resultDuosmiumId: string;
+					state: string;
+					track: string | null;
 				};
 				Insert: {
+					city?: string;
+					country?: string;
 					data: Json;
+					name: string;
 					number: number;
 					resultDuosmiumId: string;
+					state: string;
+					track?: string | null;
 				};
 				Update: {
+					city?: string;
+					country?: string;
 					data?: Json;
+					name?: string;
 					number?: number;
 					resultDuosmiumId?: string;
+					state?: string;
+					track?: string | null;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Team_name_city_state_country_fkey';
+						columns: ['name', 'city', 'state', 'country'];
+						referencedRelation: 'Location';
+						referencedColumns: ['name', 'city', 'state', 'country'];
+					},
+					{
+						foreignKeyName: 'Team_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					}
+				];
 			};
 			Tournament: {
 				Row: {
@@ -207,6 +323,14 @@ export interface Database {
 					data?: Json;
 					resultDuosmiumId?: string;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Tournament_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					}
+				];
 			};
 			Track: {
 				Row: {
@@ -224,6 +348,14 @@ export interface Database {
 					name?: string;
 					resultDuosmiumId?: string;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'Track_resultDuosmiumId_fkey';
+						columns: ['resultDuosmiumId'];
+						referencedRelation: 'Result';
+						referencedColumns: ['duosmiumId'];
+					}
+				];
 			};
 		};
 		Views: {
@@ -275,6 +407,14 @@ export interface Database {
 					public?: boolean | null;
 					updated_at?: string | null;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'buckets_owner_fkey';
+						columns: ['owner'];
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
 			};
 			migrations: {
 				Row: {
@@ -295,6 +435,7 @@ export interface Database {
 					id?: number;
 					name?: string;
 				};
+				Relationships: [];
 			};
 			objects: {
 				Row: {
@@ -333,6 +474,20 @@ export interface Database {
 					updated_at?: string | null;
 					version?: string | null;
 				};
+				Relationships: [
+					{
+						foreignKeyName: 'objects_bucketId_fkey';
+						columns: ['bucket_id'];
+						referencedRelation: 'buckets';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'objects_owner_fkey';
+						columns: ['owner'];
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
 			};
 		};
 		Views: {

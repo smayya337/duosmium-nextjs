@@ -1,97 +1,83 @@
 // noinspection ES6RedundantAwait
 
+import { db } from '@/lib/global/drizzle';
 import { STATES_BY_POSTAL_CODE } from '@/lib/global/helpers';
-import prisma from '@/lib/global/prisma';
-import { createLocationDataInput } from '@/lib/locations/async';
+import { teams } from '@/lib/global/schema';
 import { getAllCompleteResults } from '@/lib/results/async';
 import { getInterpreter } from '@/lib/results/interpreter';
 import { Location } from '@prisma/client';
+import { and, eq, sql } from 'drizzle-orm';
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
 
 export async function getTeam(duosmiumID: string, number: number) {
-	return await prisma.team.findUniqueOrThrow({
-		where: {
-			resultDuosmiumId_number: {
-				resultDuosmiumId: duosmiumID,
-				number: number
-			}
-		}
-	});
+	return (
+		await db
+			.selectDistinct()
+			.from(teams)
+			.where(and(eq(teams.resultDuosmiumId, duosmiumID), eq(teams.number, number)))
+	)[0];
 }
 
 export async function getTeamData(duosmiumID: string) {
-	const rawData = await prisma.team.findMany({
-		where: {
-			resultDuosmiumId: duosmiumID
-		},
-		orderBy: {
-			number: 'asc'
-		},
-		select: {
-			data: true
-		}
-	});
+	const rawData = await db
+		.select({ data: teams.data })
+		.from(teams)
+		.where(eq(teams.resultDuosmiumId, duosmiumID))
+		.orderBy(teams.number);
 	return rawData.map((i) => i.data);
 }
 
 export async function teamExists(duosmiumID: string, number: number) {
 	return (
-		(await prisma.team.count({
-			where: {
-				resultDuosmiumId: duosmiumID,
-				number: number
-			}
-		})) > 0
+		(
+			await db
+				.select({ count: sql<number>`count(*)` })
+				.from(teams)
+				.where(and(eq(teams.resultDuosmiumId, duosmiumID), eq(teams.number, number)))
+		)[0].count > 0
 	);
 }
 
 export async function deleteTeam(duosmiumID: string, number: number) {
-	return await prisma.team.delete({
-		where: {
-			resultDuosmiumId_number: {
-				resultDuosmiumId: duosmiumID,
-				number: number
-			}
-		}
-	});
+	return (
+		await db
+			.delete(teams)
+			.where(and(eq(teams.resultDuosmiumId, duosmiumID), eq(teams.number, number)))
+			.returning()
+	)[0];
 }
 
 export async function deleteAllTeams() {
-	return await prisma.team.deleteMany({});
+	return await db.delete(teams).returning();
 }
 
 export async function addTeam(teamData: object) {
-	return await prisma.team.upsert({
-		where: {
-			resultDuosmiumId_number: {
+	return (
+		(
+			await db
+				.insert(teams)
 				// @ts-ignore
-				resultDuosmiumId: teamData.resultDuosmiumId,
-				// @ts-ignore
-				number: teamData.number
-			}
-		},
-		// @ts-ignore
-		create: teamData,
-		// @ts-ignore
-		update: teamData
-	});
+				.values(teamData)
+				.onConflictDoUpdate({ target: [teams.resultDuosmiumId, teams.number], set: teamData })
+				.returning()
+		)[0]
+	);
 }
 
-export async function createTeamDataInput(team: Team) {
+export async function createTeamDataInput(team: Team, duosmiumID: string) {
 	const locationName = team.school;
 	const locationCity = team.city ?? '';
 	const locationState = team.state in STATES_BY_POSTAL_CODE ? team.state : '';
 	const locationCountry = team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state;
 	return {
+		resultDuosmiumId: duosmiumID,
 		number: team.number,
 		data: team.rep,
-		location: await createLocationDataInput(
-			locationName,
-			locationState,
-			locationCity,
-			locationCountry
-		)
+		locationName: locationName,
+		locationCity: locationCity,
+		locationState: locationState,
+		locationCountry: locationCountry
 	};
 }
 
@@ -99,16 +85,9 @@ export async function getTeamBySchool() {}
 
 export async function getAllTeamsBySchool() {
 	return (
-		await prisma.location.findMany({
-			include: {
-				teams: {
-					orderBy: {
-						resultDuosmiumId: 'desc'
-					}
-				}
-			},
-			orderBy: {
-				name: 'asc'
+		await db.query.locations.findMany({
+			with: {
+				teams: true
 			}
 		})
 	).filter((r) => r.teams.length > 0);

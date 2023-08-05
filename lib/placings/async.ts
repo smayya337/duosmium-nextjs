@@ -1,105 +1,92 @@
-import prisma from '@/lib/global/prisma';
+import { db } from '@/lib/global/drizzle';
+import { placings } from '@/lib/global/schema';
+import { and, eq, sql } from 'drizzle-orm';
 // @ts-ignore
 import { Placing } from 'sciolyff/interpreter';
 
 export async function getPlacing(duosmiumID: string, eventName: string, teamNumber: number) {
-	// noinspection ES6RedundantAwait
-	return await prisma.placing.findUniqueOrThrow({
-		where: {
-			resultDuosmiumId_eventName_teamNumber: {
-				resultDuosmiumId: duosmiumID,
-				eventName: eventName,
-				teamNumber: teamNumber
-			}
-		}
-	});
+	return (
+		await db
+			.selectDistinct()
+			.from(placings)
+			.where(
+				and(
+					eq(placings.resultDuosmiumId, duosmiumID),
+					eq(placings.eventName, eventName),
+					eq(placings.teamNumber, teamNumber)
+				)
+			)
+	)[0];
 }
 
 export async function getPlacingData(duosmiumID: string) {
 	// noinspection TypeScriptValidateJSTypes
-	const rawData = await prisma.placing.findMany({
-		where: {
-			resultDuosmiumId: duosmiumID
-		},
-		orderBy: [
-			{
-				teamNumber: 'asc'
-			},
-			{
-				eventName: 'asc'
-			}
-		]
-	});
+	const rawData = await db
+		.select({ data: placings.data })
+		.from(placings)
+		.where(eq(placings.resultDuosmiumId, duosmiumID))
+		.orderBy(placings.teamNumber, placings.eventName);
 	return rawData.map((i) => i.data);
 }
 
 export async function placingExists(duosmiumID: string, eventName: string, teamNumber: number) {
 	return (
-		(await prisma.placing.count({
-			where: {
-				resultDuosmiumId: duosmiumID,
-				eventName: eventName,
-				teamNumber: teamNumber
-			}
-		})) > 0
+		(
+			await db
+				.select({ count: sql<number>`count(*)` })
+				.from(placings)
+				.where(
+					and(
+						eq(placings.resultDuosmiumId, duosmiumID),
+						eq(placings.eventName, eventName),
+						eq(placings.teamNumber, teamNumber)
+					)
+				)
+		)[0].count > 0
 	);
 }
 
 export async function deletePlacing(duosmiumID: string, eventName: string, teamNumber: number) {
-	// noinspection ES6RedundantAwait
-	return await prisma.placing.delete({
-		where: {
-			resultDuosmiumId_eventName_teamNumber: {
-				resultDuosmiumId: duosmiumID,
-				eventName: eventName,
-				teamNumber: teamNumber
-			}
-		}
-	});
+	return (
+		await db
+			.delete(placings)
+			.where(
+				and(
+					eq(placings.resultDuosmiumId, duosmiumID),
+					eq(placings.eventName, eventName),
+					eq(placings.teamNumber, teamNumber)
+				)
+			)
+			.returning()
+	)[0];
 }
 
 export async function deleteAllPlacings() {
 	// noinspection ES6RedundantAwait
-	return await prisma.placing.deleteMany({});
+	return await db.delete(placings).returning();
 }
 
 export async function addPlacing(placingData: object) {
-	// noinspection TypeScriptValidateJSTypes
-	return prisma.placing.upsert({
-		where: {
-			resultDuosmiumId_eventName_teamNumber: {
+	return (
+		(
+			await db
+				.insert(placings)
 				// @ts-ignore
-				resultDuosmiumId: placingData.resultDuosmiumId,
-				// @ts-ignore
-				eventName: placingData.eventName,
-				// @ts-ignore
-				teamNumber: placingData.teamNumber
-			}
-		},
-		// @ts-ignore
-		create: placingData,
-		update: placingData
-	});
+				.values(placingData)
+				.onConflictDoUpdate({
+					target: [placings.resultDuosmiumId, placings.teamNumber, placings.eventName],
+					set: placingData
+				})
+				.returning()
+		)[0]
+	);
 }
 
 export async function createPlacingDataInput(placing: Placing, duosmiumID: string) {
 	return {
-		event: {
-			connect: {
-				resultDuosmiumId_name: {
-					resultDuosmiumId: duosmiumID,
-					name: placing.event.name
-				}
-			}
-		},
-		team: {
-			connect: {
-				resultDuosmiumId_number: {
-					resultDuosmiumId: duosmiumID,
-					number: placing.team.number
-				}
-			}
-		},
+		eventName: placing.event.name,
+		teamNumber: placing.team.number,
+		resultDuosmiumId: duosmiumID,
 		data: placing.rep
 	};
 }
