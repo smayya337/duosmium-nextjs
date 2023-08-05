@@ -112,6 +112,10 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
 	track: one(tracks, {
 		fields: [teams.resultDuosmiumId, teams.track],
 		references: [tracks.resultDuosmiumId, tracks.name]
+	}),
+	location: one(locations, {
+		fields: [teams.name, teams.city, teams.state, teams.country],
+		references: [locations.name, locations.city, locations.state, locations.country]
 	})
 }));
 

@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/global/drizzle';
 import { STATES_BY_POSTAL_CODE } from '@/lib/global/helpers';
-import { teams } from '@/lib/global/schema';
+import { locations, teams } from "@/lib/global/schema";
 import { getAllCompleteResults } from '@/lib/results/async';
 import { getInterpreter } from '@/lib/results/interpreter';
 import { Location } from '@prisma/client';
@@ -84,13 +84,14 @@ export async function createTeamDataInput(team: Team, duosmiumID: string) {
 export async function getTeamBySchool() {}
 
 export async function getAllTeamsBySchool() {
-	return (
+	const allTeams =
 		await db.query.locations.findMany({
 			with: {
 				teams: true
-			}
-		})
-	).filter((r) => r.teams.length > 0);
+			},
+			orderBy: [locations.name],
+		});
+	return allTeams.filter((r) => r.teams.length > 0);
 }
 
 export async function getAllSchoolsAndRanks() {
