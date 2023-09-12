@@ -66,7 +66,7 @@ export async function deleteAllPlacings() {
 	return await db.delete(placings).returning();
 }
 
-export async function addPlacing(placingData: object, tx=db) {
+export async function addPlacing(placingData: object, tx = db) {
 	return (
 		(
 			await tx

@@ -1,5 +1,6 @@
 // @ts-ignore
 import { ResultDataTable } from '@/components/results/view/ResultDataTable';
+import { ResultTable } from '@/components/results/view/ResultTable';
 import { colors } from '@/lib/colors/default';
 import { getCompleteResult, getResult, resultExists } from '@/lib/results/async';
 import { findBgColor } from '@/lib/results/color';
@@ -22,7 +23,6 @@ import * as React from 'react';
 import { Team } from 'sciolyff/dist/src/interpreter/types';
 // @ts-ignore
 import Interpreter, { Placing, Tournament } from 'sciolyff/interpreter';
-import { ResultTable } from "@/components/results/view/ResultTable";
 
 async function getRequestedInterpreter(id: string) {
 	if (!(await resultExists(id))) {

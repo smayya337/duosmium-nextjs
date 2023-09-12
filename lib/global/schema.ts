@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, type InferModel } from 'drizzle-orm';
 import {
 	boolean,
 	integer,
@@ -28,7 +28,7 @@ export const results = pgTable(
 		locationName: text('location_name').notNull(),
 		locationCity: text('location_city').default('').notNull(),
 		locationState: text('location_state').notNull(),
-		locationCountry: text('location_country').default('United States').notNull(),
+		locationCountry: text('location_country').default('United States').notNull()
 	},
 	(table) => {
 		return {
@@ -61,10 +61,15 @@ export const resultsRelations = relations(results, ({ one, many }) => ({
 	})
 }));
 
+export type Result = InferModel<typeof results>;
+
 export const tournaments = pgTable(
 	'tournaments',
 	{
-		resultDuosmiumId: text('result_duosmium_id').notNull().primaryKey().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.primaryKey()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -81,11 +86,15 @@ export const tournamentsRelations = relations(tournaments, ({ one }) => ({
 	})
 }));
 
+export type Tournament = InferModel<typeof tournaments>;
+
 export const teams = pgTable(
 	'teams',
 	{
 		number: integer('number').notNull(),
-		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data'),
 		name: text('name').notNull(),
 		city: text('city').default('').notNull(),
@@ -118,11 +127,15 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
 	})
 }));
 
+export type Team = InferModel<typeof teams>;
+
 export const events = pgTable(
 	'events',
 	{
 		name: text('name').notNull(),
-		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 		// placings
 	},
@@ -142,11 +155,15 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
 	placings: many(placings)
 }));
 
+export type Event = InferModel<typeof events>;
+
 export const tracks = pgTable(
 	'tracks',
 	{
 		name: text('name').notNull(),
-		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -165,12 +182,16 @@ export const tracksRelations = relations(tracks, ({ one, many }) => ({
 	teams: many(teams)
 }));
 
+export type Track = InferModel<typeof tracks>;
+
 export const placings = pgTable(
 	'placings',
 	{
 		eventName: text('event_name').notNull(),
 		teamNumber: integer('team_number').notNull(),
-		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -196,11 +217,15 @@ export const placingsRelations = relations(placings, ({ one }) => ({
 	})
 }));
 
+export type Placing = InferModel<typeof placings>;
+
 export const penalties = pgTable(
 	'penalties',
 	{
 		teamNumber: integer('team_number').notNull(),
-		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -222,10 +247,15 @@ export const penaltiesRelations = relations(penalties, ({ one }) => ({
 	})
 }));
 
+export type Penalty = InferModel<typeof penalties>;
+
 export const histograms = pgTable(
 	'histograms',
 	{
-		resultDuosmiumId: text('result_duosmium_id').notNull().primaryKey().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
+		resultDuosmiumId: text('result_duosmium_id')
+			.notNull()
+			.primaryKey()
+			.references(() => results.duosmiumId, { onDelete: 'cascade', onUpdate: 'cascade' }),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -241,6 +271,8 @@ export const histogramsRelations = relations(histograms, ({ one }) => ({
 		references: [results.duosmiumId]
 	})
 }));
+
+export type Histogram = InferModel<typeof histograms>;
 
 export const locations = pgTable(
 	'locations',
@@ -262,3 +294,5 @@ export const locationsRelations = relations(locations, ({ many }) => ({
 	results: many(results),
 	teams: many(teams)
 }));
+
+export type Location = InferModel<typeof locations>;

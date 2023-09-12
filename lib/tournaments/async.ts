@@ -44,7 +44,7 @@ export async function deleteAllTournaments() {
 	return await db.delete(tournaments).returning();
 }
 
-export async function addTournament(tournamentData: object, tx=db) {
+export async function addTournament(tournamentData: object, tx = db) {
 	return await tx
 		.insert(tournaments)
 		// @ts-ignore

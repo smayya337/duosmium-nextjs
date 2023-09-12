@@ -1,4 +1,4 @@
-import { Location } from '@prisma/client';
+import { Location } from '@/lib/global/schema';
 import Link from 'next/link';
 
 export default function AllSchoolLetters({
