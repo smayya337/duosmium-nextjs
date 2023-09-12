@@ -1,8 +1,8 @@
 import AllSchoolLetters from '@/components/results/schools/AllSchoolLetters';
 import { ResultSchool } from '@/components/results/schools/ResultSchool';
+import { Location } from '@/lib/global/schema';
 import { getAllResults } from '@/lib/results/async';
 import { getAllSchoolsAndRanks } from '@/lib/teams/async';
-import { Location } from '@prisma/client';
 import { redirect } from 'next/navigation';
 
 // @ts-ignore

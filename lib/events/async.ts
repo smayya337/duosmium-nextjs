@@ -48,7 +48,7 @@ export async function deleteAllEvents() {
 	return await db.delete(events).returning();
 }
 
-export async function addEvent(resultEventData: object, tx=db) {
+export async function addEvent(resultEventData: object, tx = db) {
 	return (
 		(
 			await tx

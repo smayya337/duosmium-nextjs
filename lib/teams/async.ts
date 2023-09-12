@@ -2,10 +2,9 @@
 
 import { db } from '@/lib/global/drizzle';
 import { STATES_BY_POSTAL_CODE } from '@/lib/global/helpers';
-import { locations, teams } from "@/lib/global/schema";
+import { Location, locations, teams } from '@/lib/global/schema';
 import { getAllCompleteResults } from '@/lib/results/async';
 import { getInterpreter } from '@/lib/results/interpreter';
-import { Location } from '@prisma/client';
 import { and, eq, sql } from 'drizzle-orm';
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
@@ -52,7 +51,7 @@ export async function deleteAllTeams() {
 	return await db.delete(teams).returning();
 }
 
-export async function addTeam(teamData: object, tx=db) {
+export async function addTeam(teamData: object, tx = db) {
 	return (
 		(
 			await tx
@@ -84,13 +83,12 @@ export async function createTeamDataInput(team: Team, duosmiumID: string) {
 export async function getTeamBySchool() {}
 
 export async function getAllTeamsBySchool() {
-	const allTeams =
-		await db.query.locations.findMany({
-			with: {
-				teams: true
-			},
-			orderBy: [locations.name],
-		});
+	const allTeams = await db.query.locations.findMany({
+		with: {
+			teams: true
+		},
+		orderBy: [locations.name]
+	});
 	return allTeams.filter((r) => r.teams.length > 0);
 }
 

@@ -1,7 +1,8 @@
 // noinspection ES6RedundantAwait
 
-import { db } from '@/lib/global/drizzle';
-import { keepTryingUntilItWorks } from '@/lib/global/drizzle';
+import { addEvent, createEventDataInput } from '@/lib/events/async';
+import { db, keepTryingUntilItWorks } from '@/lib/global/drizzle';
+import { STATES_BY_POSTAL_CODE } from '@/lib/global/helpers';
 import {
 	events,
 	histograms,
@@ -12,8 +13,15 @@ import {
 	tournaments,
 	tracks
 } from '@/lib/global/schema';
+import { addHistogram, createHistogramDataInput } from '@/lib/histograms/async';
+import { addLocation, createLocationDataInput } from '@/lib/locations/async';
+import { addPenalty, createPenaltyDataInput } from '@/lib/penalties/async';
+import { addPlacing, createPlacingDataInput } from '@/lib/placings/async';
 import { createBgColorFromImagePath } from '@/lib/results/color';
 import { createLogoPath } from '@/lib/results/logo';
+import { addTeam, createTeamDataInput } from '@/lib/teams/async';
+import { addTournament, createTournamentDataInput } from '@/lib/tournaments/async';
+import { addTrack, createTrackDataInput } from '@/lib/tracks/async';
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import { load } from 'js-yaml';
 import { cache } from 'react';
@@ -29,15 +37,6 @@ import {
 } from './helpers';
 import { getInterpreter } from './interpreter';
 import { ResultsAddQueue } from './queue';
-import { addTournament, createTournamentDataInput } from "@/lib/tournaments/async";
-import { addLocation, createLocationDataInput } from "@/lib/locations/async";
-import { addEvent, createEventDataInput } from "@/lib/events/async";
-import { addTrack, createTrackDataInput } from "@/lib/tracks/async";
-import { addTeam, createTeamDataInput } from "@/lib/teams/async";
-import { STATES_BY_POSTAL_CODE } from "@/lib/global/helpers";
-import { addPlacing, createPlacingDataInput } from "@/lib/placings/async";
-import { addPenalty, createPenaltyDataInput } from "@/lib/penalties/async";
-import { addHistogram, createHistogramDataInput } from "@/lib/histograms/async";
 
 export async function getResult(duosmiumID: string) {
 	return (await db.selectDistinct().from(results).where(eq(results.duosmiumId, duosmiumID)))[0];
@@ -170,7 +169,7 @@ export async function addResultFromYAMLFile(
 	}
 }
 
-export async function addResult(resultData: object, tx=db) {
+export async function addResult(resultData: object, tx = db) {
 	return await tx
 		.insert(results)
 		// @ts-ignore
@@ -251,7 +250,13 @@ export async function addCompleteResult(interpreter: Interpreter) {
 		// Tournament (and location)
 		await tx.transaction(async (tx2) => {
 			await addTournament(await createTournamentDataInput(interpreter.tournament, duosmiumID), tx2);
-			await addLocation(await createLocationDataInput(interpreter.tournament.location, interpreter.tournament.state), tx2);
+			await addLocation(
+				await createLocationDataInput(
+					interpreter.tournament.location,
+					interpreter.tournament.state
+				),
+				tx2
+			);
 		});
 		// Events
 		for (const event of interpreter.events) {
@@ -265,8 +270,16 @@ export async function addCompleteResult(interpreter: Interpreter) {
 		for (const team of interpreter.teams) {
 			await tx.transaction(async (tx2) => {
 				await addTeam(await createTeamDataInput(team, duosmiumID), tx2);
-				await addLocation(await createLocationDataInput(team.school, team.state in STATES_BY_POSTAL_CODE ? team.state : '', team.city ?? '', team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state), tx2);
-			})
+				await addLocation(
+					await createLocationDataInput(
+						team.school,
+						team.state in STATES_BY_POSTAL_CODE ? team.state : '',
+						team.city ?? '',
+						team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state
+					),
+					tx2
+				);
+			});
 		}
 		// Placings
 		for (const placing of interpreter.placings) {

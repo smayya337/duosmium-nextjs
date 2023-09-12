@@ -50,7 +50,7 @@ export async function deleteAllPenalties() {
 	return await db.delete(penalties).returning();
 }
 
-export async function addPenalty(penaltyData: object, tx=db) {
+export async function addPenalty(penaltyData: object, tx = db) {
 	return (
 		(
 			await tx
