@@ -48,10 +48,10 @@ export async function deleteAllEvents() {
 	return await db.delete(events).returning();
 }
 
-export async function addEvent(resultEventData: object) {
+export async function addEvent(resultEventData: object, tx=db) {
 	return (
 		(
-			await db
+			await tx
 				.insert(events)
 				// @ts-ignore
 				.values(resultEventData)
@@ -64,8 +64,9 @@ export async function addEvent(resultEventData: object) {
 	);
 }
 
-export async function createEventDataInput(event: Event) {
+export async function createEventDataInput(event: Event, duosmiumID: string) {
 	return {
+		resultDuosmiumId: duosmiumID,
 		name: event.name,
 		data: event.rep
 	};

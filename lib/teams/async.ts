@@ -52,10 +52,10 @@ export async function deleteAllTeams() {
 	return await db.delete(teams).returning();
 }
 
-export async function addTeam(teamData: object) {
+export async function addTeam(teamData: object, tx=db) {
 	return (
 		(
-			await db
+			await tx
 				.insert(teams)
 				// @ts-ignore
 				.values(teamData)
@@ -74,10 +74,10 @@ export async function createTeamDataInput(team: Team, duosmiumID: string) {
 		resultDuosmiumId: duosmiumID,
 		number: team.number,
 		data: team.rep,
-		locationName: locationName,
-		locationCity: locationCity,
-		locationState: locationState,
-		locationCountry: locationCountry
+		name: locationName,
+		city: locationCity,
+		state: locationState,
+		country: locationCountry
 	};
 }
 

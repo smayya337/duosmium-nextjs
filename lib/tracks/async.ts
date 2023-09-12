@@ -48,10 +48,10 @@ export async function deleteAllTracks() {
 	return await db.delete(tracks).returning();
 }
 
-export async function addTrack(trackData: object) {
+export async function addTrack(trackData: object, tx=db) {
 	return (
 		(
-			await db
+			await tx
 				.insert(tracks)
 				// @ts-ignore
 				.values(trackData)

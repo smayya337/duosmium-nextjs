@@ -66,10 +66,10 @@ export async function deleteAllPlacings() {
 	return await db.delete(placings).returning();
 }
 
-export async function addPlacing(placingData: object) {
+export async function addPlacing(placingData: object, tx=db) {
 	return (
 		(
-			await db
+			await tx
 				.insert(placings)
 				// @ts-ignore
 				.values(placingData)
