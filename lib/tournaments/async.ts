@@ -1,9 +1,9 @@
 // noinspection ES6RedundantAwait
 
-// @ts-ignore
 import { db } from '@/lib/global/drizzle';
 import { tournaments } from '@/lib/global/schema';
 import { eq, sql } from 'drizzle-orm';
+// @ts-ignore
 import { Tournament } from 'sciolyff/interpreter';
 
 export async function getTournament(duosmiumID: string) {
@@ -44,10 +44,10 @@ export async function deleteAllTournaments() {
 	return await db.delete(tournaments).returning();
 }
 
-export async function addTournament(tournamentData: object) {
-	// @ts-ignore
-	return await db
+export async function addTournament(tournamentData: object, tx=db) {
+	return await tx
 		.insert(tournaments)
+		// @ts-ignore
 		.values(tournamentData)
 		.onConflictDoUpdate({ target: tournaments.resultDuosmiumId, set: tournamentData });
 }

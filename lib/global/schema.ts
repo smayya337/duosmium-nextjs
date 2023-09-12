@@ -7,29 +7,28 @@ import {
 	primaryKey,
 	text,
 	timestamp,
-	uniqueIndex,
-	uuid
+	uniqueIndex
 } from 'drizzle-orm/pg-core';
 
 export const results = pgTable(
-	'Result',
+	'results',
 	{
-		duosmiumId: text('duosmiumId').notNull().primaryKey(),
+		duosmiumId: text('duosmium_id').notNull().primaryKey(),
 		logo: text('logo').notNull(),
 		color: text('color').notNull(),
-		createdAt: timestamp('createdAt').notNull(),
-		updatedAt: timestamp('updatedAt').notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
+		updatedAt: timestamp('updated_at').notNull(),
 		official: boolean('official').default(false).notNull(),
 		preliminary: boolean('preliminary').default(false).notNull(),
 		title: text('title').notNull(),
-		fullTitle: text('fullTitle').notNull(),
-		shortTitle: text('shortTitle').notNull(),
-		fullShortTitle: text('fullShortTitle').notNull(),
+		fullTitle: text('full_title').notNull(),
+		shortTitle: text('short_title').notNull(),
+		fullShortTitle: text('full_short_title').notNull(),
 		date: text('date').notNull(),
-		locationName: text('locationName').notNull(),
-		locationCity: text('locationCity').default('').notNull(),
-		locationState: text('locationState').notNull(),
-		locationCountry: text('locationCountry').default('United States').notNull()
+		locationName: text('location_name').notNull(),
+		locationCity: text('location_city').default('').notNull(),
+		locationState: text('location_state').notNull(),
+		locationCountry: text('location_country').default('United States').notNull(),
 	},
 	(table) => {
 		return {
@@ -63,9 +62,9 @@ export const resultsRelations = relations(results, ({ one, many }) => ({
 }));
 
 export const tournaments = pgTable(
-	'Tournament',
+	'tournaments',
 	{
-		resultDuosmiumId: text('resultDuosmiumId').notNull().primaryKey(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().primaryKey().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -83,10 +82,10 @@ export const tournamentsRelations = relations(tournaments, ({ one }) => ({
 }));
 
 export const teams = pgTable(
-	'Team',
+	'teams',
 	{
 		number: integer('number').notNull(),
-		resultDuosmiumId: text('resultDuosmiumId').notNull(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data'),
 		name: text('name').notNull(),
 		city: text('city').default('').notNull(),
@@ -120,10 +119,10 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
 }));
 
 export const events = pgTable(
-	'Event',
+	'events',
 	{
 		name: text('name').notNull(),
-		resultDuosmiumId: text('resultDuosmiumId').notNull(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 		// placings
 	},
@@ -144,10 +143,10 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
 }));
 
 export const tracks = pgTable(
-	'Track',
+	'tracks',
 	{
 		name: text('name').notNull(),
-		resultDuosmiumId: text('resultDuosmiumId').notNull(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -167,11 +166,11 @@ export const tracksRelations = relations(tracks, ({ one, many }) => ({
 }));
 
 export const placings = pgTable(
-	'Placing',
+	'placings',
 	{
-		eventName: text('eventName').notNull(),
-		teamNumber: integer('teamNumber').notNull(),
-		resultDuosmiumId: text('resultDuosmiumId').notNull(),
+		eventName: text('event_name').notNull(),
+		teamNumber: integer('team_number').notNull(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -198,10 +197,10 @@ export const placingsRelations = relations(placings, ({ one }) => ({
 }));
 
 export const penalties = pgTable(
-	'Penalty',
+	'penalties',
 	{
-		teamNumber: integer('teamNumber').notNull(),
-		resultDuosmiumId: text('resultDuosmiumId').notNull(),
+		teamNumber: integer('team_number').notNull(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -224,9 +223,9 @@ export const penaltiesRelations = relations(penalties, ({ one }) => ({
 }));
 
 export const histograms = pgTable(
-	'Histogram',
+	'histograms',
 	{
-		resultDuosmiumId: text('resultDuosmiumId').notNull().primaryKey(),
+		resultDuosmiumId: text('result_duosmium_id').notNull().primaryKey().references(() => results.duosmiumId, {onDelete: "cascade", onUpdate: "cascade"}),
 		data: jsonb('data').notNull()
 	},
 	(table) => {
@@ -244,7 +243,7 @@ export const histogramsRelations = relations(histograms, ({ one }) => ({
 }));
 
 export const locations = pgTable(
-	'Location',
+	'locations',
 	{
 		name: text('name').notNull(),
 		city: text('city').default('').notNull(),

@@ -50,10 +50,10 @@ export async function deleteAllPenalties() {
 	return await db.delete(penalties).returning();
 }
 
-export async function addPenalty(penaltyData: object) {
+export async function addPenalty(penaltyData: object, tx=db) {
 	return (
 		(
-			await db
+			await tx
 				.insert(penalties)
 				// @ts-ignore
 				.values(penaltyData)

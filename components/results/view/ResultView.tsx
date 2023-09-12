@@ -22,6 +22,7 @@ import * as React from 'react';
 import { Team } from 'sciolyff/dist/src/interpreter/types';
 // @ts-ignore
 import Interpreter, { Placing, Tournament } from 'sciolyff/interpreter';
+import { ResultTable } from "@/components/results/view/ResultTable";
 
 async function getRequestedInterpreter(id: string) {
 	if (!(await resultExists(id))) {
@@ -223,14 +224,15 @@ export default async function ResultView({
 			<p className={'text-lg tracking-tight text-muted-foreground text-center pb-4'}>
 				@ {interpreter.tournament.location}
 			</p>
-			<ResultDataTable
-				// @ts-ignore
-				teamData={teamData}
-				eventData={eventData}
-				trophies={interpreter.tournament.trophies}
-				tableData={tableData}
-				dialogToOpen={team}
-			/>
+			{/*<ResultDataTable*/}
+			{/*	// @ts-ignore*/}
+			{/*	teamData={teamData}*/}
+			{/*	eventData={eventData}*/}
+			{/*	trophies={interpreter.tournament.trophies}*/}
+			{/*	tableData={tableData}*/}
+			{/*	dialogToOpen={team}*/}
+			{/*/>*/}
+			<ResultTable interpreter={interpreter} />
 			<div>{footnotes}</div>
 		</>
 	);

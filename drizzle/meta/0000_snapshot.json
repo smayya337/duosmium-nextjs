@@ -1,0 +1,614 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "3be2dd70-cc7b-4a2b-acb9-dd28baa10403",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "events": {
+      "name": "events",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "events_result_duosmium_id_name_index": {
+          "name": "events_result_duosmium_id_name_index",
+          "columns": [
+            "result_duosmium_id",
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "events_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "events_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "events",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "events_result_duosmium_id_name": {
+          "name": "events_result_duosmium_id_name",
+          "columns": [
+            "result_duosmium_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "histograms": {
+      "name": "histograms",
+      "schema": "",
+      "columns": {
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "histograms_result_duosmium_id_index": {
+          "name": "histograms_result_duosmium_id_index",
+          "columns": [
+            "result_duosmium_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "histograms_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "histograms_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "histograms",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "locations": {
+      "name": "locations",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'United States'"
+        }
+      },
+      "indexes": {
+        "locations_name_city_state_country_index": {
+          "name": "locations_name_city_state_country_index",
+          "columns": [
+            "name",
+            "city",
+            "state",
+            "country"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "locations_name_city_state_country": {
+          "name": "locations_name_city_state_country",
+          "columns": [
+            "name",
+            "city",
+            "state",
+            "country"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "penalties": {
+      "name": "penalties",
+      "schema": "",
+      "columns": {
+        "team_number": {
+          "name": "team_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "penalties_result_duosmium_id_team_number_index": {
+          "name": "penalties_result_duosmium_id_team_number_index",
+          "columns": [
+            "result_duosmium_id",
+            "team_number"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "penalties_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "penalties_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "penalties",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "penalties_result_duosmium_id_team_number": {
+          "name": "penalties_result_duosmium_id_team_number",
+          "columns": [
+            "result_duosmium_id",
+            "team_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "placings": {
+      "name": "placings",
+      "schema": "",
+      "columns": {
+        "event_name": {
+          "name": "event_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_number": {
+          "name": "team_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "placings_result_duosmium_id_event_name_team_number_index": {
+          "name": "placings_result_duosmium_id_event_name_team_number_index",
+          "columns": [
+            "result_duosmium_id",
+            "event_name",
+            "team_number"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "placings_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "placings_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "placings",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "placings_result_duosmium_id_event_name_team_number": {
+          "name": "placings_result_duosmium_id_event_name_team_number",
+          "columns": [
+            "result_duosmium_id",
+            "event_name",
+            "team_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "results": {
+      "name": "results",
+      "schema": "",
+      "columns": {
+        "duosmium_id": {
+          "name": "duosmium_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "logo": {
+          "name": "logo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "official": {
+          "name": "official",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "preliminary": {
+          "name": "preliminary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_title": {
+          "name": "full_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "short_title": {
+          "name": "short_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_short_title": {
+          "name": "full_short_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location_city": {
+          "name": "location_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "location_state": {
+          "name": "location_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location_country": {
+          "name": "location_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'United States'"
+        }
+      },
+      "indexes": {
+        "results_duosmium_id_index": {
+          "name": "results_duosmium_id_index",
+          "columns": [
+            "duosmium_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "teams": {
+      "name": "teams",
+      "schema": "",
+      "columns": {
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'United States'"
+        },
+        "track": {
+          "name": "track",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "teams_result_duosmium_id_number_index": {
+          "name": "teams_result_duosmium_id_number_index",
+          "columns": [
+            "result_duosmium_id",
+            "number"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "teams_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "teams_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "teams",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "teams_result_duosmium_id_number": {
+          "name": "teams_result_duosmium_id_number",
+          "columns": [
+            "result_duosmium_id",
+            "number"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "tournaments": {
+      "name": "tournaments",
+      "schema": "",
+      "columns": {
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "tournaments_result_duosmium_id_index": {
+          "name": "tournaments_result_duosmium_id_index",
+          "columns": [
+            "result_duosmium_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "tournaments_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "tournaments_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "tournaments",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "tracks": {
+      "name": "tracks",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_duosmium_id": {
+          "name": "result_duosmium_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "tracks_result_duosmium_id_name_index": {
+          "name": "tracks_result_duosmium_id_name_index",
+          "columns": [
+            "result_duosmium_id",
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "tracks_result_duosmium_id_results_duosmium_id_fk": {
+          "name": "tracks_result_duosmium_id_results_duosmium_id_fk",
+          "tableFrom": "tracks",
+          "tableTo": "results",
+          "columnsFrom": [
+            "result_duosmium_id"
+          ],
+          "columnsTo": [
+            "duosmium_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tracks_result_duosmium_id_name": {
+          "name": "tracks_result_duosmium_id_name",
+          "columns": [
+            "result_duosmium_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

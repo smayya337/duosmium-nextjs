@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 		} else {
 			// noinspection ES6MissingAwait
 			q.push(file);
-			// addResultFromYAMLFile(file);
+			// await addResultFromYAMLFile(file);
 		}
 	}
 	return NextResponse.redirect(`${request.nextUrl.host}/results/upload`, 303);

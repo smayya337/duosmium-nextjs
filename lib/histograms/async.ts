@@ -44,8 +44,8 @@ export async function deleteAllHistograms() {
 	return await db.delete(histograms).returning();
 }
 
-export async function addHistogram(histogramData: object) {
-	return await db
+export async function addHistogram(histogramData: object, tx=db) {
+	return await tx
 		.insert(histograms)
 		// @ts-ignore
 		.values(histogramData)

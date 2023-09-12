@@ -1,7 +1,7 @@
 // noinspection ES6RedundantAwait
 
 import { db } from '@/lib/global/drizzle';
-import { keepTryingUntilItWorks } from '@/lib/global/prisma';
+import { keepTryingUntilItWorks } from '@/lib/global/drizzle';
 import {
 	events,
 	histograms,
@@ -29,6 +29,15 @@ import {
 } from './helpers';
 import { getInterpreter } from './interpreter';
 import { ResultsAddQueue } from './queue';
+import { addTournament, createTournamentDataInput } from "@/lib/tournaments/async";
+import { addLocation, createLocationDataInput } from "@/lib/locations/async";
+import { addEvent, createEventDataInput } from "@/lib/events/async";
+import { addTrack, createTrackDataInput } from "@/lib/tracks/async";
+import { addTeam, createTeamDataInput } from "@/lib/teams/async";
+import { STATES_BY_POSTAL_CODE } from "@/lib/global/helpers";
+import { addPlacing, createPlacingDataInput } from "@/lib/placings/async";
+import { addPenalty, createPenaltyDataInput } from "@/lib/penalties/async";
+import { addHistogram, createHistogramDataInput } from "@/lib/histograms/async";
 
 export async function getResult(duosmiumID: string) {
 	return (await db.selectDistinct().from(results).where(eq(results.duosmiumId, duosmiumID)))[0];
@@ -150,31 +159,29 @@ export async function addResultFromYAMLFile(
 	// @ts-ignore
 	const obj: object = load(yaml);
 	const interpreter: Interpreter = getInterpreter(obj);
-	const resultData: object = await createResultDataInput(interpreter);
 	// console.log(resultData);
 	try {
-		await keepTryingUntilItWorks(addResult, resultData);
-		// await addResult(resultData);
+		await keepTryingUntilItWorks(addCompleteResult, interpreter);
+		// await addCompleteResult(interpreter);
 		callback(generateFilename(interpreter));
 	} catch (e) {
 		console.log(`ERROR: could not add ${generateFilename(interpreter)}!`);
 		console.log(e);
 	}
-	// TODO: can we just use addResult() instead of the cursed one?
 }
 
-export async function addResult(resultData: object) {
-	return await db
+export async function addResult(resultData: object, tx=db) {
+	return await tx
 		.insert(results)
 		// @ts-ignore
-		.values(results)
+		.values(resultData)
 		.onConflictDoUpdate({ target: results.duosmiumId, set: resultData });
 }
 
 export async function createResultDataInput(interpreter: Interpreter) {
 	const duosmiumID = generateFilename(interpreter);
 	const logo = await createLogoPath(duosmiumID);
-	const color = await createBgColorFromImagePath(duosmiumID);
+	const color = await createBgColorFromImagePath(logo);
 	const title = tournamentTitle(interpreter.tournament);
 	const fullTitle = fullTournamentTitle(interpreter.tournament);
 	const shortTitle = tournamentTitleShort(interpreter.tournament);
@@ -193,7 +200,9 @@ export async function createResultDataInput(interpreter: Interpreter) {
 		locationName: locationName,
 		locationCity: '',
 		locationState: locationState,
-		locationCountry: 'United States'
+		locationCountry: 'United States',
+		updatedAt: new Date(),
+		duosmiumId: duosmiumID
 	};
 }
 
@@ -208,8 +217,8 @@ export async function regenerateAllMetadata() {
 	);
 	const operation = db.transaction(async (tx) => {
 		for (const id of ids) {
-			const input = await createResultDataInput(id);
-			await db.update(results).set(input);
+			const input = await createResultDataInput(getInterpreter(await getCompleteResult(id)));
+			await addResult(input);
 		}
 	});
 	return await operation;
@@ -232,4 +241,44 @@ export async function getRecentResults(ascending = true, limit = 0) {
 	} else {
 		return await initial.limit(limit);
 	}
+}
+
+export async function addCompleteResult(interpreter: Interpreter) {
+	const duosmiumID = generateFilename(interpreter);
+	await db.transaction(async (tx) => {
+		// Result
+		await addResult(await createResultDataInput(interpreter), tx);
+		// Tournament (and location)
+		await tx.transaction(async (tx2) => {
+			await addTournament(await createTournamentDataInput(interpreter.tournament, duosmiumID), tx2);
+			await addLocation(await createLocationDataInput(interpreter.tournament.location, interpreter.tournament.state), tx2);
+		});
+		// Events
+		for (const event of interpreter.events) {
+			await addEvent(await createEventDataInput(event, duosmiumID), tx);
+		}
+		// Tracks
+		for (const track of interpreter.tracks) {
+			await addTrack(await createTrackDataInput(track, duosmiumID), tx);
+		}
+		// Teams (and locations)
+		for (const team of interpreter.teams) {
+			await tx.transaction(async (tx2) => {
+				await addTeam(await createTeamDataInput(team, duosmiumID), tx2);
+				await addLocation(await createLocationDataInput(team.school, team.state in STATES_BY_POSTAL_CODE ? team.state : '', team.city ?? '', team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state), tx2);
+			})
+		}
+		// Placings
+		for (const placing of interpreter.placings) {
+			await addPlacing(await createPlacingDataInput(placing, duosmiumID), tx);
+		}
+		// Penalties
+		for (const penalty of interpreter.penalties) {
+			await addPenalty(await createPenaltyDataInput(penalty, duosmiumID), tx);
+		}
+		// Histogram
+		if (interpreter.histograms) {
+			await addHistogram(await createHistogramDataInput(interpreter.histograms, duosmiumID), tx);
+		}
+	});
 }
