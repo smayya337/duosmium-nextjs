@@ -1,4 +1,3 @@
-import { MenuToggle } from '@/components/global/MenuToggle';
 import { Icons } from '@/components/icons';
 import { MainNav } from '@/components/main-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -30,7 +29,6 @@ export function SiteHeader() {
 							</div>
 						</Link>
 						<ThemeToggle />
-						<MenuToggle />
 					</nav>
 				</div>
 			</div>

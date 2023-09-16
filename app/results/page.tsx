@@ -40,29 +40,29 @@ export default async function Page() {
 	return (
 		<>
 			<Hero countsByLevel={countsByLevel} recentResults={recents} />
-			<h2 className={'pb-4 text-3xl font-bold tracking-tight transition-colors text-center'}>
-				Recent Tournaments
-			</h2>
-			<ResultCardGrid>
-				{allResults.map((r) => {
-					return (
-						<Suspense key={r.duosmiumId}>
-							{/* @ts-ignore */}
-							<ResultCard meta={r} />
-						</Suspense>
-					);
-				})}
-			</ResultCardGrid>
-			<h2 className={'py-4 text-3xl font-bold tracking-tight transition-colors text-center'}>
-				Past Tournaments
-			</h2>
-			<p className={'text-center'}>
-				Searching for something that&apos;s not listed here? Check out our{' '}
-				<Link href={'/results/all'} className={'text-sky-700 dark:text-sky-500 hover:underline'}>
-					full list
-				</Link>
-				!
-			</p>
+			{/*<h2 className={'pb-4 text-3xl font-bold tracking-tight transition-colors text-center'}>*/}
+			{/*	Recent Tournaments*/}
+			{/*</h2>*/}
+			{/*<ResultCardGrid>*/}
+			{/*	{allResults.map((r) => {*/}
+			{/*		return (*/}
+			{/*			<Suspense key={r.duosmiumId}>*/}
+			{/*				/!* @ts-ignore *!/*/}
+			{/*				<ResultCard meta={r} />*/}
+			{/*			</Suspense>*/}
+			{/*		);*/}
+			{/*	})}*/}
+			{/*</ResultCardGrid>*/}
+			{/*<h2 className={'py-4 text-3xl font-bold tracking-tight transition-colors text-center'}>*/}
+			{/*	Past Tournaments*/}
+			{/*</h2>*/}
+			{/*<p className={'text-center'}>*/}
+			{/*	Searching for something that&apos;s not listed here? Check out our{' '}*/}
+			{/*	<Link href={'/results/all'} className={'text-sky-700 dark:text-sky-500 hover:underline'}>*/}
+			{/*		full list*/}
+			{/*	</Link>*/}
+			{/*	!*/}
+			{/*</p>*/}
 		</>
 	);
 }

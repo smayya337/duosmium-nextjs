@@ -4,18 +4,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export function InfoBadge({
 	label,
 	info,
-	className,
-	ref
+	className
 }: {
 	label: string;
 	info: string;
 	className: string | undefined;
-	ref: any;
 }) {
 	return (
 		<TooltipProvider>
 			<Tooltip>
-				<TooltipTrigger asChild ref={ref}>
+				<TooltipTrigger asChild>
 					<Badge variant={'outline'} className={className}>
 						{label}
 					</Badge>
