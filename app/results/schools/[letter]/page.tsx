@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: { letter: string } }) {
 		redirect('/results/schools');
 	}
 	return (
-		<>
+		<div className="container">
 			<h1 className={'text-center tracking-tight font-bold text-4xl pb-2'}>
 				All Results by School ({letter.toUpperCase()})
 			</h1>
@@ -37,6 +37,6 @@ export default async function Page({ params }: { params: { letter: string } }) {
 				// @ts-ignore
 				return <ResultSchool location={l} ranks={allData.get(l)} results={allResults} key={l} />;
 			})}
-		</>
+		</div>
 	);
 }

@@ -11,10 +11,6 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/components/ui/card';
-import { colors } from '@/lib/colors/material';
-import { cacheCompleteResult } from '@/lib/results/async';
-import { dateString, fullTournamentTitle } from '@/lib/results/helpers';
-import { getInterpreter } from '@/lib/results/interpreter';
 import { Result } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';

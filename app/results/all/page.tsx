@@ -21,7 +21,7 @@ export default async function Page() {
 		resultsBySeason[resultSeason].push(result);
 	}
 	return (
-		<>
+		<div className="containuer">
 			<h1 className={'text-center tracking-tight font-bold text-4xl pb-2'}>
 				All Results by Season
 			</h1>
@@ -31,6 +31,6 @@ export default async function Page() {
 					return <ResultSeason season={s} results={resultsBySeason[s]} key={s} />;
 				})}
 			</div>
-		</>
+		</div>
 	);
 }

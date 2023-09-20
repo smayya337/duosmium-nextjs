@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 	}
 	const interpreter = await getInterpreter(obj);
 	const result = await addResult(await createResultDataInput(interpreter));
-	return new NextResponse(result.duosmiumId, { status: 201 });
+	return new NextResponse(null, { status: 201 });
 }
 
 export async function PUT() {

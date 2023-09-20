@@ -1,5 +1,3 @@
-// @ts-ignore
-import { ResultDataTable } from '@/components/results/view/ResultDataTable';
 import ResultView from '@/components/results/view/ResultView';
 import { Result } from '@/lib/global/schema';
 import { getCompleteResult, getResult } from '@/lib/results/async';
@@ -27,7 +25,9 @@ export default async function Page({
 }) {
 	const id = params.id;
 	let data: object;
+	let res: Result;
 	try {
+		res = await getResult(id);
 		data = await getCompleteResult(id);
 	} catch (e) {
 		notFound();
@@ -41,5 +41,5 @@ export default async function Page({
 		}
 	}
 	// noinspection HtmlUnknownTarget
-	return <ResultView data={data} team={team} />;
+	return <ResultView data={data} res={res} />;
 }

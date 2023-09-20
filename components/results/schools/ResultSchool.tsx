@@ -15,6 +15,8 @@ export function ResultSchool({
 	for (const id of ranks.keys()) {
 		ids.push(id);
 	}
+	ids.sort();
+	ids.reverse();
 	const rankStrings: string[] = [];
 	ids.forEach((value) => {
 		const rankList = ranks.get(value);

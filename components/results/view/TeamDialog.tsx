@@ -1,12 +1,8 @@
 'use client';
 
+import { AccordionContent } from '@/components/results/view/AccordionContentNoBottomPadding';
 import { TeamDialogTable } from '@/components/results/view/TeamDialogTable';
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger
-} from '@/components/ui/accordion';
+import { Accordion, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
 	Dialog,
 	DialogContent,
@@ -17,13 +13,12 @@ import {
 	DialogTrigger
 } from '@/components/ui/dialog';
 // @ts-ignore
-import { ordinalize, placingNotes } from '@/lib/results/helpers';
+import { ordinalize } from '@/lib/results/helpers';
 import Link from 'next/link';
 import React from 'react';
 
 export default function TeamDialog({
 	teamNumber,
-	open,
 	tableData,
 	teamData,
 	children
@@ -44,8 +39,7 @@ export default function TeamDialog({
 		points: number;
 		penalties: number;
 	};
-	open: boolean;
-	eventData: object[];
+	eventData: { id: string; name: any; trial: any; trialed: any; medals: any }[];
 	tableData: { name: string; points: string; place: string; notes: string; medals: number }[];
 	children: React.ReactNode;
 	// ref: any;
@@ -56,11 +50,13 @@ export default function TeamDialog({
 	})`;
 	const formattedSchoolName = `${teamData.school} (${teamData.location})`;
 	return (
-		<Dialog open={open}>
+		<Dialog>
 			<DialogTrigger className={'w-full h-full'} asChild>
 				{children}
 			</DialogTrigger>
-			<DialogContent className={'max-h-[90vh] overflow-y-auto'}>
+			<DialogContent
+				className={'max-h-[90vh] overflow-y-auto xs:max-w-[90vw] md:max-w-[75vw] xl:max-w-[40vw]'}
+			>
 				<DialogHeader>
 					<DialogTitle>Information for Team {teamNumber}</DialogTitle>
 					<DialogDescription>
@@ -76,7 +72,7 @@ export default function TeamDialog({
 						</AccordionContent>
 					</AccordionItem>
 				</Accordion>
-				<DialogFooter className={'text-sm'}>
+				<DialogFooter className={'text-sm sm:justify-center'}>
 					<Link
 						href={`/results/schools/${formattedSchoolName
 							.charAt(0)

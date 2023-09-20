@@ -2,6 +2,7 @@
 import { ResultDataTable } from '@/components/results/view/ResultDataTable';
 import { ResultTable } from '@/components/results/view/ResultTable';
 import { colors } from '@/lib/colors/default';
+import { Result } from '@/lib/global/schema';
 import { getCompleteResult, getResult, resultExists } from '@/lib/results/async';
 import { findBgColor } from '@/lib/results/color';
 import {
@@ -17,7 +18,6 @@ import {
 	teamLocation
 } from '@/lib/results/helpers';
 import { getInterpreter } from '@/lib/results/interpreter';
-import { Result } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import * as React from 'react';
 import { Team } from 'sciolyff/dist/src/interpreter/types';
@@ -193,16 +193,15 @@ function createFootnotes(tournament: Tournament) {
 }
 
 // @ts-ignore
-export default async function ResultView({
-	data,
-	team
-}: {
-	data: object;
-	team: number | undefined;
-}) {
+export default async function ResultView({ data, res }: { data: object; res: Result }) {
 	const interpreter: Interpreter = await getInterpreter(data);
 	const eventData = processEventData(interpreter);
 	const teamData = processTeamData(interpreter);
+	const eventsByName = {};
+	for (const e of interpreter.events) {
+		// @ts-ignore
+		eventsByName[e.name] = e;
+	}
 	const tableData: Map<
 		number,
 		{ name: string; points: string; place: string; notes: string; medals: number }[]
@@ -212,27 +211,44 @@ export default async function ResultView({
 		tableData.set(tm.number, createTableData(placingData, eventData));
 	}
 	const footnotes = createFootnotes(interpreter.tournament);
+	const placingsByTeam = {};
+	for (const t of interpreter.teams) {
+		const placings: number[] = [];
+		for (const e of eventData) {
+			// @ts-ignore
+			placings.push(t.placingFor(eventsByName[e.name])?.isolatedPoints);
+		}
+		// @ts-ignore
+		placingsByTeam[t.number] = placings;
+	}
 	// noinspection HtmlUnknownTarget
 	return (
 		<>
-			<h1 className={'text-3xl tracking-tight font-bold text-center pb-4'}>
-				{fullTournamentTitle(interpreter.tournament)}
-			</h1>
-			<p className={'text-lg tracking-tight text-muted-foreground text-center'}>
-				{dateString(interpreter)}
-			</p>
-			<p className={'text-lg tracking-tight text-muted-foreground text-center pb-4'}>
-				@ {interpreter.tournament.location}
-			</p>
-			{/*<ResultDataTable*/}
-			{/*	// @ts-ignore*/}
-			{/*	teamData={teamData}*/}
-			{/*	eventData={eventData}*/}
-			{/*	trophies={interpreter.tournament.trophies}*/}
-			{/*	tableData={tableData}*/}
-			{/*	dialogToOpen={team}*/}
-			{/*/>*/}
-			<ResultTable interpreter={interpreter} />
+			<div className="container">
+				<h1 className={`text-3xl tracking-tight font-bold text-center pb-4`}>
+					{fullTournamentTitle(interpreter.tournament)}
+				</h1>
+				<p className={'text-lg tracking-tight text-muted-foreground text-center'}>
+					{dateString(interpreter)}
+				</p>
+				<p className={'text-lg tracking-tight text-muted-foreground text-center pb-4'}>
+					@ {interpreter.tournament.location}
+				</p>
+			</div>
+			<ResultDataTable
+				// @ts-ignore
+				teamData={teamData}
+				eventData={eventData}
+				trophies={interpreter.tournament.trophies}
+				tableData={tableData}
+			/>
+			{/* <ResultTable
+				teamData={teamData}
+				eventData={eventData}
+				trophies={interpreter.tournament.trophies}
+				tableData={tableData}
+				placingsByTeam={placingsByTeam}
+			/> */}
 			<div>{footnotes}</div>
 		</>
 	);

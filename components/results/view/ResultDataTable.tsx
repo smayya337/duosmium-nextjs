@@ -18,13 +18,10 @@ import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	SortingState,
 	useReactTable
 } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -33,37 +30,72 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 }
 
+function nameToKey(name: string) {
+	return name.toLowerCase().replaceAll(/\s+/g, '_').replaceAll(/\W/g, '');
+}
+
+function recalculatePoints(
+	activeEvents: object,
+	teamData: {
+		number: any;
+		team: string;
+		school: any;
+		suffix: any;
+		location: string;
+		disqualified: any;
+		exhibition: any;
+		attended: boolean | undefined;
+		earnedBid: any;
+		rank: any;
+		points: any;
+		penalties: any;
+	}[]
+) {
+	for (const team of teamData) {
+		let points = 0;
+		for (const event of Object.keys(activeEvents)) {
+			// @ts-ignore
+			if (activeEvents[event]) {
+				// @ts-ignore
+				points += team[event];
+			}
+		}
+		team.points = points + team.penalties;
+	}
+	recalculateRanks(teamData);
+}
+
+function recalculateRanks(
+	teamData: {
+		number: any;
+		team: string;
+		school: any;
+		suffix: any;
+		location: string;
+		disqualified: any;
+		exhibition: any;
+		attended: boolean | undefined;
+		earnedBid: any;
+		rank: any;
+		points: any;
+		penalties: any;
+	}[]
+) {
+	const numbers = teamData.map((x) => x.number);
+	numbers.sort((a, b) => {
+		const teamA = teamData.find((x) => x.number === a);
+		const teamB = teamData.find((x) => x.number === b);
+		if (teamA?.points === teamB?.points) {
+			return teamA?.penalties - teamB?.penalties;
+		}
+		return teamA?.points - teamB?.points;
+	});
+	for (const team of teamData) {
+		team.rank = numbers.indexOf(team.number) + 1;
+	}
+}
+
 // TODO: move tooltip to be by the actual badge, not over the table
-
-// @ts-ignore
-const CompatibleDisqualifiedBadge = React.forwardRef(({ onClick, href }, ref) => {
-	return <DisqualifiedBadge className={'ml-1'} ref={ref} />;
-});
-CompatibleDisqualifiedBadge.displayName = 'CompatibleDisqualifiedBadge';
-
-// @ts-ignore
-const CompatibleAbsentBadge = React.forwardRef(({ onClick, href }, ref) => {
-	return <AbsentBadge className={'ml-1'} ref={ref} />;
-});
-CompatibleAbsentBadge.displayName = 'CompatibleAbsentBadge';
-
-// @ts-ignore
-const CompatibleExhibitionBadge = React.forwardRef(({ onClick, href }, ref) => {
-	return <ExhibitionBadge className={'ml-1'} ref={ref} />;
-});
-CompatibleExhibitionBadge.displayName = 'CompatibleExhibitionBadge';
-
-// @ts-ignore
-const CompatibleTrialBadge = React.forwardRef(({ onClick, href }, ref) => {
-	return <TrialBadge className={'mt-1 py-2.5 px-0.5'} ref={ref} />;
-});
-CompatibleTrialBadge.displayName = 'CompatibleTrialBadge';
-
-// @ts-ignore
-const CompatibleTrialedBadge = React.forwardRef(({ onClick, href }, ref) => {
-	return <TrialedBadge className={'mt-1 py-2.5 px-0.5'} ref={ref} />;
-});
-CompatibleTrialedBadge.displayName = 'CompatibleTrialedBadge';
 
 function columnsFromEvents(
 	eventData: any,
@@ -72,7 +104,6 @@ function columnsFromEvents(
 		number,
 		{ name: string; points: string; place: string; notes: string; medals: number }[]
 	>,
-	toOpen: number | undefined,
 	client: boolean
 ) {
 	const tableDataMap = new Map(tableData);
@@ -121,11 +152,15 @@ function columnsFromEvents(
 						{/*@ts-ignore*/}
 						<span className={'text-xs text-muted-foreground ml-1'}>({teamDataTeam.location})</span>
 						{/*@ts-ignore*/}
-						{teamDataTeam.disqualified && <CompatibleDisqualifiedBadge />}
+						{teamDataTeam.disqualified && <DisqualifiedBadge className={undefined} />}
 						{/*@ts-ignore*/}
-						{teamDataTeam.exhibition && teamDataTeam.attended && <CompatibleExhibitionBadge />}
+						{teamDataTeam.exhibition && teamDataTeam.attended && (
+							<ExhibitionBadge className={undefined} />
+						)}
 						{/*@ts-ignore*/}
-						{teamDataTeam.exhibition && !teamDataTeam.attended && <CompatibleAbsentBadge />}
+						{teamDataTeam.exhibition && !teamDataTeam.attended && (
+							<AbsentBadge className={undefined} />
+						)}
 					</div>
 				);
 				// @ts-ignore
@@ -133,16 +168,12 @@ function columnsFromEvents(
 					return (
 						<TeamDialog
 							teamNumber={num}
-							open={toOpen === num}
 							eventData={eventData}
 							// @ts-ignore
 							tableData={rowTableData}
 							teamData={teamDataTeam}
-							ref={ref}
 						>
-							{/*<Link href={`?team=${num}`} passHref legacyBehavior>*/}
 							{teamName}
-							{/*</Link>*/}
 						</TeamDialog>
 					);
 				});
@@ -205,8 +236,8 @@ function columnsFromEvents(
 				return (
 					<div onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className={cls}>
 						{evt.name}
-						{evt.trial && <CompatibleTrialBadge />}
-						{evt.trialed && <CompatibleTrialedBadge />}
+						{evt.trial && <TrialBadge className={'mt-1 py-2.5 px-0.5'} />}
+						{evt.trialed && <TrialedBadge className={'mt-1 py-2.5 px-0.5'} />}
 					</div>
 				);
 			},
@@ -235,7 +266,7 @@ function columnsFromEvents(
 			return (
 				<div
 					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-					className={'text-left whitespace-nowrap sideways py-1'}
+					className={'text-left whitespace-nowrap sideways py-1 w-5'}
 				>
 					Team Penalties
 				</div>
@@ -254,8 +285,7 @@ export function ResultDataTable<TData, TValue>({
 	eventData,
 	teamData,
 	trophies,
-	tableData,
-	dialogToOpen
+	tableData
 }: {
 	eventData: TData[];
 	teamData: TData[];
@@ -264,15 +294,25 @@ export function ResultDataTable<TData, TValue>({
 		number,
 		{ name: string; points: string; place: string; notes: string; medals: number }[]
 	>;
-	dialogToOpen: number | undefined;
 }) {
 	const [client, setClient] = useState(false);
 	useEffect(() => setClient(true), []);
+	const defaultActive = {};
+	for (const e of eventData) {
+		// @ts-ignore
+		defaultActive[nameToKey(e.name)] = !(e.trial || e.trialed);
+	}
+	const [activeEvents] = useState(structuredClone(defaultActive));
+	useEffect(() => {
+		// @ts-ignore
+		recalculatePoints(activeEvents, teamData);
+	}, [activeEvents, teamData]);
+	// @ts-ignore
+	recalculatePoints(activeEvents, teamData);
 	const columns: ColumnDef<TData, any>[] = columnsFromEvents(
 		eventData,
 		trophies,
 		tableData,
-		dialogToOpen,
 		client
 	);
 	return <DataTable columns={columns} data={teamData} />;
@@ -293,7 +333,7 @@ function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValu
 
 	return (
 		<div>
-			<Table className={'text-center'}>
+			<Table className={'text-center max-w-[90vw]'}>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>

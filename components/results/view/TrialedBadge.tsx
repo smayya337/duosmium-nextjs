@@ -1,6 +1,6 @@
 import { InfoBadge } from '@/components/global/InfoBadge';
 
-export function TrialedBadge({ className, ref }: { className: string | undefined; ref: any }) {
+export function TrialedBadge({ className }: { className: string | undefined }) {
 	return (
 		<InfoBadge
 			label={'Trialed'}
@@ -8,7 +8,6 @@ export function TrialedBadge({ className, ref }: { className: string | undefined
 				'Placings in this event did not count towards total team score because of unforeseen circumstances during the competition.'
 			}
 			className={className}
-			ref={ref}
 		/>
 	);
 }

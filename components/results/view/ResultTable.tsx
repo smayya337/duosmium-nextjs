@@ -1,6 +1,9 @@
+'use client';
+
 import { AbsentBadge } from '@/components/results/view/AbsentBadge';
 import { DisqualifiedBadge } from '@/components/results/view/DisqualifiedBadge';
 import { ExhibitionBadge } from '@/components/results/view/ExhibitionBadge';
+import TeamDialog from '@/components/results/view/TeamDialog';
 import { TrialBadge } from '@/components/results/view/TrialBadge';
 import { TrialedBadge } from '@/components/results/view/TrialedBadge';
 import {
@@ -11,45 +14,81 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table';
-import { formatSchool, teamAttended, teamLocation } from '@/lib/results/helpers';
-// @ts-ignore
-import Interpreter, { Team } from 'sciolyff/interpreter';
+import { useEffect, useState } from 'react';
 
 function nameToKey(name: string) {
-	return name.toLowerCase().replaceAll(' ', '-');
+	return name.toLowerCase().replaceAll(/\s+/g, '_').replaceAll(/\W/g, '');
 }
 
-function totalPenalty(t: Team) {
-	return (
-		t.penalties
+function recalculatePoints(
+	activeEvents: object,
+	teamData: {
+		number: any;
+		team: string;
+		school: any;
+		suffix: any;
+		location: string;
+		disqualified: any;
+		exhibition: any;
+		attended: boolean | undefined;
+		earnedBid: any;
+		rank: any;
+		points: any;
+		penalties: any;
+	}[]
+) {
+	for (const team of teamData) {
+		let points = 0;
+		for (const event of Object.keys(activeEvents)) {
 			// @ts-ignore
-			.map((p) => p.points)
-			.reduce((partialSum: number, a: number) => partialSum + a, 0)
-	);
-}
-
-export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
-	const eventNames: string[] = [];
-	// @ts-ignore
-	eventNames.push(...interpreter.events.filter((e) => !e.trial).map((e) => e.name));
-	// @ts-ignore
-	eventNames.push(...interpreter.events.filter((e) => e.trial).map((e) => e.name));
-	const eventsByName = {};
-	for (const e of interpreter.events) {
-		// @ts-ignore
-		eventsByName[e.name] = e;
-	}
-	const placingsByTeam = {};
-	for (const t of interpreter.teams) {
-		const placings: number[] = [];
-		// @ts-ignore
-		for (const e of eventNames) {
-			// @ts-ignore
-			placings.push(t.placingFor(eventsByName[e])?.isolatedPoints);
+			if (activeEvents[event]) {
+				// @ts-ignore
+				points += team[event];
+			}
 		}
-		// @ts-ignore
-		placingsByTeam[t.number] = placings;
+		team.points = points;
 	}
+}
+
+export function ResultTable({
+	teamData,
+	eventData,
+	trophies,
+	tableData,
+	placingsByTeam
+}: {
+	teamData: {
+		number: any;
+		team: string;
+		school: any;
+		suffix: any;
+		location: string;
+		disqualified: any;
+		exhibition: any;
+		attended: boolean | undefined;
+		earnedBid: any;
+		rank: any;
+		points: any;
+		penalties: any;
+	}[];
+	eventData: { id: string; name: any; trial: any; trialed: any; medals: any }[];
+	trophies: number;
+	tableData: Map<
+		number,
+		{ name: string; points: string; place: string; notes: string; medals: number }[]
+	>;
+	placingsByTeam: object;
+}) {
+	const defaultActive = {};
+	for (const e of eventData) {
+		// @ts-ignore
+		defaultActive[nameToKey(e.name)] = !(e.trial || e.trialed);
+	}
+	const [activeEvents] = useState(defaultActive);
+	useEffect(() => {
+		recalculatePoints(activeEvents, teamData);
+	}, [activeEvents, teamData]);
+	recalculatePoints(activeEvents, teamData);
 	return (
 		<Table className={'text-center'}>
 			<TableHeader>
@@ -83,26 +122,24 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 						Total
 					</TableHead>
 					{/*@ts-ignore*/}
-					{eventNames.map((e) => {
-						// @ts-ignore
-						const evt = eventsByName[e];
+					{eventData.map((e) => {
 						return (
 							<TableHead
-								key={nameToKey(e)}
+								key={nameToKey(e.name)}
 								className={
-									'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'
+									'text-left whitespace-nowrap max-h-96 sideways align-top py-1 hover:cursor-pointer hover:underline px-2 w-[2.625rem]'
 								}
 							>
-								{e}
-								{evt.trial && <TrialBadge className={'mb-1 py-2.5 px-0.5'} />}
-								{evt.trialed && <TrialedBadge className={'mb-1 py-2.5 px-0.5'} />}
+								{e.name}
+								{e.trial && <TrialBadge className={'mt-1 py-2.5 px-0.5'} />}
+								{e.trialed && <TrialedBadge className={'mt-1 py-2.5 px-0.5'} />}
 							</TableHead>
 						);
 					})}
 					<TableHead
 						key={'penalties'}
 						className={
-							'text-left whitespace-nowrap px-2 max-h-96 sideways align-bottom py-1 hover:cursor-pointer hover:underline'
+							'text-left whitespace-nowrap px-2 max-h-96 sideways align-top py-1 hover:cursor-pointer hover:underline'
 						}
 					>
 						Team Penalties
@@ -111,66 +148,86 @@ export function ResultTable({ interpreter }: { interpreter: Interpreter }) {
 			</TableHeader>
 			<TableBody>
 				{/*@ts-ignore*/}
-				{interpreter.teams.map((t) => {
+				{teamData.map((x) => {
+					const teamName = (
+						<div>
+							{x.team}
+							{x.suffix ? ` ${x.suffix}` : ''}
+							<span className={'text-xs text-muted-foreground ml-1'}>({x.location})</span>
+						</div>
+					);
 					return (
-						<TableRow key={t.number}>
+						<TableRow key={x.number}>
 							<TableCell
 								key={'number'}
 								className={
 									'text-right text-muted-foreground hover:cursor-pointer hover:underline p-2'
 								}
 							>
-								{t.number}
+								<TeamDialog
+									teamNumber={x.number}
+									eventData={eventData}
+									// @ts-ignore
+									tableData={tableData.get(x.number)}
+									teamData={x}
+								>
+									<div>{x.number}</div>
+								</TeamDialog>
 							</TableCell>
 							<TableCell
 								key={'school'}
 								className={'text-left whitespace-nowrap hover:cursor-pointer hover:underline p-2'}
 							>
-								{formatSchool(t)}
-								{t.suffix ? ` ${t.suffix}` : ''}
-								<span className={'text-xs text-muted-foreground ml-1'}>({teamLocation(t)})</span>
-								{t.disqualified && <DisqualifiedBadge className={'ml-1'} />}
-								{t.exhibition && teamAttended(t) && <ExhibitionBadge className={'ml-1'} />}
-								{t.exhibition && !teamAttended(t) && <AbsentBadge className={'ml-1'} />}
+								<TeamDialog
+									teamNumber={x.number}
+									eventData={eventData}
+									// @ts-ignore
+									tableData={tableData.get(x.number)}
+									teamData={x}
+								>
+									{teamName}
+								</TeamDialog>
+								{x.disqualified && <DisqualifiedBadge className={'ml-1'} />}
+								{x.exhibition && x.attended && <ExhibitionBadge className={'ml-1'} />}
+								{x.exhibition && !x.attended && <AbsentBadge className={'ml-1'} />}
 							</TableCell>
-							{t.rank <= interpreter.tournament.trophies && (
-								<TableCell key={'rank'} className={`place-${t.rank} p-2`}>
-									{t.rank}
+							{x.rank <= trophies && (
+								<TableCell key={'rank'} className={`place-${x.rank} p-2`}>
+									{x.rank}
 								</TableCell>
 							)}
-							{!(t.rank <= interpreter.tournament.trophies) && (
+							{!(x.rank <= trophies) && (
 								<TableCell key={'rank'} className={'p-2'}>
-									{t.rank}
+									{x.rank}
 								</TableCell>
 							)}
 							<TableCell key={'points'} className={'p-2'}>
-								{t.points}
+								{x.points}
 							</TableCell>
-							{eventNames.map((value: string, index: number) => {
-								// @ts-ignore
-								const placing = placingsByTeam[t.number][index];
-								if (
+							{eventData.map(
+								(
+									value: { id: string; name: any; trial: any; trialed: any; medals: any },
+									index: number
+								) => {
 									// @ts-ignore
-									placing <= eventsByName[value].medals ||
-									// @ts-ignore
-									(eventsByName[value].medals === undefined &&
-										placing <= interpreter.tournament.medals)
-								) {
-									return (
-										<TableCell key={nameToKey(value)} className={`place-${placing} p-2`}>
-											{placing}
-										</TableCell>
-									);
-								} else {
-									return (
-										<TableCell key={nameToKey(value)} className={'p-2'}>
-											{placing}
-										</TableCell>
-									);
+									const placing = placingsByTeam[x.number][index];
+									if (placing <= value.medals) {
+										return (
+											<TableCell key={nameToKey(value.name)} className={`place-${placing} p-2`}>
+												{placing}
+											</TableCell>
+										);
+									} else {
+										return (
+											<TableCell key={nameToKey(value.name)} className={'p-2'}>
+												{placing}
+											</TableCell>
+										);
+									}
 								}
-							})}
+							)}
 							<TableCell key={'penalties'} className={'text-muted-foreground p-2'}>
-								{totalPenalty(t)}
+								{x.penalties}
 							</TableCell>
 						</TableRow>
 					);
