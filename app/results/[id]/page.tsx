@@ -24,7 +24,7 @@ export default async function Page({
 	searchParams: { team: number | undefined };
 }) {
 	const id = params.id;
-	let data: object;
+	let data: any;
 	let res: Result;
 	try {
 		res = await getResult(id);

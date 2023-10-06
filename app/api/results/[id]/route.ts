@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
 	}
 	try {
 		const result = await getCompleteResult(duosmiumID);
+		// @ts-ignore
 		return exportYAMLOrJSON(url, result, duosmiumID);
 	} catch (e) {
 		return new NextResponse('Server Error', { status: 500 });

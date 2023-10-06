@@ -4,15 +4,14 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { buttonVariants } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { siteConfig } from '@/config/site';
-import { getServerComponentClient } from '@/lib/global/supabase';
-import { cookies } from 'next/headers';
+import { getServerComponentClient } from '@/lib/global/supabase-server';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 
 export async function SiteHeader() {
 	const {
 		data: { user }
-	} = await getServerComponentClient(cookies).auth.getUser();
+	} = await getServerComponentClient().auth.getUser();
 	return (
 		<header className="sticky top-0 z-40 w-full border-b bg-background">
 			<div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
