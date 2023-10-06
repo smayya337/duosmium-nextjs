@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { SiteHeader } from '@/components/site-header';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 import { siteConfig } from '@/config/site';
 import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 						<div className="relative flex min-h-screen flex-col">
 							<SiteHeader />
 							<div className="flex-1 mx-auto py-8 max-w-90vw">{children}</div>
+							<Toaster />
 							{/* TODO: add a footer */}
 						</div>
 					</ThemeProvider>

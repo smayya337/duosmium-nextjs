@@ -1,11 +1,13 @@
 // 'use client';
 
-import {getServerComponentClient} from '@/lib/global/supabase';
-import {redirect} from 'next/navigation';
-import {cookies} from "next/headers";
+import { getServerComponentClient } from '@/lib/global/supabase';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function Upload() {
-	const { data: { session } } = await getServerComponentClient(cookies).auth.getSession();
+	const {
+		data: { session }
+	} = await getServerComponentClient(cookies).auth.getSession();
 	if (!session || !session?.user || !session.user.user_metadata.admin) {
 		redirect('/auth/login?next=/admin');
 	}

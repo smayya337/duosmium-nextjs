@@ -22,6 +22,7 @@ import { createLogoPath } from '@/lib/results/logo';
 import { addTeam, createTeamDataInput } from '@/lib/teams/async';
 import { addTournament, createTournamentDataInput } from '@/lib/tournaments/async';
 import { addTrack, createTrackDataInput } from '@/lib/tracks/async';
+import { kv } from '@vercel/kv';
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import { load } from 'js-yaml';
 import { cache } from 'react';
@@ -64,44 +65,58 @@ async function getCompleteResultData(duosmiumID: string) {
 }
 
 export async function getCompleteResult(duosmiumID: string) {
-	// @ts-ignore
-	const [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData] =
-		await getCompleteResultData(duosmiumID);
-	const output = {};
-	if (tournamentData) {
+	try {
+		return await kv.get(duosmiumID);
+	} catch (e) {
 		// @ts-ignore
-		output['Tournament'] = tournamentData.data;
-	}
-	// @ts-ignore
-	if (eventData.length > 0) {
+		const [
+			tournamentData,
+			eventData,
+			trackData,
+			teamData,
+			placingData,
+			penaltyData,
+			histogramData
+		] = await getCompleteResultData(duosmiumID);
+		const output = {};
+		if (tournamentData) {
+			// @ts-ignore
+			output['Tournament'] = tournamentData.data;
+		}
 		// @ts-ignore
-		output['Events'] = eventData.map((i) => i.data);
-	}
-	// @ts-ignore
-	if (trackData.length > 0) {
+		if (eventData.length > 0) {
+			// @ts-ignore
+			output['Events'] = eventData.map((i) => i.data);
+		}
 		// @ts-ignore
-		output['Tracks'] = trackData.map((i) => i.data);
-	}
-	// @ts-ignore
-	if (teamData.length > 0) {
+		if (trackData.length > 0) {
+			// @ts-ignore
+			output['Tracks'] = trackData.map((i) => i.data);
+		}
 		// @ts-ignore
-		output['Teams'] = teamData.map((i) => i.data);
-	}
-	// @ts-ignore
-	if (placingData.length > 0) {
+		if (teamData.length > 0) {
+			// @ts-ignore
+			output['Teams'] = teamData.map((i) => i.data);
+		}
 		// @ts-ignore
-		output['Placings'] = placingData.map((i) => i.data);
-	}
-	// @ts-ignore
-	if (penaltyData.length > 0) {
+		if (placingData.length > 0) {
+			// @ts-ignore
+			output['Placings'] = placingData.map((i) => i.data);
+		}
 		// @ts-ignore
-		output['Penalties'] = penaltyData.map((i) => i.data);
+		if (penaltyData.length > 0) {
+			// @ts-ignore
+			output['Penalties'] = penaltyData.map((i) => i.data);
+		}
+		if (histogramData) {
+			// @ts-ignore
+			output['Histograms'] = histogramData.data;
+		}
+		try {
+			await kv.set(duosmiumID, output);
+		} catch (e) {}
+		return output;
 	}
-	if (histogramData) {
-		// @ts-ignore
-		output['Histograms'] = histogramData.data;
-	}
-	return output;
 }
 
 export async function getAllResults(ascending = true, limit = 0) {
@@ -216,6 +231,7 @@ export async function regenerateAllMetadata() {
 	);
 	const operation = db.transaction(async (tx) => {
 		for (const id of ids) {
+			// @ts-ignore
 			const input = await createResultDataInput(getInterpreter(await getCompleteResult(id)));
 			await addResult(input);
 		}

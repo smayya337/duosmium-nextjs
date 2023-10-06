@@ -11,6 +11,7 @@ import {
 	FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 import { getClientComponentClient } from '@/lib/global/supabase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -43,8 +44,10 @@ export default function Login({ searchParams }: { searchParams: any }) {
 			password: password.toString()
 		});
 		if (error) {
-			// TODO: add a toast that tells them the error
-			console.log(error.message);
+			toast({
+				title: 'Login failed!',
+				description: error.message
+			});
 		}
 		if (data.user?.email?.endsWith('duosmium.org') && !data.user?.user_metadata.admin) {
 			await supabase.auth.updateUser({
