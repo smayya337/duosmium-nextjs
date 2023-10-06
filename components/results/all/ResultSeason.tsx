@@ -1,6 +1,6 @@
 import { OfficialBadge } from '@/components/results/home/OfficialBadge';
 import { PreliminaryBadge } from '@/components/results/home/PreliminaryBadge';
-import { Result } from '@prisma/client';
+import { Result } from '@/lib/global/schema';
 import Link from 'next/link';
 
 export function ResultSeason({ season, results }: { season: number; results: Result[] }) {

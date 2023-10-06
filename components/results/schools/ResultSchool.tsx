@@ -1,5 +1,5 @@
 import { ordinalize } from '@/lib/results/helpers';
-import { Location, Result } from '@prisma/client';
+import { Location, Result } from '@/lib/global/schema';
 import Link from 'next/link';
 
 export function ResultSchool({

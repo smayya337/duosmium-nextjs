@@ -1,5 +1,5 @@
 import { ResultRecent } from '@/components/results/home/ResultRecent';
-import { Result } from '@prisma/client';
+import { Result } from '@/lib/global/schema';
 
 export function ResultRecentList({ results }: { results: Result[] }) {
 	return (

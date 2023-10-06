@@ -11,7 +11,7 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/components/ui/card';
-import { Result } from '@prisma/client';
+import { Result } from '@/lib/global/schema';
 import Image from 'next/image';
 import Link from 'next/link';
 

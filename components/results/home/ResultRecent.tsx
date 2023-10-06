@@ -1,4 +1,4 @@
-import { Result } from '@prisma/client';
+import { Result } from '@/lib/global/schema';
 import Link from 'next/link';
 
 export function ResultRecent({ result }: { result: Result }) {

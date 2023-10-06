@@ -1,7 +1,7 @@
 import { ResultCountGrid } from '@/components/results/home/ResultCountGrid';
 import { ResultRecentList } from '@/components/results/home/ResultRecentList';
 import { siteConfig } from '@/config/site';
-import { Result } from '@prisma/client';
+import { Result } from '@/lib/global/schema';
 import Link from 'next/link';
 
 export function Hero({
