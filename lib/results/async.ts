@@ -66,7 +66,12 @@ async function getCompleteResultData(duosmiumID: string) {
 
 export async function getCompleteResult(duosmiumID: string) {
 	try {
-		return await kv.get(duosmiumID);
+		const data = await kv.get(duosmiumID);
+		if (data === null) {
+			throw new Error();
+		} else {
+			return data;
+		}
 	} catch (e) {
 		// @ts-ignore
 		const [
