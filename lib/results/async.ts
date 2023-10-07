@@ -178,7 +178,6 @@ export async function addResultFromYAMLFile(
 	// @ts-ignore
 	const obj: object = load(yaml);
 	const interpreter: Interpreter = getInterpreter(obj);
-	// console.log(resultData);
 	try {
 		await keepTryingUntilItWorks(addCompleteResult, interpreter);
 		// await addCompleteResult(interpreter);
@@ -281,23 +280,27 @@ export async function addCompleteResult(interpreter: Interpreter) {
 		});
 		// Events
 		for (const event of interpreter.events) {
-			await addEvent(await createEventDataInput(event, duosmiumID), tx);
+			const eventData = await createEventDataInput(event, duosmiumID);
+			await addEvent(eventData, tx);
 		}
 		// Tracks
 		for (const track of interpreter.tracks) {
-			await addTrack(await createTrackDataInput(track, duosmiumID), tx);
+			const trackData = await createTrackDataInput(track, duosmiumID);
+			await addTrack(trackData, tx);
 		}
 		// Teams (and locations)
 		for (const team of interpreter.teams) {
+			const teamData = await createTeamDataInput(team, duosmiumID);
+			const locationData = await createLocationDataInput(
+				team.school,
+				team.state in STATES_BY_POSTAL_CODE ? team.state : '',
+				team.city ?? '',
+				team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state
+			);
 			await tx.transaction(async (tx2) => {
-				await addTeam(await createTeamDataInput(team, duosmiumID), tx2);
+				await addTeam(teamData, tx2);
 				await addLocation(
-					await createLocationDataInput(
-						team.school,
-						team.state in STATES_BY_POSTAL_CODE ? team.state : '',
-						team.city ?? '',
-						team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state
-					),
+					locationData,
 					tx2
 				);
 			});
@@ -315,4 +318,7 @@ export async function addCompleteResult(interpreter: Interpreter) {
 			await addHistogram(await createHistogramDataInput(interpreter.histograms, duosmiumID), tx);
 		}
 	});
+	try {
+		await kv.del(duosmiumID);
+	} catch (e) {}
 }

@@ -59,6 +59,7 @@ export async function addPenalty(penaltyData: object, tx = db) {
 				.values(penaltyData)
 				.onConflictDoUpdate({
 					target: [penalties.resultDuosmiumId, penalties.teamNumber],
+					// @ts-ignore
 					set: penaltyData
 				})
 				.returning()
@@ -69,7 +70,7 @@ export async function addPenalty(penaltyData: object, tx = db) {
 export async function createPenaltyDataInput(penalty: Penalty, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
-		number: penalty.team.number,
+		teamNumber: penalty.team.number,
 		data: penalty.rep
 	};
 }

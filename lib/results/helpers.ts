@@ -87,7 +87,11 @@ export function generateFilename(interpreter: Interpreter) {
 }
 
 function cleanString(s: string) {
-	return s.replaceAll(/\./g, '').replaceAll(/[^A-Za-z0-9]/g, '_');
+	let output = s.replaceAll(/\./g, '').replaceAll(/[^A-Za-z0-9]/g, '_');
+	if (!output.endsWith("_")) {
+		output += "_";
+	}
+	return output;
 }
 
 export function tournamentTitle(tInfo: Tournament) {
