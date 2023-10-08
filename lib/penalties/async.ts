@@ -71,6 +71,6 @@ export async function createPenaltyDataInput(penalty: Penalty, duosmiumID: strin
 	return {
 		resultDuosmiumId: duosmiumID,
 		teamNumber: penalty.team.number,
-		data: penalty.rep
+		data: sql`${penalty.rep}::jsonb`
 	};
 }

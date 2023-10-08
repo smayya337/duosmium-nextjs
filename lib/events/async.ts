@@ -68,6 +68,6 @@ export async function createEventDataInput(event: Event, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
 		name: event.name,
-		data: event.rep
+		data: sql`${event.rep}::jsonb`
 	};
 }

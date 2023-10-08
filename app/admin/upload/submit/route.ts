@@ -1,17 +1,15 @@
 import { isAdmin } from '@/lib/auth/admin';
-import { getCurrentUserID } from '@/lib/auth/helpers';
 import { getRouteHandlerClient } from '@/lib/global/supabase';
-import { addResultFromYAMLFile } from '@/lib/results/async';
+// import { addResultFromYAMLFile } from '@/lib/results/async';
 import { ResultsAddQueue } from '@/lib/results/queue';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-	// const supabase = getRouteHandlerClient(cookies);
-	// if (!(await isAdmin(supabase))) {
-	// 	return new Response(null, { status: 403 });
-	// }
+	const supabase = getRouteHandlerClient(cookies);
+	if (!(await isAdmin(supabase))) {
+		return new NextResponse(null, { status: 403 });
+	}
 	const data = await request.formData();
 	const allFiles = data.getAll('yaml');
 	const q = ResultsAddQueue.getInstance();

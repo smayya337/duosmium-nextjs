@@ -55,6 +55,6 @@ export async function addHistogram(histogramData: object, tx = db) {
 export async function createHistogramDataInput(histogram: Histogram, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
-		data: histogram.rep
+		data: sql`${histogram.rep}::jsonb`
 	};
 }

@@ -72,7 +72,7 @@ export async function createTeamDataInput(team: Team, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
 		number: team.number,
-		data: team.rep,
+		data: sql`${team.rep}::jsonb`,
 		name: locationName,
 		city: locationCity,
 		state: locationState,

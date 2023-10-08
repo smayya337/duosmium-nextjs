@@ -2,7 +2,7 @@ import type { QueueObject } from 'async';
 import { queue } from 'async';
 import { addResultFromYAMLFile } from './async';
 
-const MAX_PROCESSES = 16;
+const MAX_PROCESSES = 64;
 
 export class ResultsAddQueue {
 	private static instance: ResultsAddQueue;
@@ -29,6 +29,10 @@ export class ResultsAddQueue {
 
 	public drain(arg: () => void) {
 		this.q.drain(arg);
+	}
+
+	public error(arg: (err: any, task: any) => void) {
+		this.q.error(arg);
 	}
 
 	public push(arg: File) {

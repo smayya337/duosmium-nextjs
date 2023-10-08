@@ -14,6 +14,8 @@ export async function keepTryingUntilItWorks(fn, data) {
 	} catch (e: PostgresError) {
 		if (e.message === 'deadlock detected') {
 			return await keepTryingUntilItWorks(fn, data);
+		} else {
+			throw e;
 		}
 	}
 }

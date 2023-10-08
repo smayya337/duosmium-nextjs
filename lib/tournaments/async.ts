@@ -55,7 +55,7 @@ export async function addTournament(tournamentData: object, tx = db) {
 export async function createTournamentDataInput(tournament: Tournament, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
-		data: tournament.rep
+		data: sql`${tournament.rep}::jsonb`
 	};
 }
 

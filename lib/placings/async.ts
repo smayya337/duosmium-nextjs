@@ -87,6 +87,6 @@ export async function createPlacingDataInput(placing: Placing, duosmiumID: strin
 		eventName: placing.event.name,
 		teamNumber: placing.team.number,
 		resultDuosmiumId: duosmiumID,
-		data: placing.rep
+		data: sql`${placing.rep}::jsonb`
 	};
 }

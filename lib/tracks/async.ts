@@ -64,6 +64,6 @@ export async function createTrackDataInput(track: Track, duosmiumID: string) {
 	return {
 		resultDuosmiumId: duosmiumID,
 		name: track.name.toString(),
-		data: track.rep
+		data: sql`${track.rep}::jsonb`
 	};
 }

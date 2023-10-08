@@ -178,6 +178,9 @@ export async function addResultFromYAMLFile(
 	// @ts-ignore
 	const obj: object = load(yaml);
 	const interpreter: Interpreter = getInterpreter(obj);
+	// if (await resultExists(generateFilename(interpreter))) {
+	// 	return;
+	// }
 	try {
 		await keepTryingUntilItWorks(addCompleteResult, interpreter);
 		// await addCompleteResult(interpreter);
@@ -237,7 +240,7 @@ export async function regenerateAllMetadata() {
 		for (const id of ids) {
 			// @ts-ignore
 			const input = await createResultDataInput(getInterpreter(await getCompleteResult(id)));
-			await addResult(input);
+			await addResult(input, tx);
 		}
 	});
 	return await operation;
